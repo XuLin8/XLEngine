@@ -11,6 +11,10 @@ workspace "XLEngine" --解决方案名称
 --详细的所有支持的tokens 可参考 [https://github.com/premake/premake-core/wiki/Tokens]
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+IncludeDir = {}
+IncludeDir["GLFW"] = "XLEngine/vendor/GLFW/include"
+include "XLEngine/vendor/GLFW"
+
 project "XLEngine" --项目名称
     location "XLEngine" --相对路径
     kind "SharedLib" --表明该项目是dll动态库
@@ -31,7 +35,14 @@ project "XLEngine" --项目名称
     includedirs--附加包含目录
     {
         "%{prj.name}/src",
-        "%{prj.name}/vendor/spdlog/include"
+        "%{prj.name}/vendor/spdlog/include",
+        "%{IncludeDir.GLFW}"
+    }
+
+    links
+    {
+        "GLFW",
+        "opengl32.lib"
     }
 
     filter "system:windows"--windows平台的配置
