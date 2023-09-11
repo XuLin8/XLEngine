@@ -2,9 +2,6 @@
 
 #include "XLEngine/Core.h"
 
-#include <string>
-#include <functional>
-
 namespace XLEngine
 {
 	//TODO:ÊÂ¼þ»º³å

@@ -12,6 +12,8 @@ namespace XLEngine
 		virtual ~Application();
 
 		void Run();
+	private:
+		bool m_Running = true;
 	};
 	
 	//在客户端定义

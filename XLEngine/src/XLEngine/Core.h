@@ -1,4 +1,5 @@
 #pragma once
+#include "xlpch.h"
 
 #ifdef XL_PLATFORM_WINDOWS
 	#ifdef XL_BUILD_DLL

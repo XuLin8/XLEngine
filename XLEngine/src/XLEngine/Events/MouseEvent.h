@@ -2,8 +2,6 @@
 
 #include "Event.h"
 
-#include <sstream>
-
 namespace XLEngine {
 	class XLENGINE_API MouseMovedEvent :public Event
 	{
