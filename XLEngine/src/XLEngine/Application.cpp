@@ -14,6 +14,9 @@ namespace XLEngine
 
 	void Application::Run()
 	{
+		WindowResizeEvent e(1200, 700);
+		XL_TRACE(e);
+
 		while (true);
 	}
 }

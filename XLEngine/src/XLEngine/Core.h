@@ -9,3 +9,5 @@
 #else
 	#error XLEngine only supports Windows!
 #endif // XL_PLATFORM_WINDOWS
+
+#define BIT(x) (1 << x)
