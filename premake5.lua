@@ -63,17 +63,17 @@ project "XLEngine" --ÏîÄ¿Ãû³Æ
 
     filter "configurations:Debug"
         defines "XL_DEBUG"
-        runtime "Debug"
+        buildoptions "/MDd"
         symbols "on"
 
     filter "configurations:Release"
         defines "XL_RELEASE"
-        runtime "Release"
+        buildoptions "/MD"
         optimize "on"
 
     filter "configurations:Dist"
         defines "XL_DIST"
-        runtime "Release"
+        buildoptions "/MD"
         optimize "on"
 
 project "Sandbox"
@@ -113,15 +113,15 @@ project "Sandbox"
 
     filter "configurations:Debug"
         defines "XL_DEBUG"
-        runtime "Debug"
+       buildoptions "/MDd"
         symbols "on"
 
     filter "configurations:Release"
         defines "XL_RELEASE"
-        runtime "Release"
+        buildoptions "/MD"
         optimize "on"
 
     filter "configurations:Dist"
         defines "XL_DIST"
-        runtime "Release"
+        buildoptions "/MD"
         optimize "on"
