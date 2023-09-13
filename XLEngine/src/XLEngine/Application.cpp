@@ -1,18 +1,25 @@
 #include "xlpch.h"
 #include "Application.h"
 #include "Log.h"
-
-#include <GLFW/glfw3.h>
+#include <glad/glad.h>
 
 namespace XLEngine
 {
 //将事件的处理函数（如OnEvent）与其他函数（如 m_Window->SetEventCallback）绑定起来
 #define BIND_EVENT_FN(x) [this](auto&&... args) -> decltype(auto) { return this->x(std::forward<decltype(args)>(args)...); }
 
+	Application* Application::s_Instance = nullptr;
+
 	Application::Application()
 	{
+		XL_CORE_ASSERT(!s_Instance, "Application already exists!");
+		s_Instance = this;
+
 		m_Window = std::unique_ptr<Window>(Window::Create());
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
+
+		unsigned int id;
+		glGenVertexArrays(1, &id);
 	}
 
 	Application::~Application()
@@ -33,11 +40,13 @@ namespace XLEngine
 	void Application::PushLayer(Layer* layer)
 	{
 		m_LayerStack.PushLayer(layer);
+		layer->OnAttach();
 	}
 
-	void Application::PushOverLay(Layer* overlayer)
+	void Application::PushOverlay(Layer* layer)
 	{
-		m_LayerStack.PushOverlay(overlayer);
+		m_LayerStack.PushOverlay(layer);
+		layer->OnAttach();
 	}
 
 	void Application::Run()

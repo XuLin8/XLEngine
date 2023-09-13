@@ -13,7 +13,12 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 IncludeDir = {}
 IncludeDir["GLFW"] = "XLEngine/vendor/GLFW/include"
+IncludeDir["Glad"] = "XLEngine/vendor/Glad/include"
+IncludeDir["ImGui"] = "XLEngine/vendor/imgui"
+
 include "XLEngine/vendor/GLFW"
+include "XLEngine/vendor/Glad"
+include "XLEngine/vendor/imgui"
 
 project "XLEngine" --项目名称
     location "XLEngine" --相对路径
@@ -36,13 +41,17 @@ project "XLEngine" --项目名称
     {
         "%{prj.name}/src",
         "%{prj.name}/vendor/spdlog/include",
-        "%{IncludeDir.GLFW}"
+        "%{IncludeDir.GLFW}",
+        "%{IncludeDir.Glad}",
+        "%{IncludeDir.ImGui}"
     }
 
     links
     {
+        "opengl32.lib",
         "GLFW",
-        "opengl32.lib"
+        "Glad",
+        "ImGui"
     }
 
     filter "system:windows"--windows平台的配置
@@ -54,6 +63,7 @@ project "XLEngine" --项目名称
         {
             "XL_BUILD_DLL",
             "XL_PLATFORM_WINDOWS",
+            "GLFW_INCLUDE_NONE"
         }
 
         postbuildcommands -- build后的自定义命令
