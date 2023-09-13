@@ -11,7 +11,7 @@ public:
 
 	void OnUpdate() override
 	{
-		XL_INFO("ExampleLayer ::Update");
+		//XL_INFO("ExampleLayer ::Update");
 	}
 
 	void OnEvent(XLEngine::Event& event) override

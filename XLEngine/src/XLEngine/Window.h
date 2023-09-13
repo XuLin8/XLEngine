@@ -22,7 +22,7 @@ namespace XLEngine
 		}
 	};
 
-	//基于桌面系统的窗口的界面
+	//基于Windows系统的窗口的界面
 	class XLENGINE_API Window
 	{
 	public:
