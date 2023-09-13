@@ -1,6 +1,6 @@
 [submodule "XLEngine/vendor/spdlog"]
 	path = XLEngine/vendor/spdlog
 	url = https://github.com/gabime/spdlog
-[submodule "XLEngine/vendor/imgui"]
-	path = XLEngine/vendor/imgui
-	url = https://github.com/TheCherno/imgui
+[submodule "XLEngine/vendor/GLFW"]
+	path = XLEngine/vendor/GLFW
+	url = https://github.com/Xulin8/glfw.git
