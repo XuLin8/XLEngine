@@ -20,3 +20,6 @@
 	#define XL_ASSERT(x,...)
 	#define XL_CORE_ASSERT(x,...)
 #endif
+
+//将事件的处理函数（如OnEvent）与其他函数（如 m_Window->SetEventCallback）绑定起来
+#define XL_BIND_EVENT_FN(x) [this](auto&&... args) -> decltype(auto) { return this->x(std::forward<decltype(args)>(args)...); }

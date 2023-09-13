@@ -10,7 +10,7 @@ namespace XLEngine
 		None = 0,
 		WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,	// 窗口
 		AppTick, AppUpdate, AppRender,											// App
-		KeyPressed, KeyReleased,												// 按键
+		KeyPressed, KeyReleased, KeyTyped,										// 按键
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled		// 鼠标
 	};
 

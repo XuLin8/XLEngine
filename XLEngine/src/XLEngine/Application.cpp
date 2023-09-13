@@ -5,9 +5,6 @@
 
 namespace XLEngine
 {
-//将事件的处理函数（如OnEvent）与其他函数（如 m_Window->SetEventCallback）绑定起来
-#define BIND_EVENT_FN(x) [this](auto&&... args) -> decltype(auto) { return this->x(std::forward<decltype(args)>(args)...); }
-
 	Application* Application::s_Instance = nullptr;
 
 	Application::Application()
@@ -16,7 +13,7 @@ namespace XLEngine
 		s_Instance = this;
 
 		m_Window = std::unique_ptr<Window>(Window::Create());
-		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
+		m_Window->SetEventCallback(XL_BIND_EVENT_FN(OnEvent));
 
 		unsigned int id;
 		glGenVertexArrays(1, &id);
@@ -29,7 +26,7 @@ namespace XLEngine
 	void Application::OnEvent(Event& e)
 	{
 		EventDispatcher dispatcher(e);
-		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
+		dispatcher.Dispatch<WindowCloseEvent>(XL_BIND_EVENT_FN(OnWindowClose));
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
 		{
 			(*--it)->OnEvent(e);
