@@ -111,6 +111,7 @@ project "Sandbox"
     {
         "XLEngine/vendor/spdlog/include",
         "XLEngine/src",
+        "XLEngine/vendor",
         "%{IncludeDir.glm}"
     }
 
