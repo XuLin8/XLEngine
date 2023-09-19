@@ -7,6 +7,7 @@
 #include "Events/ApplicationEvent.h"
 
 #include "XLEngine/ImGui/ImGuiLayer.h"
+#include "XLEngine/Renderer/Shader.h"
 
 namespace XLEngine
 {
@@ -33,6 +34,7 @@ namespace XLEngine
 		LayerStack m_LayerStack;
 
 		unsigned int m_VertexArray, m_VertexBuffer, m_IndexBuffer;
+		std::unique_ptr<Shader> m_Shader;
 	private:
 		static Application* s_Instance;
 	};
