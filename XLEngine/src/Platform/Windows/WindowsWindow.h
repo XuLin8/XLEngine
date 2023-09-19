@@ -1,8 +1,9 @@
 #pragma once
 
 #include "XLEngine/Window.h"
+#include "XLEngine/Renderer/GraphicsContext.h"
 
-#include <GLFW/glfw3.h>
+#include <glfw/glfw3.h>
 
 namespace XLEngine
 {
@@ -28,6 +29,7 @@ namespace XLEngine
 		virtual void Shutdown();
 	private:
 		GLFWwindow* m_Window;
+		GraphicsContext* m_Context;
 
 		struct WindowData
 		{
