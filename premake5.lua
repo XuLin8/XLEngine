@@ -1,6 +1,5 @@
 workspace "XLEngine" --解决方案名称
     architecture "x64" --编译平台 只编64位--(x86_64,ARM)
-    staticruntime "off"
     startproject "Sandbox"
 
     configurations 
@@ -25,8 +24,10 @@ include "XLEngine/vendor/imgui"
 
 project "XLEngine" --项目名称
     location "XLEngine" --相对路径
-    kind "SharedLib" --表明该项目是dll动态库
-    language "c++"
+    kind "StaticLib" --表明该项目是静态链接库
+    language "C++"
+    cppdialect "C++17"
+    staticruntime "on"
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")--输出目录
     objdir ("bin-int/" .. outputdir .. "/%{prj.name}")--中间临时文件的目录
@@ -41,6 +42,11 @@ project "XLEngine" --项目名称
         "%[prj.name]/vendor/glm/glm/**.hpp",
         "%[prj.name]/vendor/glm/glm/**.inl"
     }
+
+    defines
+	{
+		"_CRT_SECURE_NO_WARNINGS",
+	}
 
     includedirs--附加包含目录
     {
@@ -62,7 +68,6 @@ project "XLEngine" --项目名称
     }
 
     filter "system:windows"--windows平台的配置
-        cppdialect "c++17"
         systemversion "latest"
 
         defines --预编译宏
@@ -72,10 +77,10 @@ project "XLEngine" --项目名称
             "GLFW_INCLUDE_NONE"
         }
 
-        postbuildcommands -- build后的自定义命令
-        {
-            ("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/Sandbox\"") --拷贝引擎dll库到sanbox.exe的同一目录下去
-        }
+        --postbuildcommands -- build后的自定义命令
+        --{
+        --    ("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/Sandbox\"") --拷贝引擎dll库到sanbox.exe的同一目录下去
+        --}
 
     filter "configurations:Debug"
         defines "XL_DEBUG"
@@ -95,8 +100,9 @@ project "XLEngine" --项目名称
 project "Sandbox"
     location "Sandbox"
     kind "ConsoleApp"
-    language "c++"
-    staticruntime "off"
+    language "C++"
+    cppdialect "C++17"
+    staticruntime "on"
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -121,7 +127,6 @@ project "Sandbox"
     }
 
     filter "system:windows"
-        cppdialect "c++17"
         systemversion "latest"
 
         defines

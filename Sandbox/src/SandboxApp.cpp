@@ -1,4 +1,5 @@
 #include <XLEngine.h>
+#include <imgui/imgui.h>
 
 class ExampleLayer :public XLEngine::Layer 
 {
@@ -13,6 +14,13 @@ public:
 	{
 		if (XLEngine::Input::IsKeyPressed(XL_KEY_TAB))
 			XL_TRACE("Tab key is pressed (poll)!");
+	}
+
+	virtual void OnImGuiRender() override
+	{
+		ImGui::Begin("Test");
+		ImGui::Text("Hello World");
+		ImGui::End();
 	}
 
 	void OnEvent(XLEngine::Event& event) override
