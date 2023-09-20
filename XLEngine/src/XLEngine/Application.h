@@ -9,6 +9,7 @@
 #include "XLEngine/ImGui/ImGuiLayer.h"
 #include "XLEngine/Renderer/Shader.h"
 #include "XLEngine/Renderer/Buffer.h"
+#include "XLEngine/Renderer/VertexArray.h"
 
 namespace XLEngine
 {
@@ -16,7 +17,7 @@ namespace XLEngine
 	{
 	public:
 		Application();
-		virtual ~Application();
+		virtual ~Application() = default;
 
 		void Run();
 		void OnEvent(Event& e);
@@ -34,10 +35,11 @@ namespace XLEngine
 		bool m_Running = true;
 		LayerStack m_LayerStack;
 
-		unsigned int m_VertexArray;
-		std::unique_ptr<Shader> m_Shader;
-		std::unique_ptr<VertexBuffer> m_VertexBuffer;
-		std::unique_ptr<IndexBuffer> m_IndexBuffer;
+		std::shared_ptr<Shader> m_Shader;
+		std::shared_ptr<VertexArray> m_VertexArray;
+
+		std::shared_ptr<Shader> m_BlueShader;
+		std::shared_ptr<VertexArray> m_SquareVA;
 	private:
 		static Application* s_Instance;
 	};

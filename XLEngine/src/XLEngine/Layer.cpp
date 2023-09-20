@@ -8,9 +8,4 @@ namespace XLEngine
 	{
 
 	}
-
-	Layer::~Layer()
-	{
-
-	}
 }
