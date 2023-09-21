@@ -11,6 +11,8 @@
 #include "XLEngine/Renderer/Buffer.h"
 #include "XLEngine/Renderer/VertexArray.h"
 
+#include "XLEngine/Renderer/OrthographicCamera.h"
+
 namespace XLEngine
 {
 	class XLENGINE_API Application
@@ -40,6 +42,8 @@ namespace XLEngine
 
 		std::shared_ptr<Shader> m_BlueShader;
 		std::shared_ptr<VertexArray> m_SquareVA;
+
+		OrthographicCamera m_Camera;
 	private:
 		static Application* s_Instance;
 	};
