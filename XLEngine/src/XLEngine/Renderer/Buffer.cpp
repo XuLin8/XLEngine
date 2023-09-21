@@ -9,10 +9,10 @@ namespace XLEngine {
 	{
 		switch (Renderer::GetAPI())
 		{
-		case RendererAPI::None:
+		case RendererAPI::API::None:
 			XL_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); 
 			return nullptr;
-		case RendererAPI::OpenGL:
+		case RendererAPI::API::OpenGL:
 			return new OpenGLVertexBuffer(vertices, size);
 		}
 		XL_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -23,10 +23,10 @@ namespace XLEngine {
 	{
 		switch (Renderer::GetAPI())
 		{
-		case RendererAPI::None:
+		case RendererAPI::API::None:
 			XL_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
 			return nullptr;
-		case RendererAPI::OpenGL:
+		case RendererAPI::API::OpenGL:
 			return new OpenGLIndexBuffer(indices, size);
 		}
 		XL_CORE_ASSERT(false, "Unknown RendererAPI!");
