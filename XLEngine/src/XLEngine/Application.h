@@ -6,16 +6,12 @@
 #include "Events/Event.h"
 #include "Events/ApplicationEvent.h"
 
+#include "XLEngine/Core/Timestep.h"
 #include "XLEngine/ImGui/ImGuiLayer.h"
-#include "XLEngine/Renderer/Shader.h"
-#include "XLEngine/Renderer/Buffer.h"
-#include "XLEngine/Renderer/VertexArray.h"
-
-#include "XLEngine/Renderer/OrthographicCamera.h"
 
 namespace XLEngine
 {
-	class XLENGINE_API Application
+	class Application
 	{
 	public:
 		Application();
@@ -36,14 +32,8 @@ namespace XLEngine
 		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running = true;
 		LayerStack m_LayerStack;
+		float m_LastFrameTime = 0.0f;
 
-		std::shared_ptr<Shader> m_Shader;
-		std::shared_ptr<VertexArray> m_VertexArray;
-
-		std::shared_ptr<Shader> m_BlueShader;
-		std::shared_ptr<VertexArray> m_SquareVA;
-
-		OrthographicCamera m_Camera;
 	private:
 		static Application* s_Instance;
 	};
