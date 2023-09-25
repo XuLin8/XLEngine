@@ -17,10 +17,14 @@ IncludeDir["GLFW"] = "XLEngine/vendor/GLFW/include"
 IncludeDir["Glad"] = "XLEngine/vendor/Glad/include"
 IncludeDir["ImGui"] = "XLEngine/vendor/imgui"
 IncludeDir["glm"] = "XLEngine/vendor/glm"
+IncludeDir["stb_image"] = "XLEngine/vendor/stb_image"
 
-include "XLEngine/vendor/GLFW"
-include "XLEngine/vendor/Glad"
-include "XLEngine/vendor/imgui"
+group "Dependencies"
+    include "XLEngine/vendor/GLFW"
+    include "XLEngine/vendor/Glad"
+    include "XLEngine/vendor/imgui"
+
+group ""
 
 project "XLEngine" --项目名称
     location "XLEngine" --相对路径
@@ -39,10 +43,12 @@ project "XLEngine" --项目名称
     {
         "%{prj.name}/src/**.h",
         "%{prj.name}/src/**.cpp",
-        "%[prj.name]/vendor/glm/glm/**.hpp",
-        "%[prj.name]/vendor/glm/glm/**.inl"
+        "%{prj.name}/vendor/stb_image/**.h",
+        "%{prj.name}/vendor/stb_image/**.cpp",
+        "%{prj.name}/vendor/glm/glm/**.hpp",
+        "%{prj.name}/vendor/glm/glm/**.inl"
     }
-
+    
     defines
 	{
 		"_CRT_SECURE_NO_WARNINGS",
@@ -55,16 +61,16 @@ project "XLEngine" --项目名称
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Glad}",
         "%{IncludeDir.ImGui}",
-        "%{IncludeDir.glm}"
-
+        "%{IncludeDir.glm}",
+        "%{IncludeDir.stb_image}",
     }
 
     links
     {
-        "opengl32.lib",
         "GLFW",
         "Glad",
-        "ImGui"
+        "ImGui",
+        "opengl32.lib"
     }
 
     filter "system:windows"--windows平台的配置
