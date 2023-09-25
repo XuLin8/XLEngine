@@ -154,6 +154,7 @@ public:
 		m_TextureShader.reset(XLEngine::Shader::Create(textureShaderVertexSrc, textureShaderFragmentSrc));
 
 		m_Texture = XLEngine::Texture2D::Create("assets/textures/Checkerboard.png");
+		m_LogoTextrue = XLEngine::Texture2D::Create("assets/textures/SiluokayiLogo.png");
 
 		std::dynamic_pointer_cast<XLEngine::OpenGLShader>(m_TextureShader)->Bind();
 		std::dynamic_pointer_cast<XLEngine::OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0);
@@ -201,7 +202,9 @@ public:
 		
 		m_Texture->Bind();
 		XLEngine::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
-		
+		m_LogoTextrue->Bind();
+		XLEngine::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.0f)));
+
 		// Triangle
 		//XLEngine::Renderer::Submit(m_Shader, m_VertexArray);
 
@@ -226,7 +229,7 @@ private:
 	XLEngine::Ref<XLEngine::Shader> m_FlatColorShader,m_TextureShader;
 	XLEngine::Ref<XLEngine::VertexArray> m_SquareVA;
 
-	XLEngine::Ref<XLEngine::Texture2D>m_Texture;
+	XLEngine::Ref<XLEngine::Texture2D>m_Texture,m_LogoTextrue;
 
 	XLEngine::OrthographicCamera m_Camera;
 	glm::vec3 m_CameraPosition;
