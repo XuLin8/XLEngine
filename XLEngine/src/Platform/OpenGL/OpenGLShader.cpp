@@ -2,113 +2,187 @@
 
 #include "OpenGLShader.h"
 
+#include <fstream>
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 
 namespace XLEngine
 {
+	static GLenum ShaderTypeFromString(const std::string& type)
+	{
+		if (type == "vertex")
+			return GL_VERTEX_SHADER;
+		if (type == "fragment" || type == "pixel")
+			return GL_FRAGMENT_SHADER;
+
+		XL_CORE_ASSERT(false, "Unknown shader type!");
+		return 0;
+	}
+
+	OpenGLShader::OpenGLShader(const std::string& filepath)
+	{
+		std::string source = ReadFile(filepath);
+		auto shaderSources = PreProcess(source);
+		Compile(shaderSources);
+	}
+
 	OpenGLShader::OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc)
 	{
-		// Create an empty vertex shader handle
-		GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+		std::unordered_map<GLenum, std::string> sources;
+		sources[GL_VERTEX_SHADER] = vertexSrc;
+		sources[GL_FRAGMENT_SHADER] = fragmentSrc;
+		Compile(sources);
+	}
 
-		// Send the vertex shader source code to GL
-		// Note that std::string's .c_str is NULL character terminated.
-		const GLchar* source = vertexSrc.c_str();
-		glShaderSource(vertexShader, 1, &source, 0);
-
-		// Compile the vertex shader
-		glCompileShader(vertexShader);
-
-		GLint isCompiled = 0;
-		glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &isCompiled);
-		if (isCompiled == GL_FALSE)
+	std::string OpenGLShader::ReadFile(const std::string& filepath)
+	{
+		std::string result;
+		std::ifstream in(filepath, std::ios::in, std::ios::binary);
+		if (in)
 		{
-			GLint maxLength = 0;
-			glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &maxLength);
-
-			// The maxLength includes the NULL character
-			std::vector<GLchar> infoLog(maxLength);
-			glGetShaderInfoLog(vertexShader, maxLength, &maxLength, &infoLog[0]);
-
-			// We don't need the shader anymore.
-			glDeleteShader(vertexShader);
-
-			XL_CORE_ERROR("{0}", infoLog.data());
-			XL_CORE_ASSERT(false, "Vertex shader compilation failure!");
-			return;
+			in.seekg(0, std::ios::end);
+			result.resize(in.tellg());
+			in.seekg(0, std::ios::beg);
+			in.read(&result[0], result.size());
+			in.close();
+		}
+		else
+		{
+			XL_CORE_ERROR("Could not open file '{0}'", filepath);
 		}
 
-		// Create an empty fragment shader handle
-		GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+		return result;
+	}
 
-		// Send the fragment shader source code to GL
-		// Note that std::string's .c_str is NULL character terminated.
-		source = fragmentSrc.c_str();
-		glShaderSource(fragmentShader, 1, &source, 0);
+	std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::string& source)
+	{
+		std::unordered_map<GLenum, std::string> shaderSources;
 
-		// Compile the fragment shader
-		glCompileShader(fragmentShader);
+		// 定义着色器类型标识符
+		const char* typeToken = "#type";
 
-		glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &isCompiled);
-		if (isCompiled == GL_FALSE)
+		// 计算着色器类型标识符的长度
+		size_t typeTokenLength = strlen(typeToken);
+
+		// 在源代码中查找第一个着色器类型标识符的位置
+		size_t pos = source.find(typeToken, 0);
+
+		// 循环直到没有找到更多的标识符
+		while (pos != std::string::npos)
 		{
-			GLint maxLength = 0;
-			glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &maxLength);
+			// 查找标识符后的行结束符（换行符或回车符）
+			size_t eol = source.find_first_of("\r\n", pos);
+			XL_CORE_ASSERT(eol != std::string::npos, "Syntax error");
 
-			// The maxLength includes the NULL character
-			std::vector<GLchar> infoLog(maxLength);
-			glGetShaderInfoLog(fragmentShader, maxLength, &maxLength, &infoLog[0]);
+			// 计算标识符值的起始位置
+			size_t begin = pos + typeTokenLength + 1;
 
-			// We don't need the shader anymore.
-			glDeleteShader(fragmentShader);
-			// Either of them. Don't leak shaders.
-			glDeleteShader(vertexShader);
+			// 提取标识符值（着色器类型，如"vertex"或"fragment"）
+			std::string type = source.substr(begin, eol - begin);
+			XL_CORE_ASSERT(ShaderTypeFromString(type), "Invalid shader type specified");
 
-			XL_CORE_ERROR("{0}", infoLog.data());
-			XL_CORE_ASSERT(false, "Fragment shader compilation failure!");
-			return;
+			// 查找下一个非空白字符的位置，以确定着色器源代码的起始位置
+			size_t nextLinePos = source.find_first_not_of("\r\n", eol);
+
+			// 查找下一个着色器类型标识符的位置
+			pos = source.find(typeToken, nextLinePos);
+
+			// 将提取的着色器源代码存储到映射中，以着色器类型作为键
+			// 如果没有找到下一个标识符，则将剩余的源代码都包括在内
+			shaderSources[ShaderTypeFromString(type)] = source.substr(nextLinePos, pos - (nextLinePos == std::string::npos ? source.size() - 1 : nextLinePos));
 		}
 
-		// Vertex and fragment shaders are successfully compiled.
-		// Now time to link them together into a program.
-		// Get a program object.
-		m_RendererID = glCreateProgram();
-		GLuint program = m_RendererID;
+		// 返回包含不同类型着色器源代码的映射
+		return shaderSources;
+	}
 
-		// Attach our shaders to our program
-		glAttachShader(program, vertexShader);
-		glAttachShader(program, fragmentShader);
 
-		// Link our program
+	void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
+	{
+		// 创建一个OpenGL着色器程序
+		GLuint program = glCreateProgram();
+
+		// 用于存储着色器对象的容器
+		std::vector<GLenum> glShaderIDs(shaderSources.size());
+
+		// 遍历着色器源代码的unordered_map
+		for (auto& kv : shaderSources)
+		{
+			GLenum type = kv.first;                 // 着色器类型 (如GL_VERTEX_SHADER或GL_FRAGMENT_SHADER)
+			const std::string& source = kv.second;  // 着色器源代码
+
+			// 创建一个新的着色器对象
+			GLuint shader = glCreateShader(type);
+
+			// 将着色器源代码与着色器对象关联
+			const GLchar* sourceCStr = source.c_str();
+			glShaderSource(shader, 1, &sourceCStr, 0);
+
+			// 编译着色器
+			glCompileShader(shader);
+
+			// 检查着色器是否编译成功
+			GLint isCompiled = 0;
+			glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
+			if (isCompiled == GL_FALSE)
+			{
+				// 获取编译错误信息的长度
+				GLint maxLength = 0;
+				glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
+
+				// 创建一个存储错误信息的缓冲区
+				std::vector<GLchar> infoLog(maxLength);
+				glGetShaderInfoLog(shader, maxLength, &maxLength, &infoLog[0]);
+
+				// 删除失败的着色器对象
+				glDeleteShader(shader);
+
+				// 输出错误信息并断言失败
+				XL_CORE_ERROR("{0}", infoLog.data());
+				XL_CORE_ASSERT(false, "Shader compilation failure!");
+				break;
+			}
+
+			// 将着色器附加到着色器程序上
+			glAttachShader(program, shader);
+
+			// 存储着色器对象的ID
+			glShaderIDs.push_back(shader);
+		}
+
+		// 将编译好的着色器程序的ID存储在类成员变量中
+		m_RendererID = program;
+
+		// 链接着色器程序
 		glLinkProgram(program);
 
-		// Note the different functions here: glGetProgram* instead of glGetShader*.
+		// 检查着色器程序链接是否成功
 		GLint isLinked = 0;
 		glGetProgramiv(program, GL_LINK_STATUS, (int*)&isLinked);
 		if (isLinked == GL_FALSE)
 		{
+			// 获取链接错误信息的长度
 			GLint maxLength = 0;
 			glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
 
-			// The maxLength includes the NULL character
+			// 创建一个存储错误信息的缓冲区
 			std::vector<GLchar> infoLog(maxLength);
 			glGetProgramInfoLog(program, maxLength, &maxLength, &infoLog[0]);
 
-			// We don't need the program anymore.
+			// 删除着色器程序和着色器对象
 			glDeleteProgram(program);
-			// Don't leak shaders either.
-			glDeleteShader(vertexShader);
-			glDeleteShader(fragmentShader);
+			for (auto id : glShaderIDs)
+				glDeleteShader(id);
 
+			// 输出错误信息并断言失败
 			XL_CORE_ERROR("{0}", infoLog.data());
 			XL_CORE_ASSERT(false, "Shader link failure!");
 			return;
 		}
 
-		// Always detach shaders after a successful link.
-		glDetachShader(program, vertexShader);
-		glDetachShader(program, fragmentShader);
+		// 分离并删除着色器对象，因为它们已经被链接到程序中
+		for (auto id : glShaderIDs)
+			glDetachShader(program, id);
 	}
 
 	OpenGLShader::~OpenGLShader()

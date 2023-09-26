@@ -8,6 +8,10 @@ workspace "XLEngine" --解决方案名称
         "Release",
         "Dist"
     }
+    flags
+	{
+		"MultiProcessorCompile"
+	}
 --临时变量 定义 输出目录
 --详细的所有支持的tokens 可参考 [https://github.com/premake/premake-core/wiki/Tokens]
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
