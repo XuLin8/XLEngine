@@ -9,6 +9,7 @@ namespace XLEngine
 	public:
 		OrthographicCamera(float l, float r, float b, float t);
 
+		void SetProjection(float l, float r, float b, float t);
 		const glm::vec3& GetPosition() const { return m_Position; }
 		void SetPosition(const glm::vec3& position)
 		{
