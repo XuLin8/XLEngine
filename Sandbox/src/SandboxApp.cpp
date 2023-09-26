@@ -7,6 +7,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "XLEngine/Renderer/Shader.h"
+
 class ExampleLayer :public XLEngine::Layer 
 {
 public:
@@ -91,7 +93,7 @@ public:
 			}
 		)";
 
-		m_Shader.reset(XLEngine::Shader::Create(vertexSrc, fragmentSrc));
+		m_Shader = XLEngine::Shader::Create("VertexPosColor", vertexSrc, fragmentSrc);
 
 		std::string flatColorShaderVertexSrc = R"(
 			#version 330 core
@@ -124,14 +126,14 @@ public:
 			}
 		)";
 
-		m_FlatColorShader.reset(XLEngine::Shader::Create(flatColorShaderVertexSrc, flatColorShaderFragmentSrc));
-		m_TextureShader.reset(XLEngine::Shader::Create("assets/shaders/Texture.glsl"));
+		m_FlatColorShader = XLEngine::Shader::Create("FlatColor", flatColorShaderVertexSrc, flatColorShaderFragmentSrc);
+		auto textureShader = m_ShaderLibrary.Load("assets/shaders/Texture.glsl");
 
 		m_Texture = XLEngine::Texture2D::Create("assets/textures/Checkerboard.png");
 		m_LogoTextrue = XLEngine::Texture2D::Create("assets/textures/SiluokayiLogo.png");
 
-		std::dynamic_pointer_cast<XLEngine::OpenGLShader>(m_TextureShader)->Bind();
-		std::dynamic_pointer_cast<XLEngine::OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0);
+		std::dynamic_pointer_cast<XLEngine::OpenGLShader>(textureShader)->Bind();
+		std::dynamic_pointer_cast<XLEngine::OpenGLShader>(textureShader)->UploadUniformInt("u_Texture", 0);
 	}
 
 	void OnUpdate(XLEngine::Timestep ts) override
@@ -174,10 +176,12 @@ public:
 			}
 		}
 		
+		auto textureShader = m_ShaderLibrary.Get("Texture");
+
 		m_Texture->Bind();
-		XLEngine::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+		XLEngine::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 		m_LogoTextrue->Bind();
-		XLEngine::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.0f)));
+		XLEngine::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.0f)));
 
 		// Triangle
 		//XLEngine::Renderer::Submit(m_Shader, m_VertexArray);
@@ -197,14 +201,15 @@ public:
 	}
 
 private:
+	XLEngine::ShaderLibrary m_ShaderLibrary;
 	XLEngine::Ref<XLEngine::Shader> m_Shader;
 	XLEngine::Ref<XLEngine::VertexArray> m_VertexArray;
 
-	XLEngine::Ref<XLEngine::Shader> m_FlatColorShader,m_TextureShader;
+	XLEngine::Ref<XLEngine::Shader> m_FlatColorShader;
 	XLEngine::Ref<XLEngine::VertexArray> m_SquareVA;
 
 	XLEngine::Ref<XLEngine::Texture2D>m_Texture,m_LogoTextrue;
-
+	
 	XLEngine::OrthographicCamera m_Camera;
 	glm::vec3 m_CameraPosition;
 	float m_CameraMoveSpeed = 1.1f;
