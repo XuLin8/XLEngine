@@ -3,8 +3,8 @@
 #include "Core.h"
 #include "Window.h"
 #include "LayerStack.h"
-#include "Events/Event.h"
-#include "Events/ApplicationEvent.h"
+#include "XLEngine/Events/Event.h"
+#include "XLEngine/Events/ApplicationEvent.h"
 
 #include "XLEngine/Core/Timestep.h"
 #include "XLEngine/ImGui/ImGuiLayer.h"

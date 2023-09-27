@@ -1,8 +1,8 @@
 #include "xlpch.h"
 #include "OrthographicCameraController.h"
 
-#include "XLEngine/Input.h"
-#include "XLEngine/KeyCodes.h"
+#include "XLEngine/Core/Input.h"
+#include "XLEngine/Core/KeyCodes.h"
 
 namespace XLEngine {
 

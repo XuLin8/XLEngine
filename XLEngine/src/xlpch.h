@@ -13,7 +13,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "XLEngine/Log.h"
+#include "XLEngine/Core/Log.h"
 
 #ifdef XL_PLATFORM_WINDOWS
 	#include <Windows.h>

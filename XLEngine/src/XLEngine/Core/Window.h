@@ -2,8 +2,8 @@
 
 #include "xlpch.h"
 
-#include "XLEngine/Log.h"
-#include "XLEngine/Core.h"
+#include "XLEngine/Core/Log.h"
+#include "XLEngine/Core/Core.h"
 #include "XLEngine/Events/Event.h"
 
 namespace XLEngine

@@ -2,7 +2,7 @@
 
 #include "WindowsInput.h"
 
-#include "XLEngine/Application.h"
+#include "XLEngine/Core/Application.h"
 #include <GLFW/glfw3.h>
 
 namespace XLEngine

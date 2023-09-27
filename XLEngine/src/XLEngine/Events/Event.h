@@ -1,6 +1,6 @@
 #pragma once
 #include "xlpch.h"
-#include "XLEngine/Core.h"
+#include "XLEngine/Core/Core.h"
 
 namespace XLEngine
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "XLEngine/Window.h"
+#include "XLEngine/Core/Window.h"
 #include "XLEngine/Renderer/GraphicsContext.h"
 
 #include <glfw/glfw3.h>

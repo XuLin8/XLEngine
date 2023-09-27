@@ -1,13 +1,13 @@
 #pragma once
 
 //给应用程序使用
-#include"XLEngine/Application.h"
+#include"XLEngine/Core/Application.h"
 
-#include "XLEngine/Log.h"
-#include "XLEngine/Input.h"
-#include "XLEngine/KeyCodes.h"
-#include "XLEngine/MouseButtonCodes.h"
-#include "XLEngine/OrthographicCameraController.h"
+#include "XLEngine/Core/Log.h"
+#include "XLEngine/Core/Input.h"
+#include "XLEngine/Core/KeyCodes.h"
+#include "XLEngine/Core/MouseButtonCodes.h"
+#include "XLEngine/Renderer/OrthographicCameraController.h"
 #include "XLEngine/ImGui/ImGuiLayer.h"
 
 #include "XLEngine/Core/Timestep.h"
@@ -22,4 +22,4 @@
 #include "XLEngine/Renderer/OrthographicCamera.h"
 
 //EntryPoint
-#include "XLEngine/EntryPoint.h"
+#include "XLEngine/Core/EntryPoint.h"

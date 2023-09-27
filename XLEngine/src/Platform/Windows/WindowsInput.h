@@ -1,6 +1,6 @@
 #pragma once
 
-#include "XLEngine/Input.h"
+#include "XLEngine/Core/Input.h"
 
 namespace XLEngine
 {
