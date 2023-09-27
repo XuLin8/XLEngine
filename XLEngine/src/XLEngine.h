@@ -20,6 +20,3 @@
 #include "XLEngine/Renderer/Texture.h"
 #include "XLEngine/Renderer/VertexArray.h"
 #include "XLEngine/Renderer/OrthographicCamera.h"
-
-//EntryPoint
-#include "XLEngine/Core/EntryPoint.h"
