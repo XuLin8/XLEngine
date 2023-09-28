@@ -14,6 +14,7 @@
 
 //Rnderer
 #include "XLEngine/Renderer/Renderer.h"
+#include "XLEngine/Renderer/Renderer2D.h"
 #include "XLEngine/Renderer/RenderCommand.h"
 #include "XLEngine/Renderer/Buffer.h"
 #include "XLEngine/Renderer/Shader.h"
