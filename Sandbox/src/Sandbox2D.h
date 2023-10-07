@@ -21,5 +21,7 @@ private:
 	XLEngine::Ref<XLEngine::VertexArray> m_SquareVA;
 	XLEngine::Ref<XLEngine::Shader> m_FlatColorShader;
 
+	XLEngine::Ref<XLEngine::Texture2D> m_CheckerboardTexture;
+
 	glm::vec4 m_SquareColor = { 0.2f, 0.3f,0.8f,1.0f };
 };
