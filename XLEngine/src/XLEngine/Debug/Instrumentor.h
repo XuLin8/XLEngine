@@ -123,7 +123,7 @@ namespace XLEngine
 	};
 }
 
-#define XL_PROFILE 1
+#define XL_PROFILE 0
 #if XL_PROFILE
 	#define XL_PROFILE_BEGIN_SESSION(name, filepath) ::XLEngine::Instrumentor::Get().BeginSession(name, filepath)
 	#define XL_PROFILE_END_SESSION() ::XLEngine::Instrumentor::Get().EndSession()
