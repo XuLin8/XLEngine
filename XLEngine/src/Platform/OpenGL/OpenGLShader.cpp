@@ -21,6 +21,8 @@ namespace XLEngine
 
 	OpenGLShader::OpenGLShader(const std::string& filepath)
 	{
+		XL_PROFILE_FUNCTION();
+
 		std::string source = ReadFile(filepath);
 		auto shaderSources = PreProcess(source);
 		Compile(shaderSources);
@@ -36,6 +38,8 @@ namespace XLEngine
 	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
 		:m_Name(name)
 	{
+		XL_PROFILE_FUNCTION();
+
 		std::unordered_map<GLenum, std::string> sources;
 		sources[GL_VERTEX_SHADER] = vertexSrc;
 		sources[GL_FRAGMENT_SHADER] = fragmentSrc;
@@ -44,6 +48,8 @@ namespace XLEngine
 
 	std::string OpenGLShader::ReadFile(const std::string& filepath)
 	{
+		XL_PROFILE_FUNCTION();
+
 		std::string result;
 		std::ifstream in(filepath, std::ios::in|std::ios::binary);
 		if (in)
@@ -64,6 +70,8 @@ namespace XLEngine
 
 	std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::string& source)
 	{
+		XL_PROFILE_FUNCTION();
+
 		std::unordered_map<GLenum, std::string> shaderSources;
 
 		// 定义着色器类型标识符
@@ -107,6 +115,8 @@ namespace XLEngine
 
 	void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
 	{
+		XL_PROFILE_FUNCTION();
+
 		// 创建一个OpenGL着色器程序
 		GLuint program = glCreateProgram();
 
@@ -197,36 +207,50 @@ namespace XLEngine
 
 	OpenGLShader::~OpenGLShader()
 	{
+		XL_PROFILE_FUNCTION();
+
 		glDeleteProgram(m_RendererID);
 	}
 
 	void OpenGLShader::Bind() const
 	{
+		XL_PROFILE_FUNCTION();
+
 		glUseProgram(m_RendererID);
 	}
 
 	void OpenGLShader::Unbind() const
 	{
+		XL_PROFILE_FUNCTION();
+
 		glUseProgram(0);
 	}
 
 	void OpenGLShader::SetInt(const std::string& name, int value)
 	{
+		XL_PROFILE_FUNCTION();
+
 		UploadUniformInt(name, value);
 	}
 
 	void OpenGLShader::SetFloat3(const std::string& name, const glm::vec3& value)
 	{
+		XL_PROFILE_FUNCTION();
+
 		UploadUniformFloat3(name, value);
 	}
 
 	void OpenGLShader::SetFloat4(const std::string& name, const glm::vec4& value)
 	{
+		XL_PROFILE_FUNCTION();
+
 		UploadUniformFloat4(name, value);
 	}
 
 	void OpenGLShader::SetMat4(const std::string& name, const glm::mat4& value)
 	{
+		XL_PROFILE_FUNCTION();
+
 		UploadUniformMat4(name, value);
 	}
 

@@ -14,6 +14,8 @@ namespace XLEngine {
 
 	void OpenGLContext::Init()
 	{
+		XL_PROFILE_FUNCTION();
+
 		glfwMakeContextCurrent(m_WindowHandle);
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		XL_CORE_ASSERT(status, "Failed to initialize Glad!");
@@ -26,6 +28,8 @@ namespace XLEngine {
 
 	void OpenGLContext::SwapBuffers()
 	{
+		XL_PROFILE_FUNCTION();
+
 		glfwSwapBuffers(m_WindowHandle);
 	}
 }

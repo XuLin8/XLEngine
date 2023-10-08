@@ -14,6 +14,8 @@ namespace XLEngine
 
 	Application::Application()
 	{
+		XL_PROFILE_FUNCTION();
+
 		XL_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
 
@@ -29,6 +31,8 @@ namespace XLEngine
 	
 	void Application::OnEvent(Event& e)
 	{
+		XL_PROFILE_FUNCTION();
+
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(XL_BIND_EVENT_FN(OnWindowClose));
 		dispatcher.Dispatch<WindowResizeEvent>(XL_BIND_EVENT_FN(OnWindowResize));
@@ -42,12 +46,16 @@ namespace XLEngine
 
 	void Application::PushLayer(Layer* layer)
 	{
+		XL_PROFILE_FUNCTION();
+
 		m_LayerStack.PushLayer(layer);
 		layer->OnAttach();
 	}
 
 	void Application::PushOverlay(Layer* layer)
 	{
+		XL_PROFILE_FUNCTION();
+
 		m_LayerStack.PushOverlay(layer);
 		layer->OnAttach();
 	}

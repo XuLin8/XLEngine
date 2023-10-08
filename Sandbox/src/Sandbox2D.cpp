@@ -4,6 +4,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <chrono>
+
 Sandbox2D::Sandbox2D()
 	: Layer("Sandbox2D"), m_CameraController(1280.0f / 720.0f, true)
 {
@@ -11,31 +13,47 @@ Sandbox2D::Sandbox2D()
 
 void Sandbox2D::OnAttach()
 {
+	XL_PROFILE_FUNCTION();
+
 	m_CheckerboardTexture = XLEngine::Texture2D::Create("assets/textures/Checkerboard.png");
 }
 
 void Sandbox2D::OnDetach()
 {
+	XL_PROFILE_FUNCTION();
 }
 
 void Sandbox2D::OnUpdate(XLEngine::Timestep ts)
 {
+	XL_PROFILE_FUNCTION();
+
 	// Update
-	m_CameraController.OnUpdate(ts);
+	{
+		XL_PROFILE_SCOPE("CameraController::OnUpdate");
+		m_CameraController.OnUpdate(ts);
+	}
 
 	// Render
-	XLEngine::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
-	XLEngine::RenderCommand::Clear();
-
-	XLEngine::Renderer2D::BeginScene(m_CameraController.GetCamera());
-	XLEngine::Renderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });
-	XLEngine::Renderer2D::DrawQuad({ 0.5f, -0.5f }, { 0.5f, 0.75f }, { 0.2f, 0.3f, 0.8f, 1.0f });
-	XLEngine::Renderer2D::DrawQuad({ 0.0f,  0.0f, -0.1f }, { 10.0f, 10.0f }, m_CheckerboardTexture);
-	XLEngine::Renderer2D::EndScene();
+	{
+		XL_PROFILE_SCOPE("Renderer Prep");
+		XLEngine::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
+		XLEngine::RenderCommand::Clear();
+	}
+	
+	{
+		XL_PROFILE_SCOPE("Renderer Draw");
+		XLEngine::Renderer2D::BeginScene(m_CameraController.GetCamera());
+		XLEngine::Renderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });
+		XLEngine::Renderer2D::DrawQuad({ 0.5f, -0.5f }, { 0.5f, 0.75f }, { 0.2f, 0.3f, 0.8f, 1.0f });
+		XLEngine::Renderer2D::DrawQuad({ 0.0f,  0.0f, -0.1f }, { 10.0f, 10.0f }, m_CheckerboardTexture);
+		XLEngine::Renderer2D::EndScene();
+	}
+	
 }
 
 void Sandbox2D::OnImGuiRender()
 {
+	XL_PROFILE_FUNCTION();
 	ImGui::Begin("Settings");
 	ImGui::ColorEdit4("Square Color", glm::value_ptr(m_SquareColor));
 	ImGui::End();

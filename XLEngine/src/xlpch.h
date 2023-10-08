@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <chrono>
 #include <memory>
 #include <utility>
 #include <algorithm>
@@ -14,6 +15,7 @@
 #include <unordered_set>
 
 #include "XLEngine/Core/Log.h"
+#include "XLEngine/Debug/Instrumentor.h"
 
 #ifdef XL_PLATFORM_WINDOWS
 	#include <Windows.h>

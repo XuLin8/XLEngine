@@ -9,6 +9,8 @@ namespace XLEngine {
 
 	void Renderer::Init()
 	{
+		XL_PROFILE_FUNCTION();
+
 		RenderCommand::Init();
 		Renderer2D::Init();
 	}
