@@ -25,7 +25,7 @@ public:
 		};
 
 		XLEngine::Ref<XLEngine::VertexBuffer> vertexBuffer;
-		vertexBuffer.reset(XLEngine::VertexBuffer::Create(vertices, sizeof(vertices)));
+		vertexBuffer = XLEngine::VertexBuffer::Create(vertices, sizeof(vertices));
 		vertexBuffer->SetLayout({
 			{ XLEngine::ShaderDataType::Float3, "a_Position" },
 			{ XLEngine::ShaderDataType::Float4, "a_Color" },
@@ -34,7 +34,7 @@ public:
 
 		uint32_t indices[3] = { 0, 1, 2 };
 		XLEngine::Ref<XLEngine::IndexBuffer> indexBuffer;
-		indexBuffer.reset(XLEngine::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+		indexBuffer = XLEngine::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
 		m_VertexArray->SetIndexBuffer(indexBuffer);
 
 		m_SquareVA = XLEngine::VertexArray::Create();
@@ -47,7 +47,7 @@ public:
 		};
 
 		XLEngine::Ref<XLEngine::VertexBuffer> squareVB;
-		squareVB.reset(XLEngine::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
+		squareVB = XLEngine::VertexBuffer::Create(squareVertices, sizeof(squareVertices));
 		squareVB->SetLayout({
 			{ XLEngine::ShaderDataType::Float3, "a_Position" },
 			{ XLEngine::ShaderDataType::Float2, "a_TexCoord" }
@@ -56,7 +56,7 @@ public:
 
 		uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
 		XLEngine::Ref<XLEngine::IndexBuffer> squareIB;
-		squareIB.reset(XLEngine::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
+		squareIB = XLEngine::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
 		m_SquareVA->SetIndexBuffer(squareIB);
 
 		std::string vertexSrc = R"(
