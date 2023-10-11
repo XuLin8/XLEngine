@@ -68,6 +68,7 @@ namespace XLEngine
 		for (const auto& element : layout)
 		{
 			glEnableVertexAttribArray(index);
+			//告诉OpenGL该如何解析顶点数据
 			glVertexAttribPointer(index,
 				element.GetComponentCount(),
 				ShaderDataTypeToOpenGLBaseType(element.Type),
