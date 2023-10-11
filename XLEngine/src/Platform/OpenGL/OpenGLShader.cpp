@@ -233,6 +233,13 @@ namespace XLEngine
 		UploadUniformInt(name, value);
 	}
 
+	void OpenGLShader::SetIntArray(const std::string& name, int* values, uint32_t count)
+	{
+		XL_PROFILE_FUNCTION();
+
+		UpLoadUniformIntArray(name, values, count);
+	}
+
 	void OpenGLShader::SetFloat(const std::string& name, float value)
 	{
 		XL_PROFILE_FUNCTION();
@@ -266,6 +273,12 @@ namespace XLEngine
 		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
 
 		glUniform1i(location, value);
+	}
+
+	void OpenGLShader::UpLoadUniformIntArray(const std::string& name, int* values, uint32_t count)
+	{
+		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+		glUniform1iv(location, count, values);
 	}
 
 	void OpenGLShader::UploadUniformFloat(const std::string& name, float value)
