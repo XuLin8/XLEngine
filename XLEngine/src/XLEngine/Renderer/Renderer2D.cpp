@@ -110,7 +110,6 @@ namespace XLEngine
 		// 创建纹理着色器并绑定它
 		s_Data.TextureShader = Shader::Create("assets/shaders/Texture.glsl");
 		s_Data.TextureShader->Bind();
-		// 设置纹理单元为 0，以便在着色器中使用
 		s_Data.TextureShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
 
 		// Set all texture slots to 0
