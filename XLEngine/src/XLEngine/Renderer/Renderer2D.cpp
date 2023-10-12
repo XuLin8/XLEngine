@@ -22,10 +22,10 @@ namespace XLEngine
 	// 渲染器2D数据结构，存储渲染器的状态和资源
 	struct Renderer2DData
 	{
-		const int IndexCoe = 6;					//索引系数
-		const uint32_t MaxQuads = 10000;          // 最大四边形数量
-		const uint32_t MaxVertices = MaxQuads * 4; // 最大顶点数量
-		const uint32_t MaxIndices = MaxQuads * IndexCoe;  // 最大索引数量
+		static const int IndexCoe = 6;					//索引系数
+		static const uint32_t MaxQuads = 20000;          // 最大四边形数量
+		static const uint32_t MaxVertices = MaxQuads * 4; // 最大顶点数量
+		static const uint32_t MaxIndices = MaxQuads * IndexCoe;  // 最大索引数量
 		static const uint32_t MaxTextureSlots = 32;// TODO: RenderCaps
 
 		Ref<VertexArray> QuadVertexArray;          // 四边形顶点数组对象(VAO)
@@ -41,6 +41,8 @@ namespace XLEngine
 		uint32_t TextureSlotIndex = 1; // 0 = white texture
 
 		glm::vec4 QuadVertexPositions[4];
+
+		Renderer2D::Statistics Stats;
 	};
 
 	static Renderer2DData s_Data;
@@ -166,6 +168,17 @@ namespace XLEngine
 			s_Data.TextureSlots[i]->Bind(i);
 
 		RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
+		s_Data.Stats.DrawCalls++;
+	}
+
+	void Renderer2D::FlushAndReset()
+	{
+		EndScene();
+
+		s_Data.QuadIndexCount = 0;
+		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
+
+		s_Data.TextureSlotIndex = 1;
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
@@ -239,8 +252,21 @@ namespace XLEngine
 		DrawQuadCommon(transform,color,textureIndex,tilingFactor);
 	}
 
+	void Renderer2D::ResetStats()
+	{
+		memset(&s_Data.Stats, 0, sizeof(Statistics));
+	}
+
+	Renderer2D::Statistics Renderer2D::GetStats()
+	{
+		return s_Data.Stats;
+	}
+
 	void Renderer2D::DrawQuadCommon(const glm::mat4& transform, const glm::vec4& color, float textureIndex, float tilingFactor)
 	{
+		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
+			FlushAndReset();
+
 		constexpr glm::vec2 texCoords[] = {
 			{0.0f, 0.0f},
 			{1.0f, 0.0f},
@@ -259,6 +285,7 @@ namespace XLEngine
 		}
 
 		s_Data.QuadIndexCount += s_Data.IndexCoe;
+		s_Data.Stats.QuadCount++;
 	}
 
 	float Renderer2D::AllocateTextureSlot(const Ref<Texture2D>& texture)
