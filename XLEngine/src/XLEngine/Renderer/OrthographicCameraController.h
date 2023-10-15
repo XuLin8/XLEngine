@@ -27,9 +27,13 @@ namespace XLEngine
 		OrthographicCamera& GetCamera() { return m_Camera; }
 		const OrthographicCamera& GetCamera() const { return m_Camera; }
 		const OrthographicCameraBounds& GetBounds() const { return m_Bounds; }
+
+		void SetZoomLevel(float level) { m_ZoomLevel = level; CalculateView(); }
+
 	private:
 		bool OnMouseScrolled(MouseScrolledEvent& e);
 		bool OnWindowResized(WindowResizeEvent& e);
+		void CalculateView();
 
 	private:
 		float m_AspectRatio;
