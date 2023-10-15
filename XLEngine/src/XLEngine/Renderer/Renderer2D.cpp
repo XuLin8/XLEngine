@@ -22,7 +22,7 @@ namespace XLEngine
 	// 渲染器2D数据结构，存储渲染器的状态和资源
 	struct Renderer2DData
 	{
-		static const int IndexCoe = 6;					//索引系数
+		static const int IndexCoe = 6;				//索引系数
 		static const uint32_t MaxQuads = 20000;          // 最大四边形数量
 		static const uint32_t MaxVertices = MaxQuads * 4; // 最大顶点数量
 		static const uint32_t MaxIndices = MaxQuads * IndexCoe;  // 最大索引数量
@@ -196,7 +196,9 @@ namespace XLEngine
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
 			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
-		DrawQuadCommon(transform, color, textureIndex, tilingFactor);
+		constexpr glm::vec2 texCoords[] = { {0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f} };
+			
+		DrawQuadCommon(transform, color, textureIndex, tilingFactor, texCoords);
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
@@ -208,14 +210,33 @@ namespace XLEngine
 	{
 		XL_PROFILE_FUNCTION();
 
-		constexpr glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
-
 		float textureIndex = AllocateTextureSlot(texture);
 
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
 			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
-		DrawQuadCommon(transform, color, textureIndex, tilingFactor);
+		constexpr glm::vec2 texCoords[] = { {0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f} };
+
+		DrawQuadCommon(transform, tintColor, textureIndex, tilingFactor, texCoords);
+	}
+
+	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<SubTexture2D>& subtexture, float tilingFactor, const glm::vec4& tintColor)
+	{
+		DrawQuad({ position.x, position.y, 0.0f }, size, subtexture, tilingFactor, tintColor);
+	}
+
+	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<SubTexture2D>& subtexture, float tilingFactor, const glm::vec4& tintColor)
+	{
+		XL_PROFILE_FUNCTION();
+
+		const glm::vec2* texCoords = subtexture->GetTexCoords();
+		const Ref<Texture2D> texture = subtexture->GetTexture();
+		float textureIndex = AllocateTextureSlot(texture);
+
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
+			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+
+		DrawQuadCommon(transform, tintColor, textureIndex, tilingFactor, texCoords);
 	}
 
 	void Renderer2D::DrawRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const glm::vec4& color)
@@ -232,7 +253,9 @@ namespace XLEngine
 			* glm::rotate(glm::mat4(1.0f), rotation, { 0.0f, 0.0f, 1.0f })
 			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
-		DrawQuadCommon(transform, color, textureIndex, tilingFactor);
+		constexpr glm::vec2 texCoords[] = { {0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f} };
+
+		DrawQuadCommon(transform, color, textureIndex, tilingFactor, texCoords);
 	}
 
 	void Renderer2D::DrawRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
@@ -242,14 +265,33 @@ namespace XLEngine
 
 	void Renderer2D::DrawRotatedQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
 	{
-		constexpr glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
 		float textureIndex = AllocateTextureSlot(texture);
 
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
 			* glm::rotate(glm::mat4(1.0f), rotation, { 0.0f, 0.0f, 1.0f })
 			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
-		DrawQuadCommon(transform,color,textureIndex,tilingFactor);
+		constexpr glm::vec2 texCoords[] = { {0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f} };
+
+		DrawQuadCommon(transform, tintColor, textureIndex, tilingFactor, texCoords);
+	}
+
+	void Renderer2D::DrawRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const Ref<SubTexture2D>& subtexture, float tilingFactor, const glm::vec4& tintColor)
+	{
+		DrawRotatedQuad({ position.x, position.y, 0.0f }, size, rotation, subtexture, tilingFactor, tintColor);
+	}
+
+	void Renderer2D::DrawRotatedQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const Ref<SubTexture2D>& subtexture, float tilingFactor, const glm::vec4& tintColor)
+	{
+		const glm::vec2* texCoords = subtexture->GetTexCoords();
+		const Ref<Texture2D> texture = subtexture->GetTexture();
+		float textureIndex = AllocateTextureSlot(texture);
+		
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
+			* glm::rotate(glm::mat4(1.0f), rotation, { 0.0f, 0.0f, 1.0f })
+			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+
+		DrawQuadCommon(transform, tintColor, textureIndex, tilingFactor, texCoords);
 	}
 
 	void Renderer2D::ResetStats()
@@ -262,17 +304,10 @@ namespace XLEngine
 		return s_Data.Stats;
 	}
 
-	void Renderer2D::DrawQuadCommon(const glm::mat4& transform, const glm::vec4& color, float textureIndex, float tilingFactor)
+	void Renderer2D::DrawQuadCommon(const glm::mat4& transform, const glm::vec4& color,float textureIndex, float tilingFactor, const glm::vec2 texCoords[4])
 	{
 		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
 			FlushAndReset();
-
-		constexpr glm::vec2 texCoords[] = {
-			{0.0f, 0.0f},
-			{1.0f, 0.0f},
-			{1.0f, 1.0f},
-			{0.0f, 1.0f}
-		};
 
 		for (uint32_t i = 0; i < 4; i++)
 		{

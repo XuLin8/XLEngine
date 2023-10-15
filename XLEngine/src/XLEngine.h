@@ -19,5 +19,6 @@
 #include "XLEngine/Renderer/Buffer.h"
 #include "XLEngine/Renderer/Shader.h"
 #include "XLEngine/Renderer/Texture.h"
+#include "XLEngine/Renderer/SubTexture2D.h"
 #include "XLEngine/Renderer/VertexArray.h"
 #include "XLEngine/Renderer/OrthographicCamera.h"
