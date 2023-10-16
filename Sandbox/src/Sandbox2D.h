@@ -22,6 +22,7 @@ private:
 	//temp
 	XLEngine::Ref<XLEngine::VertexArray> m_SquareVA;
 	XLEngine::Ref<XLEngine::Shader> m_FlatColorShader;
+	XLEngine::Ref<XLEngine::Framebuffer> m_Framebuffer;
 
 	XLEngine::Ref<XLEngine::Texture2D> m_CheckerboardTexture;
 	XLEngine::Ref<XLEngine::Texture2D> m_SpriteSheet;
