@@ -3,7 +3,7 @@
 #include "xlpch.h"
 
 #include "XLEngine/Core/Log.h"
-#include "XLEngine/Core/Core.h"
+#include "XLEngine/Core/Base.h"
 #include "XLEngine/Events/Event.h"
 
 namespace XLEngine

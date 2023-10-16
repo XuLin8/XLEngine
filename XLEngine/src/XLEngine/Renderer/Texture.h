@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "XLEngine/Core/Core.h"
+#include "XLEngine/Core/Base.h"
 
 namespace XLEngine
 {
