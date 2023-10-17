@@ -16,6 +16,7 @@ namespace XLEngine
 	{
 	public:
 		XLEngineEditor()
+			:Application("XLEngine-Editor")
 		{
 			PushLayer(new EditorLayer());
 		}

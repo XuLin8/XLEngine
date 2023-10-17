@@ -14,7 +14,7 @@ namespace XLEngine
 	class Application
 	{
 	public:
-		Application();
+		Application(const std::string& name = "XLEngine");
 		virtual ~Application() = default;
 
 		void Run();
