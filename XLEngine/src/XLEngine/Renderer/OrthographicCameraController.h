@@ -7,15 +7,6 @@
 
 namespace XLEngine
 {
-	struct OrthographicCameraBounds
-	{
-		float Left, Right;
-		float Bottom, Top;
-
-		float GetWidth() { return Right - Left; }
-		float GetHeight() { return Top - Bottom; }
-	};
-
 	class OrthographicCameraController
 	{
 	public:
@@ -23,17 +14,16 @@ namespace XLEngine
 
 		void OnUpdate(Timestep ts);
 		void OnEvent(Event& e);
+		void OnResize(float width, float height);
 
 		OrthographicCamera& GetCamera() { return m_Camera; }
 		const OrthographicCamera& GetCamera() const { return m_Camera; }
-		const OrthographicCameraBounds& GetBounds() const { return m_Bounds; }
 
-		void SetZoomLevel(float level) { m_ZoomLevel = level; CalculateView(); }
+		void SetZoomLevel(float level) { m_ZoomLevel = level; }
 
 	private:
 		bool OnMouseScrolled(MouseScrolledEvent& e);
 		bool OnWindowResized(WindowResizeEvent& e);
-		void CalculateView();
 
 	private:
 		float m_AspectRatio;
@@ -45,7 +35,6 @@ namespace XLEngine
 		float m_CameraRotation = 0.0f;
 		float m_CameraTranslationSpeed = 5.0f, m_CameraRotationSpeed = 180.0f;
 
-		OrthographicCameraBounds m_Bounds;
 		OrthographicCamera m_Camera;
 	};
 }
