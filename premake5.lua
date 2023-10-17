@@ -1,6 +1,6 @@
 workspace "XLEngine" --解决方案名称
     architecture "x64" --编译平台 只编64位--(x86_64,ARM)
-    startproject "Sandbox"
+    startproject "XLEngineEditor"
 
     configurations 
     {
@@ -107,8 +107,8 @@ project "XLEngine" --项目名称
         runtime "Release"
         optimize "on"
 
-project "XLEngine-Editor"
-    location "XLEngine-Editor"
+project "XLEngineEditor"
+    location "XLEngineEditor"
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++17"
