@@ -107,6 +107,58 @@ project "XLEngine" --ÏîÄ¿Ãû³Æ
         runtime "Release"
         optimize "on"
 
+project "XLEngine-Editor"
+    location "XLEngine-Editor"
+    kind "ConsoleApp"
+    language "C++"
+    cppdialect "C++17"
+    staticruntime "on"
+
+    targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+    objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+    files
+    {
+        "%{prj.name}/src/**.h",
+        "%{prj.name}/src/**.cpp"
+    }
+
+    includedirs
+    {
+        "XLEngine/vendor/spdlog/include",
+        "XLEngine/src",
+        "XLEngine/vendor",
+        "%{IncludeDir.glm}"
+    }
+
+    links
+    {
+        "XLEngine"
+    }
+
+    filter "system:windows"
+        systemversion "latest"
+
+        defines
+        {
+            "XL_PLATFORM_WINDOWS",
+        }
+
+    filter "configurations:Debug"
+        defines "XL_DEBUG"
+        runtime "Debug"
+        symbols "on"
+
+    filter "configurations:Release"
+        defines "XL_RELEASE"
+        runtime "Release"
+        optimize "on"
+
+    filter "configurations:Dist"
+        defines "XL_DIST"
+        runtime "Release"
+        optimize "on"
+
 project "Sandbox"
     location "Sandbox"
     kind "ConsoleApp"
