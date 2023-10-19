@@ -6,7 +6,7 @@
 #include "XLEngine/Core/Log.h"
 #include "XLEngine/Core/Input.h"
 #include "XLEngine/Core/KeyCodes.h"
-#include "XLEngine/Core/MouseButtonCodes.h"
+#include "XLEngine/Core/MouseCodes.h"
 #include "XLEngine/Renderer/OrthographicCameraController.h"
 #include "XLEngine/ImGui/ImGuiLayer.h"
 

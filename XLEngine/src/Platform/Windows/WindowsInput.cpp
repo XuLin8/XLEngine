@@ -1,29 +1,28 @@
 #include "xlpch.h"
 
-#include "WindowsInput.h"
+#include "XLEngine/Core/Input.h"
 
 #include "XLEngine/Core/Application.h"
 #include <GLFW/glfw3.h>
 
 namespace XLEngine
 {
-	Input* Input::s_Instance = new WindowsInput();
-	bool WindowsInput::IsKeyPressedImpl(int keycode)
+	bool Input::IsKeyPressed(KeyCode key)
 	{
 		//类型强转+编译器自动解引用指针（如果对象是指针）并调用相应的成员函数。这是C++的一种语法糖
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
-		auto state = glfwGetKey(window, keycode);
+		auto state = glfwGetKey(window, static_cast<int32_t>(key));
 		return state == GLFW_PRESS || state == GLFW_REPEAT;
 	}
 
-	bool WindowsInput::IsMouseButtonPressedImpl(int button)
+	bool Input::IsMouseButtonPressed(MouseCode button)
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
-		auto state = glfwGetMouseButton(window, button);
+		auto state = glfwGetMouseButton(window, static_cast<int32_t>(button));
 		return state == GLFW_PRESS;
 	}
 
-	std::pair<float, float> WindowsInput::GetMousePositionImpl()
+	glm::vec2 Input::GetMousePosition()
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		double xpos, ypos;
@@ -31,13 +30,13 @@ namespace XLEngine
 		return { float(xpos),float(ypos) };
 	}
 
-	float WindowsInput::GetMouseXImpl()
+	float Input::GetMouseX()
 	{
-		return GetMousePositionImpl().first;
+		return GetMousePosition().x;
 	}
 
-	float WindowsInput::GetMouseYImpl()
+	float Input::GetMouseY()
 	{
-		return GetMousePositionImpl().second;
+		return GetMousePosition().y;
 	}
 }
