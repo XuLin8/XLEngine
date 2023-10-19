@@ -22,6 +22,7 @@ IncludeDir["Glad"] = "XLEngine/vendor/Glad/include"
 IncludeDir["ImGui"] = "XLEngine/vendor/imgui"
 IncludeDir["glm"] = "XLEngine/vendor/glm"
 IncludeDir["stb_image"] = "XLEngine/vendor/stb_image"
+IncludeDir["entt"] = "XLEngine/vendor/entt/include"
 
 group "Dependencies"
     include "XLEngine/vendor/GLFW"
@@ -67,6 +68,7 @@ project "XLEngine" --ÏîÄ¿Ãû³Æ
         "%{IncludeDir.ImGui}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.stb_image}",
+        "%{IncludeDir.entt}",
     }
 
     links
@@ -128,7 +130,7 @@ project "XLEngineEditor"
         "XLEngine/vendor/spdlog/include",
         "XLEngine/src",
         "XLEngine/vendor",
-        "%{IncludeDir.glm}"
+        "%{IncludeDir.glm}",
     }
 
     links
@@ -180,7 +182,8 @@ project "Sandbox"
         "XLEngine/vendor/spdlog/include",
         "XLEngine/src",
         "XLEngine/vendor",
-        "%{IncludeDir.glm}"
+        "%{IncludeDir.glm}",
+        "%{IncludeDir.entt}"
     }
 
     links
