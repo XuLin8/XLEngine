@@ -11,8 +11,8 @@ namespace XLEngine
 	OpenGLFramebuffer::OpenGLFramebuffer(const FramebufferSpecification& spec)
 		:m_Specification(spec)
 	{
-		// 调用Invalidate函数来初始化帧缓冲
-		Invalidate();
+		// 调用Refresh函数来初始化帧缓冲
+		Refresh();
 	}
 
 	OpenGLFramebuffer::~OpenGLFramebuffer()
@@ -22,7 +22,8 @@ namespace XLEngine
 		glDeleteTextures(1, &m_DepthAttachment);
 	}
 
-	void OpenGLFramebuffer::Invalidate()
+	// 重新初始化帧缓冲
+	void OpenGLFramebuffer::Refresh()
 	{
 		if (m_RendererID)
 		{
@@ -58,7 +59,7 @@ namespace XLEngine
 		// 检查帧缓冲的完整性
 		XL_CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete!");
 
-		// 取消帧缓冲的绑定,将渲染目标切换回默认的窗口后备缓冲区
+		// 取消当前帧缓冲的绑定,将渲染目标切换回默认的窗口后备缓冲区
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
@@ -85,6 +86,6 @@ namespace XLEngine
 		m_Specification.Width = width;
 		m_Specification.Height = height;
 
-		Invalidate();
+		Refresh();
 	}
 }

@@ -10,7 +10,7 @@ namespace XLEngine
 		OpenGLFramebuffer(const FramebufferSpecification& spec);
 		virtual ~OpenGLFramebuffer();
 
-		void Invalidate();
+		void Refresh();
 
 		virtual void Bind() override;
 		virtual void Unbind() override;
