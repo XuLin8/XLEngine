@@ -131,6 +131,7 @@ project "XLEngineEditor"
         "XLEngine/src",
         "XLEngine/vendor",
         "%{IncludeDir.glm}",
+        "%{IncludeDir.entt}"
     }
 
     links

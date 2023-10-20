@@ -10,6 +10,9 @@
 #include "XLEngine/Renderer/OrthographicCameraController.h"
 #include "XLEngine/ImGui/ImGuiLayer.h"
 
+#include "XLEngine/Scene/Component.h"
+#include "XLEngine/Scene/Scene.h"
+
 #include "XLEngine/Core/Timestep.h"
 
 //Rnderer

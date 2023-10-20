@@ -20,6 +20,13 @@ namespace XLEngine
         fbSpec.Width = 1280;
         fbSpec.Height = 720;
         m_Framebuffer = Framebuffer::Create(fbSpec);
+
+        m_ActiveScene = CreateRef<Scene>();
+        auto square = m_ActiveScene->CreateEntity();
+        m_ActiveScene->Reg().emplace<TransformComponent>(square);
+        m_ActiveScene->Reg().emplace<SpriteRendererComponent>(square, glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
+        m_SquareEntity = square;
+
     }
 
     void EditorLayer::OnDetach()
@@ -46,7 +53,7 @@ namespace XLEngine
             RenderCommand::Clear();
         }
 
-        {
+        /*{
             static float rotation = 0.0f;
             rotation += ts * 50.0f;
 
@@ -70,7 +77,16 @@ namespace XLEngine
             }
             Renderer2D::EndScene();
             m_Framebuffer->Unbind();
-        }
+        }*/
+
+        Renderer2D::BeginScene(m_CameraController.GetCamera());
+
+        // Update scene
+        m_ActiveScene->OnUpdate(ts);
+        
+        Renderer2D::EndScene();
+
+        m_Framebuffer->Unbind();
     }
 
     void EditorLayer::OnImGuiRender()
@@ -149,7 +165,8 @@ namespace XLEngine
         ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
         ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
 
-        ImGui::ColorEdit4("Square Color", glm::value_ptr(m_SquareColor));
+        auto& squareColor = m_ActiveScene->Reg().get<SpriteRendererComponent>(m_SquareEntity).Color;
+        ImGui::ColorEdit4("Square Color", glm::value_ptr(squareColor));
 
         ImGui::End();
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0,0 });
