@@ -2,7 +2,7 @@
 
 #include "entt.hpp"
 #include "Scene.h"
-#define ENTT_ENTITY_REGISTRY_HPP 1
+
 namespace XLEngine
 {
     class Entity
