@@ -1,9 +1,22 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include "XLEngine/Renderer/Camera.h"
 
 namespace XLEngine
 {
+
+	struct CameraComponent
+	{
+		Camera Camera;
+		bool Primary = true; // TODO: think about moving to Scene
+
+		CameraComponent() = default;
+		CameraComponent(const CameraComponent&) = default;
+		CameraComponent(const glm::mat4& projection)
+			:Camera(projection){}
+	};
+
 	struct TagComponent
 	{
 		std::string Tag;
