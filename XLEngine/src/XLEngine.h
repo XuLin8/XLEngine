@@ -13,7 +13,7 @@
 #include "XLEngine/Scene/Component.h"
 #include "XLEngine/Scene/Scene.h"
 #include "XLEngine/Scene/Entity.h"
-
+#include "XLEngine/Scene/ScriptableEntity.h"
 #include "XLEngine/Core/Timestep.h"
 
 //Rnderer
