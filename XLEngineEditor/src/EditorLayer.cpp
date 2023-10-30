@@ -24,8 +24,12 @@ namespace XLEngine
         m_ActiveScene = CreateRef<Scene>();
 
         // Entity
-        Entity square = m_ActiveScene->CreateEntity("Green Squate");
+        Entity square = m_ActiveScene->CreateEntity("Green Square");
         square.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.0f,1.0f,0.0f,1.0f });
+       
+        Entity redSquare = m_ActiveScene->CreateEntity("Red Square");
+        redSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 1.0f,0.0f,0.0f,1.0f });
+
         m_SquareEntity = square;
 
         m_CameraEntity = m_ActiveScene->CreateEntity("Camera Entity");
