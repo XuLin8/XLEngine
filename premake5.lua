@@ -23,11 +23,13 @@ IncludeDir["ImGui"] = "XLEngine/vendor/imgui"
 IncludeDir["glm"] = "XLEngine/vendor/glm"
 IncludeDir["stb_image"] = "XLEngine/vendor/stb_image"
 IncludeDir["entt"] = "XLEngine/vendor/entt/include"
+IncludeDir["yaml_cpp"] = "XLEngine/vendor/yaml-cpp/include"
 
 group "Dependencies"
     include "XLEngine/vendor/GLFW"
     include "XLEngine/vendor/Glad"
     include "XLEngine/vendor/imgui"
+    include "XLEngine/vendor/yaml-cpp"
 
 group ""
 
@@ -69,6 +71,7 @@ project "XLEngine" --项目名称
         "%{IncludeDir.glm}",
         "%{IncludeDir.stb_image}",
         "%{IncludeDir.entt}",
+        "%{IncludeDir.yaml_cpp}",
     }
 
     links
@@ -76,6 +79,7 @@ project "XLEngine" --项目名称
         "GLFW",
         "Glad",
         "ImGui",
+        "yaml-cpp",
         "opengl32.lib"
     }
 
@@ -86,7 +90,8 @@ project "XLEngine" --项目名称
         {
             "XL_BUILD_DLL",
             "XL_PLATFORM_WINDOWS",
-            "GLFW_INCLUDE_NONE"
+            "GLFW_INCLUDE_NONE",
+            "YAML_CPP_STATIC_DEFINE",
         }
 
         --postbuildcommands -- build后的自定义命令
