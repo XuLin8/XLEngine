@@ -1,25 +1,29 @@
 #pragma once
 
 #include "Event.h"
+#include "XLEngine/Core/KeyCodes.h"
 
 namespace XLEngine
 {
 	class XLENGINE_API KeyEvent :public Event
 	{
 	public:
-		inline int GetKeyCode() const { return m_KeyCode; }
+		KeyCode GetKeyCode() const { return m_KeyCode; }
 		EVENT_CLASS_CATEGORY(EventCategoryKeyboard|EventCategoryInput)
 	protected:
-		KeyEvent(int key)
+		KeyEvent(KeyCode key)
 			:m_KeyCode(key) {}
-		int m_KeyCode;
+		KeyCode m_KeyCode;
 	};
 
 	class XLENGINE_API KeyPressedEvent :public KeyEvent
 	{
 	public:
-		KeyPressedEvent(int key,int repeatCount)
+		KeyPressedEvent(const KeyCode key, const uint16_t repeatCount)
 			:KeyEvent(key) ,m_RepeatCount(repeatCount) {}
+
+		uint16_t GetRepeatCount() const { return m_RepeatCount; }
+
 		std::string ToString() const override
 		{
 			std::stringstream ss;
@@ -28,13 +32,13 @@ namespace XLEngine
 		}
 		EVENT_CLASS_TYPE(KeyPressed)
 	private:
-		int m_RepeatCount;
+		uint16_t m_RepeatCount;
 	};
 
 	class XLENGINE_API KeyReleasedEvent :public KeyEvent
 	{
 	public:
-		KeyReleasedEvent(int key)
+		KeyReleasedEvent(const KeyCode key)
 			:KeyEvent(key) {}
 		std::string ToString() const override
 		{
@@ -48,7 +52,7 @@ namespace XLEngine
 	class XLENGINE_API KeyTypedEvent :public KeyEvent
 	{
 	public:
-		KeyTypedEvent(int keycode)
+		KeyTypedEvent(const KeyCode keycode)
 			: KeyEvent(keycode) {}
 
 		std::string ToString() const override
