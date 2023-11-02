@@ -13,3 +13,6 @@
 [submodule "XLEngine/vendor/yaml-cpp"]
 	path = XLEngine/vendor/yaml-cpp
 	url = https://github.com/XuLin8/yaml-cpp.git
+[submodule "XLEngine/vendor/ImGuizmo"]
+	path = XLEngine/vendor/ImGuizmo
+	url = https://github.com/XuLin8/ImGuizmo
