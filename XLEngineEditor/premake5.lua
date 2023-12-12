@@ -20,6 +20,7 @@ project "XLEngineEditor"
 		"%{wks.location}/XLEngine/vendor",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.entt}",
+		"%{IncludeDir.ImGuizmo}",
 	}
 
 	links

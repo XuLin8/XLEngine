@@ -32,6 +32,7 @@ IncludeDir["glm"] =         "%{wks.location}/XLEngine/vendor/glm"
 IncludeDir["stb_image"] =   "%{wks.location}/XLEngine/vendor/stb_image"
 IncludeDir["entt"] =        "%{wks.location}/XLEngine/vendor/entt/include"
 IncludeDir["yaml_cpp"] =    "%{wks.location}/XLEngine/vendor/yaml-cpp/include"
+IncludeDir["ImGuizmo"] =	"%{wks.location}/XLEngine/vendor/ImGuizmo"
 
 group "Dependencies"
     include "vendor/premake"
