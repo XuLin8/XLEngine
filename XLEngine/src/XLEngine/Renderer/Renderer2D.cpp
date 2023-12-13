@@ -149,10 +149,17 @@ namespace XLEngine
 		s_Data.TextureShader->Bind();
 		s_Data.TextureShader->SetMat4("u_ViewProjection", viewProj);
 		
-		s_Data.QuadIndexCount = 0;
-		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
+		StartBatch();
+	}
 
-		s_Data.TextureSlotIndex = 1;
+	void Renderer2D::BeginScene(const EditorCamera& camera)
+	{
+		glm::mat4 viewProj = camera.GetViewProjection();
+
+		s_Data.TextureShader->Bind();
+		s_Data.TextureShader->SetMat4("u_ViewProjection", viewProj);
+
+		StartBatch();
 	}
 
 	void Renderer2D::BeginScene(const OrthographicCamera& camera)
@@ -162,22 +169,32 @@ namespace XLEngine
 		s_Data.TextureShader->Bind();
 		s_Data.TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
 
-		s_Data.QuadIndexCount = 0;
-		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
+		StartBatch();
 	}
 
 	void Renderer2D::EndScene()
 	{
 		XL_PROFILE_FUNCTION();
 
-		uint32_t dataSize = (uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase;
-		s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
-
 		Flush();
+	}
+
+	void Renderer2D::StartBatch()
+	{
+		s_Data.QuadIndexCount = 0;
+		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
+
+		s_Data.TextureSlotIndex = 1;
 	}
 
 	void Renderer2D::Flush()
 	{
+		if (s_Data.QuadIndexCount == 0)
+			return; // Nothing to draw
+
+		uint32_t dataSize = (uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase;
+		s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
+
 		// Bind textures
 		for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
 			s_Data.TextureSlots[i]->Bind(i);
@@ -186,14 +203,10 @@ namespace XLEngine
 		s_Data.Stats.DrawCalls++;
 	}
 
-	void Renderer2D::FlushAndReset()
+	void Renderer2D::NextBatch()
 	{
-		EndScene();
-
-		s_Data.QuadIndexCount = 0;
-		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
-
-		s_Data.TextureSlotIndex = 1;
+		Flush();
+		StartBatch();
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
@@ -338,7 +351,7 @@ namespace XLEngine
 	void Renderer2D::DrawQuadCommon(const glm::mat4& transform, const glm::vec4& color,float textureIndex, float tilingFactor, const glm::vec2 texCoords[4])
 	{
 		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
-			FlushAndReset();
+			NextBatch();
 
 		for (uint32_t i = 0; i < 4; i++)
 		{

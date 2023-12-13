@@ -3,6 +3,8 @@
 #include "XLEngine.h"
 #include "Panels/SceneHierarchyPanel.h"
 
+#include "XLEngine/Renderer/EditorCamera.h"
+
 namespace XLEngine
 {
 	class EditorLayer : public Layer
@@ -38,6 +40,8 @@ namespace XLEngine
 		Entity m_SecondCamera;
 
 		bool m_PrimaryCamera = true;
+
+		EditorCamera m_EditorCamera;
 
 		Ref<Texture2D> m_CheckerboardTexture;
 		

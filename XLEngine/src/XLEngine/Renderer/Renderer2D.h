@@ -3,7 +3,8 @@
 #include "OrthographicCamera.h"
 #include "Texture.h"
 #include "SubTexture2D.h"
-#include "Camera.h"
+#include "XLEngine/Renderer/Camera.h"
+#include "XLEngine/Renderer/EditorCamera.h"
 
 namespace XLEngine
 {
@@ -14,6 +15,7 @@ namespace XLEngine
 		static void Shutdown();
 
 		static void BeginScene(const Camera& camera, const glm::mat4& transform);
+		static void BeginScene(const EditorCamera& camera);
 		static void BeginScene(const OrthographicCamera& camera); // TODO: Remove
 		static void EndScene();
 		static void Flush();
@@ -52,6 +54,7 @@ namespace XLEngine
 	private:
 		static void DrawQuadCommon(const glm::mat4& transform, const glm::vec4& color, float textureIndex, float tilingFactor, const glm::vec2 texCoords[4]);
 		static float AllocateTextureSlot(const Ref<Texture2D>& texture);
-		static void FlushAndReset();
+		static void StartBatch();
+		static void NextBatch();
 	};
 }
