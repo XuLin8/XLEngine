@@ -33,7 +33,8 @@ project "XLEngineEditor"
 
 		defines
 		{
-			"XL_PLATFORM_WINDOWS"
+			"XL_PLATFORM_WINDOWS",
+			"XL_ENABLE_ASSERTS"
 		}
 
 	filter "configurations:Debug"
