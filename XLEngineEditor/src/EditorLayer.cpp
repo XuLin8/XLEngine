@@ -243,6 +243,8 @@ namespace XLEngine
 
         style.WindowMinSize.x = minWinSizeX;
 
+        static bool bShowContentBrowser = false;
+
         if (ImGui::BeginMenuBar())
         {
             if (ImGui::BeginMenu("File"))
@@ -260,11 +262,19 @@ namespace XLEngine
                 ImGui::EndMenu();
             }
 
+            if (ImGui::BeginMenu("Window"))
+            {
+                ImGui::MenuItem("Content Browser", NULL, &bShowContentBrowser);
+                ImGui::EndMenu();
+            }
             ImGui::EndMenuBar();
         }
 
         m_SceneHierarchyPanel.OnImGuiRender();
-        m_ContentBrowserPanel.OnImGuiRender();
+        if (bShowContentBrowser)
+        {
+            m_ContentBrowserPanel.OnImGuiRender(&bShowContentBrowser);
+        }
 
         ImGui::Begin("Stats");
 
