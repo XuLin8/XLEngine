@@ -79,6 +79,21 @@ namespace XLEngine
 			return false;
 		}
 
+		static GLenum XLEngineFBTextureFormatToGL(FramebufferTextureFormat format)
+		{
+			switch (format)
+			{
+			case XLEngine::FramebufferTextureFormat::None:				break;
+			case XLEngine::FramebufferTextureFormat::RGBA8:				return GL_RGBA8;
+			case XLEngine::FramebufferTextureFormat::RED_INTEGER:		return GL_RED_INTEGER;
+			case XLEngine::FramebufferTextureFormat::DEPTH24STENCIL8:	break;
+			default:													break;
+			}
+
+			XL_CORE_ASSERT(false,"Illegal FramebufferTextureFormat");
+			return 0;
+		}
+
 	}
 	OpenGLFramebuffer::OpenGLFramebuffer(const FramebufferSpecification& spec)
 		:m_Specification(spec)
@@ -92,6 +107,14 @@ namespace XLEngine
 		}
 		// 调用Refresh函数来初始化帧缓冲
 		Refresh();
+	}
+
+	void OpenGLFramebuffer::ClearAttachment(uint32_t attachmentIndex, int value)
+	{
+		XL_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size(),"OpenGLFramebuffer.cpp/ClearAttachment/attachmentIndex < m_ColorAttachments.size()");
+
+		auto& spec = m_ColorAttachmentSpecifications[attachmentIndex];
+		glClearTexImage(m_ColorAttachments[attachmentIndex], 0, Utils::XLEngineFBTextureFormatToGL(spec.TextureFormat), GL_INT, &value);
 	}
 
 	OpenGLFramebuffer::~OpenGLFramebuffer()

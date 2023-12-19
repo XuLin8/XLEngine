@@ -17,6 +17,9 @@ namespace XLEngine
 		glm::vec2 TexCoord;  // 纹理坐标
 		float TexIndex;		 // 纹理索引，用于选择纹理单元中的纹理
 		float TilingFactor;  // 纹理平铺因子，控制纹理的平铺效果
+
+		// Editor-only
+		int EntityID;
 	};
 
 	// 渲染器2D数据结构，存储渲染器的状态和资源
@@ -60,11 +63,12 @@ namespace XLEngine
 
 		// 设置顶点数据的布局，这告诉渲染器顶点数据的结构
 		s_Data.QuadVertexBuffer->SetLayout({
-			{ ShaderDataType::Float3, "a_Position" },  // 顶点位置
-			{ ShaderDataType::Float4, "a_Color" },     // 顶点颜色
-			{ ShaderDataType::Float2, "a_TexCoord" },   // 纹理坐标
-			{ ShaderDataType::Float, "a_TexIndex"},
-			{ ShaderDataType::Float, "a_TilingFactor"},
+			{ ShaderDataType::Float3,	"a_Position"	},// 顶点位置
+			{ ShaderDataType::Float4,	"a_Color"		},// 顶点颜色
+			{ ShaderDataType::Float2,	"a_TexCoord"	},// 纹理坐标
+			{ ShaderDataType::Float,	"a_TexIndex"	},
+			{ ShaderDataType::Float,	"a_TilingFactor"},
+			{ ShaderDataType::Int,		"a_EntityID"	},
 			});
 
 		// 将顶点缓冲对象添加到顶点数组对象
@@ -254,7 +258,7 @@ namespace XLEngine
 		DrawQuadCommon(transform, tintColor, textureIndex, tilingFactor, texCoords);
 	}
 
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color, int entityID)
 	{
 		XL_PROFILE_FUNCTION();
 
@@ -263,10 +267,10 @@ namespace XLEngine
 
 		constexpr glm::vec2 texCoords[] = { {0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f} };
 			
-		DrawQuadCommon(transform, color, textureIndex, tilingFactor, texCoords);
+		DrawQuadCommon(transform, color, textureIndex, tilingFactor, texCoords, entityID);
 	}
 
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor, int entityID)
 	{
 		XL_PROFILE_FUNCTION();
 
@@ -274,7 +278,7 @@ namespace XLEngine
 
 		constexpr glm::vec2 texCoords[] = { {0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f} };
 
-		DrawQuadCommon(transform, tintColor, textureIndex, tilingFactor, texCoords);
+		DrawQuadCommon(transform, tintColor, textureIndex, tilingFactor, texCoords, entityID);
 	}
 
 	void Renderer2D::DrawRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const glm::vec4& color)
@@ -338,6 +342,11 @@ namespace XLEngine
 		DrawQuadCommon(transform, tintColor, textureIndex, tilingFactor, texCoords);
 	}
 
+	void Renderer2D::DrawSprite(const glm::mat4& transform, SpriteRendererComponent& src, int entityID)
+	{
+		DrawQuad(transform, src.Color, entityID);
+	}
+
 	void Renderer2D::ResetStats()
 	{
 		memset(&s_Data.Stats, 0, sizeof(Statistics));
@@ -348,7 +357,7 @@ namespace XLEngine
 		return s_Data.Stats;
 	}
 
-	void Renderer2D::DrawQuadCommon(const glm::mat4& transform, const glm::vec4& color,float textureIndex, float tilingFactor, const glm::vec2 texCoords[4])
+	void Renderer2D::DrawQuadCommon(const glm::mat4& transform, const glm::vec4& color,float textureIndex, float tilingFactor, const glm::vec2 texCoords[4], int entityID)
 	{
 		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
 			NextBatch();
@@ -360,6 +369,7 @@ namespace XLEngine
 			s_Data.QuadVertexBufferPtr->TexCoord = texCoords[i];
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
 			s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+			s_Data.QuadVertexBufferPtr->EntityID = entityID;// Editor-only
 			s_Data.QuadVertexBufferPtr++;
 		}
 
