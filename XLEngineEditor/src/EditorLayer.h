@@ -2,6 +2,7 @@
 
 #include "XLEngine.h"
 #include "Panels/SceneHierarchyPanel.h"
+#include "Panels/ContentBrowserPanel.h"
 
 #include "XLEngine/Renderer/EditorCamera.h"
 
@@ -59,5 +60,6 @@ namespace XLEngine
 
 		// Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;
+		ContentBrowserPanel m_ContentBrowserPanel;
 	};
 }
