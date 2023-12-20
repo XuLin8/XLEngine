@@ -12,7 +12,7 @@
 
 namespace XLEngine
 {
-    extern const std::filesystem::path s_AssetPath;
+    extern const std::filesystem::path g_AssetPath;
 	EditorLayer::EditorLayer()
 		:Layer("EditorLayer"), m_CameraController(1280.0f / 720.0f)
 	{
@@ -318,7 +318,7 @@ namespace XLEngine
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
             {
                 const wchar_t* path = (const wchar_t*)payload->Data;
-                OpenScene(std::filesystem::path(s_AssetPath) / path);
+                OpenScene(std::filesystem::path(g_AssetPath) / path);
             }
             ImGui::EndDragDropTarget();
         }
