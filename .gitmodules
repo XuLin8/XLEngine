@@ -16,3 +16,6 @@
 [submodule "XLEngine/vendor/ImGuizmo"]
 	path = XLEngine/vendor/ImGuizmo
 	url = https://github.com/XuLin8/ImGuizmo
+[submodule "XLEngine/vendor/Box2D"]
+	path = XLEngine/vendor/Box2D
+	url = https://github.com/XuLin8/box2d
