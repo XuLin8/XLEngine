@@ -32,6 +32,7 @@ project "XLEngine" --项目名称
 	{
 		"src",
 		"vendor/spdlog/include",
+		"%{IncludeDir.Box2D}",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
@@ -40,15 +41,18 @@ project "XLEngine" --项目名称
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.ImGuizmo}",
+		
 	}
 
 	links
 	{
+		"Box2D",
 		"GLFW",
 		"Glad",
 		"ImGui",
 		"yaml-cpp",
 		"opengl32.lib",
+		
 	}
 
 	filter "files:vendor/ImGuizmo/**.cpp"

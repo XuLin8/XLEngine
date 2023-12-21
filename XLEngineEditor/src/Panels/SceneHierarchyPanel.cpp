@@ -230,16 +230,40 @@ namespace XLEngine
 
         if (ImGui::BeginPopup("AddComponent"))
         {
-            if (ImGui::MenuItem("Camera"))
+            if (!m_SelectionContext.HasComponent<CameraComponent>())
             {
-                m_SelectionContext.AddComponent<CameraComponent>();
-                ImGui::CloseCurrentPopup();
+                if (ImGui::MenuItem("Camera"))
+                {
+                    m_SelectionContext.AddComponent<CameraComponent>();
+                    ImGui::CloseCurrentPopup();
+                }
             }
 
-            if (ImGui::MenuItem("Sprite Renderer"))
+            if (!m_SelectionContext.HasComponent<SpriteRendererComponent>())
             {
-                m_SelectionContext.AddComponent<SpriteRendererComponent>();
-                ImGui::CloseCurrentPopup();
+                if (ImGui::MenuItem("Sprite Renderer"))
+                {
+                    m_SelectionContext.AddComponent<SpriteRendererComponent>();
+                    ImGui::CloseCurrentPopup();
+                }
+            }
+
+            if (!m_SelectionContext.HasComponent<Rigidbody2DComponent>())
+            {
+                if (ImGui::MenuItem("Rigidbody 2D"))
+                {
+                    m_SelectionContext.AddComponent<Rigidbody2DComponent>();
+                    ImGui::CloseCurrentPopup();
+                }
+            }
+
+            if (!m_SelectionContext.HasComponent<BoxCollider2DComponent>())
+            {
+                if (ImGui::MenuItem("Box Collider 2D"))
+                {
+                    m_SelectionContext.AddComponent<BoxCollider2DComponent>();
+                    ImGui::CloseCurrentPopup();
+                }
             }
 
             ImGui::EndPopup();
@@ -248,91 +272,94 @@ namespace XLEngine
         ImGui::PopItemWidth();
 
         DrawComponent<TransformComponent>("Transform", entity, [](auto& component)
-            {
-                DrawVec3Control("Translation", component.Translation);
-        glm::vec3 rotation = glm::degrees(component.Rotation);
-        DrawVec3Control("Rotation", rotation);
-        component.Rotation = glm::radians(rotation);
-        DrawVec3Control("Scale", component.Scale, 1.0f);
-            });
-
-#if 0
-        DrawComponent<CameraComponent>("Camera", entity, [](auto& component)
-            {
-                auto& camera = component.Camera;
-
-        ImGui::Checkbox("Primary", &component.Primary);
-
-        const char* projectionTypeStrings[] = { "Perspective", "Orthographic" };
-        const char* currentProjectionTypeString = projectionTypeStrings[(int)camera.GetProjectionType()];
-        if (ImGui::BeginCombo("Projection", currentProjectionTypeString))
         {
-            for (int i = 0; i < 2; i++)
+            DrawVec3Control("Translation", component.Translation);
+            glm::vec3 rotation = glm::degrees(component.Rotation);
+            DrawVec3Control("Rotation", rotation);
+            component.Rotation = glm::radians(rotation);
+            DrawVec3Control("Scale", component.Scale, 1.0f);
+        });
+
+        DrawComponent<CameraComponent>("Camera", entity, [](auto& component)
+        {
+            auto& camera = component.Camera;
+
+            ImGui::Checkbox("Primary", &component.Primary);
+
+            const char* projectionTypeStrings[] = { "Perspective", "Orthographic" };
+            const char* currentProjectionTypeString = projectionTypeStrings[(int)camera.GetProjectionType()];
+            if (ImGui::BeginCombo("Projection", currentProjectionTypeString))
             {
-                bool isSelected = currentProjectionTypeString == projectionTypeStrings[i];
-                if (ImGui::Selectable(projectionTypeStrings[i], isSelected))
+                for (int i = 0; i < 2; i++)
                 {
-                    currentProjectionTypeString = projectionTypeStrings[i];
-                    camera.SetProjectionType((SceneCamera::ProjectionType)i);
+                    bool isSelected = currentProjectionTypeString == projectionTypeStrings[i];
+                    if (ImGui::Selectable(projectionTypeStrings[i], isSelected))
+                    {
+                        currentProjectionTypeString = projectionTypeStrings[i];
+                        camera.SetProjectionType((SceneCamera::ProjectionType)i);
+                    }
+
+                    if (isSelected)
+                        ImGui::SetItemDefaultFocus();
                 }
 
-                if (isSelected)
-                    ImGui::SetItemDefaultFocus();
+                ImGui::EndCombo();
             }
 
-            ImGui::EndCombo();
-        }
-
-        if (camera.GetProjectionType() == SceneCamera::ProjectionType::Perspective)
-        {
-            float verticalFov = glm::degrees(camera.GetPerspectiveVerticalFOV());
-            if (ImGui::DragFloat("Vertical FOV", &verticalFov))
-                camera.SetPerspectiveVerticalFOV(glm::radians(verticalFov));
-
-            float perspectiveNear = camera.GetPerspectiveNearClip();
-            if (ImGui::DragFloat("Near", &perspectiveNear))
-                camera.SetPerspectiveNearClip(perspectiveNear);
-
-            float perspectiveFar = camera.GetPerspectiveFarClip();
-            if (ImGui::DragFloat("Far", &perspectiveFar))
-                camera.SetPerspectiveFarClip(perspectiveFar);
-        }
-
-        if (camera.GetProjectionType() == SceneCamera::ProjectionType::Orthographic)
-        {
-            float orthoSize = camera.GetOrthographicSize();
-            if (ImGui::DragFloat("Size", &orthoSize))
-                camera.SetOrthographicSize(orthoSize);
-
-            float orthoNear = camera.GetOrthographicNearClip();
-            if (ImGui::DragFloat("Near", &orthoNear))
-                camera.SetOrthographicNearClip(orthoNear);
-
-            float orthoFar = camera.GetOrthographicFarClip();
-            if (ImGui::DragFloat("Far", &orthoFar))
-                camera.SetOrthographicFarClip(orthoFar);
-
-            ImGui::Checkbox("Fixed Aspect Ratio", &component.FixedAspectRatio);
-        }
-            });
-#endif
-        DrawComponent<SpriteRendererComponent>("Sprite Render", entity, [](auto& component)
+            if (camera.GetProjectionType() == SceneCamera::ProjectionType::Perspective)
             {
-                ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+                float perspectiveVerticalFov = glm::degrees(camera.GetPerspectiveVerticalFOV());
+                if (ImGui::DragFloat("Vertical FOV", &perspectiveVerticalFov))
+                    camera.SetPerspectiveVerticalFOV(glm::radians(perspectiveVerticalFov));
 
-                ImGui::Button("Texture", ImVec2(100.0f, 0.0f));
-                if (ImGui::BeginDragDropTarget())
+                float verticalFov = glm::degrees(camera.GetPerspectiveVerticalFOV());
+                if (ImGui::DragFloat("Vertical FOV", &verticalFov))
+                    camera.SetPerspectiveVerticalFOV(glm::radians(verticalFov));
+
+                float perspectiveNear = camera.GetPerspectiveNearClip();
+                if (ImGui::DragFloat("Near", &perspectiveNear))
+                    camera.SetPerspectiveNearClip(perspectiveNear);
+
+                float perspectiveFar = camera.GetPerspectiveFarClip();
+                if (ImGui::DragFloat("Far", &perspectiveFar))
+                    camera.SetPerspectiveFarClip(perspectiveFar);
+            }
+
+            if (camera.GetProjectionType() == SceneCamera::ProjectionType::Orthographic)
+            {
+                float orthoSize = camera.GetOrthographicSize();
+                if (ImGui::DragFloat("Size", &orthoSize))
+                    camera.SetOrthographicSize(orthoSize);
+
+                float orthoNear = camera.GetOrthographicNearClip();
+                if (ImGui::DragFloat("Near", &orthoNear))
+                    camera.SetOrthographicNearClip(orthoNear);
+
+                float orthoFar = camera.GetOrthographicFarClip();
+                if (ImGui::DragFloat("Far", &orthoFar))
+                    camera.SetOrthographicFarClip(orthoFar);
+
+                ImGui::Checkbox("Fixed Aspect Ratio", &component.FixedAspectRatio);
+            }
+        });
+
+        DrawComponent<SpriteRendererComponent>("Sprite Render", entity, [](auto& component)
+        {
+            ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+
+            ImGui::Button("Texture", ImVec2(100.0f, 0.0f));
+            if (ImGui::BeginDragDropTarget())
+            {
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
                 {
-                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
-                    {
-                        const wchar_t* path = (const wchar_t*)payload->Data;
-                        std::filesystem::path texturePath = std::filesystem::path(g_AssetPath) / path;
-                        component.Texture = Texture2D::Create(texturePath.string());
-                    }
-                    ImGui::EndDragDropTarget();
+                    const wchar_t* path = (const wchar_t*)payload->Data;
+                    std::filesystem::path texturePath = std::filesystem::path(g_AssetPath) / path;
+                    component.Texture = Texture2D::Create(texturePath.string());
                 }
+                ImGui::EndDragDropTarget();
+            }
 
-                ImGui::DragFloat("Tiling Factor", &component.TilingFactor, 0.1f, 0.0f, 100.0f);
-            });
+            ImGui::DragFloat("Tiling Factor", &component.TilingFactor, 0.1f, 0.0f, 100.0f);
+        });
     }
 }

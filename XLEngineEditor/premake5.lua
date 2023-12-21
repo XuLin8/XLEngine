@@ -25,7 +25,7 @@ project "XLEngineEditor"
 
 	links
 	{
-		"XLEngine"
+		"XLEngine",
 	}
 
 	filter "system:windows"

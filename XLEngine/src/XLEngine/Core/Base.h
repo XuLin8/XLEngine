@@ -59,16 +59,21 @@
 #endif // End of DLL support 
 
 #ifdef XL_DEBUG
+	#if defined(XL_PLATFORM_WINDOWS)
+		#define XL_DEBUGBREAK() __debugbreak()
+	#elif defined(XL_PLATFORM_LINUX)
+		#include <signal.h>
+		#define HE_DEBUGBREAK() raise(SIGTRAP)
+	#else
+		#error "Platform doesn't support debugbreak yet!"
+#endif
 	#define XL_ENABLE_ASSERTS
+#else
+	#define XL_DEBUGBREAK()
 #endif
 
-#ifdef XL_ENABLE_ASSERTS
-	#define XL_ASSERT(x,...){if(!(x)) {XL_ERROR("Assertion Failed:{0}",__VA_ARGS__);__debugbreak();}}
-	#define XL_CORE_ASSERT(x,...){if(!(x)) {XL_CORE_ERROR("Assertion Failed:{0}",__VA_ARGS__);__debugbreak();}}
-#else
-	#define XL_ASSERT(x,...)
-	#define XL_CORE_ASSERT(x,...)
-#endif
+#define XL_EXPAND_MACRO(x) x
+#define XL_STRINGIFY_MACRO(x) #x
 
 #define BIT(x) (1 << x)
 
@@ -94,3 +99,6 @@ namespace XLEngine
 	}
 
 }
+
+#include "XLEngine/Core/Log.h"
+#include "XLEngine/Core/Assert.h"
