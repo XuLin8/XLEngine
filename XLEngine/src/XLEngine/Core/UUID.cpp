@@ -21,4 +21,9 @@ namespace XLEngine
 		: m_UUID(uuid)
 	{
 	}
+
+	UUID::UUID(const UUID& other)
+		:m_UUID(other.m_UUID)
+	{
+	}
 }
