@@ -291,11 +291,11 @@ namespace XLEngine
 
         ImGui::Begin("Stats");
 
-        std::string name = "None";
+       /* std::string name = "None";
         if (m_HoveredEntity)
             name = m_HoveredEntity.GetComponent<TagComponent>().Tag;
             
-        ImGui::Text("Hovered Entity: %s", name.c_str());
+        ImGui::Text("Hovered Entity: %s", name.c_str());*/
 
         auto stats = Renderer2D::GetStats();
         ImGui::Text("Renderer2D Stats:");
@@ -479,7 +479,7 @@ namespace XLEngine
     {
         if (e.GetMouseButton() == Mouse::ButtonLeft)
         {
-            if (m_ViewportHovered && !ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt))
+            if (m_ViewportHovered && !ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt) && m_HoveredEntity)
                 m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
         }
         return false;
