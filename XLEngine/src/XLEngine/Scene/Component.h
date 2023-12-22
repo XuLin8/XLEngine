@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SceneCamera.h"
-#include "ScriptableEntity.h"
+#include "XLEngine/Core/UUID.h"
 #include "XLEngine/Renderer/Texture.h"
 
 #include <glm/glm.hpp>
@@ -10,6 +10,13 @@
 
 namespace XLEngine
 {
+	struct IDComponent
+	{
+		UUID ID;
+
+		IDComponent() = default;
+		IDComponent(const IDComponent&) = default;
+	};
 
 	struct CameraComponent
 	{
@@ -20,6 +27,9 @@ namespace XLEngine
 		CameraComponent() = default;
 		CameraComponent(const CameraComponent&) = default;
 	};
+
+	// Forward declaration
+	class ScriptableEntity;
 
 	struct NativeScriptComponent
 	{
