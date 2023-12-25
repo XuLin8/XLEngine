@@ -34,6 +34,12 @@ namespace XLEngine
 		void DuplicateEntity(Entity entity);
 		
 		Entity GetPrimaryCameraEntity();
+
+		template<typename... Componets>
+		auto GetAllEntitiesWith()
+		{
+			return m_Registry.view<Componets...>();
+		}
 	private:
 		template<typename T>
 		void OnComponentAdded(Entity entity, T& component);
