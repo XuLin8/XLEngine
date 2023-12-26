@@ -16,12 +16,13 @@ namespace XLEngine
 	public:
 		Application(const std::string& name = "XLEngine");
 		virtual ~Application() = default;
-
+		void Init();
 		void Run();
 		void OnEvent(Event& e);
 
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* layer);
+		void PopLayer(Layer* layer);
 
 		Window& GetWindow() { return *m_Window; }
 		static Application& Get() { return *s_Instance; }

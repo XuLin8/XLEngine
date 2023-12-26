@@ -22,8 +22,6 @@ namespace XLEngine
 		m_Window = Window::Create(WindowProps(name));
 		m_Window->SetEventCallback(XL_BIND_EVENT_FN(OnEvent));
 
-		Renderer::Init();
-
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
 		
@@ -59,6 +57,11 @@ namespace XLEngine
 		layer->OnAttach();
 	}
 
+	void Application::Init()
+	{
+		Renderer::Init();
+	}
+
 	void Application::Run()
 	{
 		while (m_Running)
@@ -76,6 +79,12 @@ namespace XLEngine
 
 			m_Window->OnUpdate();
 		}
+	}
+
+	void Application::PopLayer(Layer* layer)
+	{
+		m_LayerStack.PopLayer(layer);
+		layer->OnDetach();
 	}
 
 	void Application::Close()

@@ -24,16 +24,18 @@ namespace XLEngine
         m_SelectionContext = {};
     }
 
-    void SceneHierarchyPanel::OnImGuiRender()
+    void SceneHierarchyPanel::OnImGuiRender(bool* pOpen, bool* pOpenProperties)
     {
-        ImGui::Begin("Scene Hierarchy");
-
-        if (m_Context)
+        if (pOpen)
         {
-            m_Context->m_Registry.each([&](auto entityID) {
-                Entity entity = { entityID, m_Context.get() };
-                DrawEntityNode(entity);
-            });
+            ImGui::Begin("Scene Hierarchy", pOpen);
+            if (m_Context)
+            {
+                m_Context->m_Registry.each([&](auto entityID) {
+                    Entity entity = { entityID, m_Context.get() };
+                    DrawEntityNode(entity);
+                });
+            }
 
             if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
                 m_SelectionContext = {};
@@ -49,13 +51,16 @@ namespace XLEngine
         }
         ImGui::End();
 
-        ImGui::Begin("Properties");
-        if (m_SelectionContext)
+        if (*pOpenProperties)
         {
-            DrawComponents(m_SelectionContext);
-        }
+            ImGui::Begin("Properties",pOpenProperties);
+            if (m_SelectionContext)
+            {
+                DrawComponents(m_SelectionContext);
+            }
 
-        ImGui::End();
+            ImGui::End();
+        }
     }
 
     void SceneHierarchyPanel::SetSelectedEntity(Entity entity)

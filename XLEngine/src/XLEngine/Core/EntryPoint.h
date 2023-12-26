@@ -13,6 +13,10 @@ int main(int argc, int argv)
 	auto app = XLEngine::CreateApplication();
 	XL_PROFILE_END_SESSION();
 
+	XL_PROFILE_BEGIN_SESSION("Init", "XLEngineProfile-Init.json");
+	app->Init();
+	XL_PROFILE_END_SESSION();
+
 	XL_PROFILE_BEGIN_SESSION("Runtime", "XLEngineProfile-Runtime.json");
 	app->Run();
 	XL_PROFILE_END_SESSION();
