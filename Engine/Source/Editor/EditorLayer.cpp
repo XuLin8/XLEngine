@@ -281,7 +281,7 @@ namespace XLEngine
                     SaveSceneAs();
 
                 if (ImGui::MenuItem("Exit", NULL, false))
-                    Application::Get().Close();
+                    Application::GetInstance().Close();
 
                 ImGui::EndMenu();
             }
@@ -354,7 +354,7 @@ namespace XLEngine
 
             m_ViewportFocused = ImGui::IsWindowFocused();
             m_ViewportHovered = ImGui::IsWindowHovered();
-            Application::Get().GetImGuiLayer()->BlockEvents(!m_ViewportFocused && !m_ViewportHovered);
+            Application::GetInstance().GetImGuiLayer()->BlockEvents(!m_ViewportFocused && !m_ViewportHovered);
 
 
             ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
@@ -461,8 +461,8 @@ namespace XLEngine
 
     void EditorLayer::LoadDefaultEditorConfig()
     {
-        const std::filesystem::path CurrentEditorConfigPath{ "imgui.ini" };
-        const std::filesystem::path DefaultEditorConfigPath{ "assets/config/imgui.ini" };
+        const std::filesystem::path CurrentEditorConfigPath{ AssetManager::GetInstance().GetFullPath("imgui.ini") };
+        const std::filesystem::path DefaultEditorConfigPath{ AssetManager::GetInstance().GetFullPath("Assets/Config/imgui.ini")};
         XL_CORE_ASSERT(std::filesystem::exists(DefaultEditorConfigPath));
         if (std::filesystem::exists(CurrentEditorConfigPath))
             std::filesystem::remove(CurrentEditorConfigPath);

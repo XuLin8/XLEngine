@@ -1,23 +1,26 @@
 #pragma once
-#include "xlpch.h"
+
 #include "Runtime/Core/Base/Base.h"
-#include "Window.h"
-#include "LayerStack.h"
+#include "Runtime/Core/Base/PublicSingleton.h"
+#include "Runtime/Core/Window.h"
+#include "Runtime/Core/LayerStack.h"
 #include "Runtime/Events/Event.h"
 #include "Runtime/Events/ApplicationEvent.h"
 
 #include "Runtime/Core/Timestep.h"
+
 #include "Runtime/ImGui/ImGuiLayer.h"
+
+int main(int argc, char** argv);
 
 namespace XLEngine
 {
-	class Application
+	class Application : public PublicSingleton<Application>
 	{
 	public:
-		Application(const std::string& name = "XLEngine");
-		virtual ~Application() = default;
-		void Init();
-		void Run();
+		Application() = default;
+		virtual ~Application() {}
+
 		void OnEvent(Event& e);
 
 		void PushLayer(Layer* layer);
@@ -25,26 +28,29 @@ namespace XLEngine
 		void PopLayer(Layer* layer);
 
 		Window& GetWindow() { return *m_Window; }
-		static Application& Get() { return *s_Instance; }
 
 		void Close();
 
 		ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }
+
+		//static Application& Get() { return *s_Instance; }
 	private:
+		void Init(const std::string& name);
+		void Run();
+		void Clean();
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);
-
-		std::unique_ptr<Window> m_Window;
+	private:
+		Scope<Window> m_Window;
 		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running = true;
 		bool m_Minimized = false;
 		LayerStack m_LayerStack;
 		float m_LastFrameTime = 0.0f;
-
 	private:
-		static Application* s_Instance;
+		friend int ::main(int argc, char** argv);
+
+		// To be defined in CLIENT
+		friend void MyAppInitialize(Application& app);
 	};
-	
-	//�ڿͻ��˶���
-	Application* CreateApplication();
 }

@@ -5,28 +5,12 @@
 #include "Runtime/Renderer/Renderer.h"
 
 #include "Input.h"
+#include "Runtime/Resource/ConfigManager/ConfigManager.h"
 
 #include <glfw/glfw3.h>
 
 namespace XLEngine
 {
-	Application* Application::s_Instance = nullptr;
-
-	Application::Application(const std::string& name)
-	{
-		XL_PROFILE_FUNCTION();
-
-		XL_CORE_ASSERT(!s_Instance, "Application already exists!");
-		s_Instance = this;
-
-		m_Window = Window::Create(WindowProps(name));
-		m_Window->SetEventCallback(XL_BIND_EVENT_FN(OnEvent));
-
-		m_ImGuiLayer = new ImGuiLayer();
-		PushOverlay(m_ImGuiLayer);
-		
-	}
-	
 	void Application::OnEvent(Event& e)
 	{
 		XL_PROFILE_FUNCTION();
@@ -57,9 +41,19 @@ namespace XLEngine
 		layer->OnAttach();
 	}
 
-	void Application::Init()
+	void Application::Init(const std::string& name)
 	{
+		Log::Init();
+		XL_CORE_WARN("Initialized Log!");
+
+		m_Window = Window::Create(WindowProps(name));
+		m_Window->SetEventCallback(XL_BIND_EVENT_FN(Application::OnEvent));
+
+		m_ImGuiLayer = new ImGuiLayer();
+		PushOverlay(m_ImGuiLayer);
+
 		Renderer::Init();
+		ConfigManager::GetInstance().Initialize();
 	}
 
 	void Application::Run()
@@ -92,6 +86,11 @@ namespace XLEngine
 		m_Running = false;
 	}
 
+	void Application::Clean()
+	{
+		Renderer::Shutdown();
+
+	}
 	bool Application::OnWindowClose(WindowCloseEvent& e)
 	{
 		m_Running = false;

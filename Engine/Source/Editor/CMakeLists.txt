@@ -11,6 +11,8 @@ source_group(TREE ${EngineEditorDir} FILES ${EditorHeaderFiles} ${EditorSourceFi
 
 add_executable(XLEngineEditor ${EditorHeaderFiles} ${EditorSourceFiles})
 
+add_compile_definitions("ENGINE_ROOT_DIR=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+
 target_link_libraries(XLEngineEditor PRIVATE XLEngineRuntime)
 
 target_include_directories(XLEngineEditor PRIVATE

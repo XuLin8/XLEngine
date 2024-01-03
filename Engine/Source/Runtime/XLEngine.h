@@ -16,6 +16,9 @@
 
 #include "Runtime/Scene/Component.h"
 
+#include "Runtime/Resource/ConfigManager/ConfigManager.h"
+#include "Runtime/Resource/AssetManager/AssetManager.h"
+
 //Rnderer
 #include "Runtime/Renderer/Renderer.h"
 #include "Runtime/Renderer/Renderer2D.h"

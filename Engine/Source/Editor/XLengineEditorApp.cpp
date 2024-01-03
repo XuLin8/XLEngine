@@ -1,5 +1,4 @@
 #include "XLEngine.h"
-#include "Runtime/Core/EntryPoint.h"
 
 #include "Platform/OpenGL/OpenGLShader.h"
 
@@ -12,22 +11,9 @@
 
 namespace XLEngine
 {
-	class XLEngineEditor : public Application
+	void MyAppInitialize(Application& app)
 	{
-	public:
-		XLEngineEditor()
-			:Application("XLEngineEditor")
-		{
-			PushLayer(new EditorLayer());
-		}
-
-		~XLEngineEditor()
-		{
-		}
-	};
-
-	Application* CreateApplication()
-	{
-		return new XLEngineEditor();
+		app.Init("XLEngine Editor");
+		app.PushLayer(new EditorLayer());
 	}
 }
