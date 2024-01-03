@@ -2,7 +2,7 @@
 
 //给应用程序使用
 #include "Runtime/Core/Application.h"
-#include "Runtime/Core/Log.h"
+#include "Runtime/Core/Log/Log.h"
 #include "Runtime/Core/Input.h"
 #include "Runtime/Core/KeyCodes.h"
 #include "Runtime/Core/MouseCodes.h"

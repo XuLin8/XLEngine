@@ -1,14 +1,14 @@
 #Directories
-.vs/
-bin/
+
+*/bin/
 bin-int/
 build/
 out/
 
+.vs/
 *.sln
 *.vcxproj
 *.vcxproj.user
 *.vcxproj.filters
 
-*.ini
-*.json
+*.log
