@@ -1,11 +1,11 @@
 #pragma once
 
 //给应用程序使用
-#include "Runtime/Core/Application.h"
+#include "Runtime/Core/AppFramework/Application.h"
 #include "Runtime/Core/Log/Log.h"
-#include "Runtime/Core/Input.h"
-#include "Runtime/Core/KeyCodes.h"
-#include "Runtime/Core/MouseCodes.h"
+#include "Runtime/Input/Input.h"
+#include "Runtime/Input/KeyCodes.h"
+#include "Runtime/Input/MouseCodes.h"
 #include "Runtime/Core/Timestep.h"
 #include "Runtime/Renderer/OrthographicCameraController.h"
 #include "Runtime/ImGui/ImGuiLayer.h"
