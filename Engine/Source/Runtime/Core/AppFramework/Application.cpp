@@ -18,7 +18,7 @@ namespace XLEngine
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(XL_BIND_EVENT_FN(OnWindowClose));
 		dispatcher.Dispatch<WindowResizeEvent>(XL_BIND_EVENT_FN(OnWindowResize));
-		for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend();++it)
+		for (auto it = mLayerStack.rbegin(); it != mLayerStack.rend();++it)
 		{
 			if (e.handled)break;
 			(*it)->OnEvent(e);
@@ -29,7 +29,7 @@ namespace XLEngine
 	{
 		XL_PROFILE_FUNCTION();
 
-		m_LayerStack.PushLayer(layer);
+		mLayerStack.PushLayer(layer);
 		layer->OnAttach();
 	}
 
@@ -37,7 +37,7 @@ namespace XLEngine
 	{
 		XL_PROFILE_FUNCTION();
 
-		m_LayerStack.PushOverlay(layer);
+		mLayerStack.PushOverlay(layer);
 		layer->OnAttach();
 	}
 
@@ -48,43 +48,43 @@ namespace XLEngine
 
 		ConfigManager::GetInstance().Initialize();
 
-		m_Window = Window::Create(WindowProps(name));
-		m_Window->SetEventCallback(XL_BIND_EVENT_FN(Application::OnEvent));
+		mWindow = Window::Create(WindowProps(name));
+		mWindow->SetEventCallback(XL_BIND_EVENT_FN(Application::OnEvent));
 
-		m_ImGuiLayer = new ImGuiLayer();
-		PushOverlay(m_ImGuiLayer);
+		mImGuiLayer = new ImGuiLayer();
+		PushOverlay(mImGuiLayer);
 
 		Renderer::Init();
 	}
 
 	void Application::Run()
 	{
-		while (m_Running)
+		while (bRunning)
 		{
 			float time = (float)(glfwGetTime());
-			Timestep timestep = time - m_LastFrameTime;
-			m_LastFrameTime = time;
+			Timestep timestep = time - mLastFrameTime;
+			mLastFrameTime = time;
 
-			if (!m_Minimized)
-				for (Layer* layer : m_LayerStack) layer->OnUpdate(timestep);
+			if (!bMinimized)
+				for (Layer* layer : mLayerStack) layer->OnUpdate(timestep);
 					
-			m_ImGuiLayer->Begin();
-			for (Layer* layer : m_LayerStack) layer->OnImGuiRender();
-			m_ImGuiLayer->End();
+			mImGuiLayer->Begin();
+			for (Layer* layer : mLayerStack) layer->OnImGuiRender();
+			mImGuiLayer->End();
 
-			m_Window->OnUpdate();
+			mWindow->OnUpdate();
 		}
 	}
 
 	void Application::PopLayer(Layer* layer)
 	{
-		m_LayerStack.PopLayer(layer);
+		mLayerStack.PopLayer(layer);
 		layer->OnDetach();
 	}
 
 	void Application::Close()
 	{
-		m_Running = false;
+		bRunning = false;
 	}
 
 	void Application::Clean()
@@ -94,7 +94,7 @@ namespace XLEngine
 	}
 	bool Application::OnWindowClose(WindowCloseEvent& e)
 	{
-		m_Running = false;
+		bRunning = false;
 		return true;
 	}
 
@@ -102,11 +102,11 @@ namespace XLEngine
 	{
 		if (e.GetWidth() == 0 || e.GetHeight() == 0)
 		{
-			m_Minimized = true;
+			bMinimized = true;
 			return false;
 		}
 
-		m_Minimized = false;
+		bMinimized = false;
 		Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
 
 		return false;
