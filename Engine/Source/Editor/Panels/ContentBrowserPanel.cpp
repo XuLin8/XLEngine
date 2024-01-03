@@ -1,15 +1,13 @@
 #include "ContentBrowserPanel.h"
+#include "Runtime/Resource/ConfigManager/ConfigManager.h"
 #include "Runtime/Resource/AssetManager/AssetManager.h"
 
 #include <imgui/imgui.h>
 
 namespace XLEngine
 {
-	// Once we have projects, change this
-	extern const std::filesystem::path g_AssetPath = "assets";
-
 	ContentBrowserPanel::ContentBrowserPanel()
-		:m_CurrentDirectory(g_AssetPath)
+		:m_CurrentDirectory(ConfigManager::GetInstance().GetAssetsFolder())
 	{
 		m_DirectoryIcon = Texture2D::Create(AssetManager::GetInstance().GetFullPath("Resources/Icons/ContentBrowser/DirectoryIcon.png").string());
 		m_FileIcon = Texture2D::Create(AssetManager::GetInstance().GetFullPath("Resources/Icons/ContentBrowser/FileIcon.png").string());
@@ -25,7 +23,7 @@ namespace XLEngine
 			return;
 		}
 
-		if (m_CurrentDirectory != std::filesystem::path(g_AssetPath))
+		if (m_CurrentDirectory != std::filesystem::path(ConfigManager::GetInstance().GetAssetsFolder()))
 		{
 			if (ImGui::Button("<-"))
 			{
@@ -47,7 +45,7 @@ namespace XLEngine
 		for (auto& directoryEntry : std::filesystem::directory_iterator(m_CurrentDirectory))
 		{
 			const auto& path = directoryEntry.path();
-			auto relativePath = std::filesystem::relative(path, g_AssetPath);
+			auto relativePath = std::filesystem::relative(path, ConfigManager::GetInstance().GetAssetsFolder());
 			std::string filenameString = relativePath.filename().string();
 
 			ImGui::PushID(filenameString.c_str());

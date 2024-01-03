@@ -46,6 +46,8 @@ namespace XLEngine
 		Log::Init();
 		XL_CORE_WARN("Initialized Log!");
 
+		ConfigManager::GetInstance().Initialize();
+
 		m_Window = Window::Create(WindowProps(name));
 		m_Window->SetEventCallback(XL_BIND_EVENT_FN(Application::OnEvent));
 
@@ -53,7 +55,6 @@ namespace XLEngine
 		PushOverlay(m_ImGuiLayer);
 
 		Renderer::Init();
-		ConfigManager::GetInstance().Initialize();
 	}
 
 	void Application::Run()
