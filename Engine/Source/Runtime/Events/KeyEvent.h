@@ -8,7 +8,7 @@ namespace XLEngine
 	class XLENGINE_API KeyEvent :public Event
 	{
 	public:
-		KeyCode GetKeyCode() const { return m_KeyCode; }
+		[[nodiscard]] KeyCode GetKeyCode() const { return m_KeyCode; }
 		EVENT_CLASS_CATEGORY(EventCategoryKeyboard|EventCategoryInput)
 	protected:
 		KeyEvent(KeyCode key)
@@ -22,7 +22,7 @@ namespace XLEngine
 		KeyPressedEvent(const KeyCode key, const uint16_t repeatCount)
 			:KeyEvent(key) ,m_RepeatCount(repeatCount) {}
 
-		uint16_t GetRepeatCount() const { return m_RepeatCount; }
+		[[nodiscard]] uint16_t GetRepeatCount() const { return m_RepeatCount; }
 
 		std::string ToString() const override
 		{

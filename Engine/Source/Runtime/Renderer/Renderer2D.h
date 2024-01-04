@@ -50,7 +50,7 @@ namespace XLEngine
 
 		static void DrawSprite(const glm::mat4& transform, SpriteRendererComponent& src, int entityID);
 
-		static float GetLineWidth();
+		[[nodiscard]] static float GetLineWidth();
 		static void SetLineWidth(float width);
 
 		// Stats
@@ -59,8 +59,8 @@ namespace XLEngine
 			uint32_t DrawCalls = 0;
 			uint32_t QuadCount = 0;
 
-			uint32_t GetTotalVertexCount() { return QuadCount * 4; }
-			uint32_t GetTotalIndexCount() { return QuadCount * 6; }
+			[[nodiscard]] uint32_t GetTotalVertexCount() { return QuadCount * 4; }
+			[[nodiscard]] uint32_t GetTotalIndexCount() { return QuadCount * 6; }
 		};
 		static void ResetStats();
 		static Statistics GetStats();

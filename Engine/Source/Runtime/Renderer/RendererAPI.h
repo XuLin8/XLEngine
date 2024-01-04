@@ -23,7 +23,7 @@ namespace XLEngine
 		virtual void DrawLines(const Ref<VertexArray>& vertexArray, uint32_t vertexCount) = 0;
 		virtual void SetLineWidth(float width) = 0;
 
-		inline static API GetAPI() { return  s_API; }
+		[[nodiscard]] inline static API GetAPI() { return  s_API; }
 	private:
 		static API s_API;
 	};
