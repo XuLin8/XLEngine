@@ -163,25 +163,16 @@ namespace XLEngine
             m_Framebuffer->Unbind();
         }*/
 
-        switch (m_SceneState)
-        {
-        case XLEngine::EditorLayer::SceneState::Edit:
+        if (ModeManager::IsEditState())
         {
             if (m_ViewportFocused)
                 m_CameraController.OnUpdate(ts);
-
             m_EditorCamera.OnUpdate(ts);
-
             m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
-            break;
         }
-        case XLEngine::EditorLayer::SceneState::Play:
+        else
         {
             m_ActiveScene->OnUpdateRuntime(ts);
-            break;
-        }
-        default:
-            break;
         }
 
         auto [mx, my] = ImGui::GetMousePos();
@@ -445,13 +436,13 @@ namespace XLEngine
         ImGui::Begin("##toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
         float size = ImGui::GetWindowHeight() - 4.0f;
-        Ref<Texture2D> icon = m_SceneState == SceneState::Edit ? m_IconPlay : m_IconStop;
+        Ref<Texture2D> icon = ModeManager::IsEditState() ? m_IconPlay : m_IconStop;
         ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
         if (ImGui::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0))
         {
-            if (m_SceneState == SceneState::Edit)
+            if (ModeManager::IsEditState())
                 OnScenePlay();
-            else if (m_SceneState == SceneState::Play)
+            else
                 OnSceneStop();
         }
         ImGui::PopStyleVar(2);
@@ -563,14 +554,14 @@ namespace XLEngine
 
     void EditorLayer::OnOverlayRender()
     {
-        if (m_SceneState == SceneState::Play)
+        if (ModeManager::IsEditState())
         {
-            Entity camera = m_ActiveScene->GetPrimaryCameraEntity();
-            Renderer2D::BeginScene(camera.GetComponent<CameraComponent>().Camera, camera.GetComponent<TransformComponent>().GetTransform());
+            Renderer2D::BeginScene(m_EditorCamera);
         }
         else
         {
-            Renderer2D::BeginScene(m_EditorCamera);
+            Entity camera = m_ActiveScene->GetPrimaryCameraEntity();
+            Renderer2D::BeginScene(camera.GetComponent<CameraComponent>().Camera, camera.GetComponent<TransformComponent>().GetTransform());
         }
 
         if (m_ShowPhysicsColliders)
@@ -633,7 +624,7 @@ namespace XLEngine
     }
     void EditorLayer::OpenScene(const std::filesystem::path& path)
     {
-        if (m_SceneState != SceneState::Edit)
+        if (!ModeManager::IsEditState())
             OnSceneStop();
 
         if (path.extension().string() != ".xl")
@@ -681,7 +672,9 @@ namespace XLEngine
 
     void EditorLayer::OnScenePlay()
     {
-        m_SceneState = SceneState::Play;
+        if (ModeManager::IsEditState())
+            ModeManager::ChangeState();
+
         m_ActiveScene = Scene::Copy(m_EditorScene);
         m_ActiveScene->OnRuntimeStart();
 
@@ -690,7 +683,8 @@ namespace XLEngine
 
     void EditorLayer::OnSceneStop()
     {
-        m_SceneState = SceneState::Edit;
+        if (!ModeManager::IsEditState())
+            ModeManager::ChangeState();
 
         m_ActiveScene->OnRuntimeStop();
         m_ActiveScene = m_EditorScene;
@@ -700,7 +694,7 @@ namespace XLEngine
 
     void EditorLayer::OnDuplicateEntity()
     {
-        if (m_SceneState != SceneState::Edit)
+        if (!ModeManager::IsEditState())
             return;
 
         Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
