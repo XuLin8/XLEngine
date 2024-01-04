@@ -2,7 +2,7 @@
 #include "Scene.h"
 #include "Entity.h"
 
-#include "Runtime/Scene/Component.h"
+#include "Runtime/EcsFramework/Component/ComponentGroup.h"
 #include "Runtime/Scene/ScriptableEntity.h"
 #include "Runtime/Renderer/Renderer2D.h"
 

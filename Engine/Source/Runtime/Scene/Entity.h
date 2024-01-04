@@ -2,7 +2,7 @@
 #include "Runtime/Core/UUID.h"
 
 #include "Scene.h"
-#include "Component.h"
+#include "Runtime/EcsFramework/Component/ComponentGroup.h"
 #include <entt.hpp>
 
 namespace XLEngine

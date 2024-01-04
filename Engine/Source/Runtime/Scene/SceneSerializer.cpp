@@ -1,7 +1,7 @@
 #include "xlpch.h"
 #include "SceneSerializer.h"
 #include "Entity.h"
-#include "Component.h"
+#include "Runtime/EcsFramework/Component/ComponentGroup.h"
 
 #include <yaml-cpp/yaml.h>
 
