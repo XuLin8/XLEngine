@@ -20,10 +20,10 @@ namespace XLEngine
 
 		void Clear();
 
-		const std::filesystem::path& GetRootFolder() const;
-		const std::filesystem::path& GetAssetsFolder() const;
-		const std::filesystem::path& GetShadersFolder() const;
-		const std::filesystem::path& GetResourceFolder() const;
+		[[nodiscard]] const std::filesystem::path& GetRootFolder() const;
+		[[nodiscard]] const std::filesystem::path& GetAssetsFolder() const;
+		[[nodiscard]] const std::filesystem::path& GetShadersFolder() const;
+		[[nodiscard]] const std::filesystem::path& GetResourceFolder() const;
 
 	private:
 		std::filesystem::path mRootFolder;

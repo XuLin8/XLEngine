@@ -30,8 +30,8 @@ namespace XLEngine
 		virtual ~Window() = default;
 
 		virtual void OnUpdate() = 0;
-		virtual uint32_t GetWidth() const = 0;
-		virtual uint32_t GetHeight() const = 0;
+		[[nodiscard]] virtual uint32_t GetWidth() const = 0;
+		[[nodiscard]] virtual uint32_t GetHeight() const = 0;
 
 		virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
 		virtual void SetVSync(bool enabled) = 0;
