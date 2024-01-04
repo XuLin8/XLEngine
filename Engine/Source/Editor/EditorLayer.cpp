@@ -15,12 +15,17 @@
 
 namespace XLEngine
 {
+    // Window
     static bool bShowViewport = true;
     static bool bShowContentBrowser = true;
     static bool bShowSceneHierachy = true;
     static bool bShowProperties = true;
     static bool bShowStats = true;
     static bool bShowSettings = true;
+
+    // Help
+    static bool bShowTutorial = false;
+    static bool bShowAboutMe = false;
 
 	EditorLayer::EditorLayer()
 		:Layer("EditorLayer"), m_CameraController(1280.0f / 720.0f)
@@ -290,6 +295,14 @@ namespace XLEngine
                     LoadDefaultEditorConfig();
                 ImGui::EndMenu();
             }
+
+            if (ImGui::BeginMenu("Help"))
+            {
+                ImGui::MenuItem("Tutorial", NULL, &bShowTutorial);
+                ImGui::MenuItem("About Me", NULL, &bShowAboutMe);
+                ImGui::EndMenu();
+            }
+
             ImGui::EndMenuBar();
         }
         // ----MenuBar End----
@@ -416,6 +429,24 @@ namespace XLEngine
             ImGui::PopStyleVar();
         }
         // ----Windows End----
+
+        // ----Help Begin----
+        // TODO
+        ImGuiWindowFlags helpMenuFlags = ImGuiWindowFlags_NoDocking;
+        if (bShowTutorial)
+        {
+            ImGui::Begin("Tutorial", &bShowTutorial, helpMenuFlags);
+            ImGui::Text("Hello!");
+            ImGui::Text("Hello!");
+            ImGui::End();
+        }
+        if (bShowAboutMe)
+        {
+            ImGui::Begin("About Me", &bShowAboutMe, helpMenuFlags);
+            ImGui::Text("My name is Lynn");
+            ImGui::End();
+        }
+        // ----Help End----
         UI_Toolbar();
 
         ImGui::End();
