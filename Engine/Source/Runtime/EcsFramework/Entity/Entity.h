@@ -1,7 +1,7 @@
 #pragma once
 #include "Runtime/Core/UUID.h"
 
-#include "Scene.h"
+#include "Runtime/EcsFramework/Level/Level.h"
 #include "Runtime/EcsFramework/Component/ComponentGroup.h"
 #include <entt.hpp>
 
@@ -11,7 +11,7 @@ namespace XLEngine
     {
     public:
         Entity() = default;
-        Entity(entt::entity handle, Scene* scene);
+        Entity(entt::entity handle, Level* scene);
         Entity(const Entity& other) = default;
 
         template<typename T, typename... Args>
@@ -69,6 +69,6 @@ namespace XLEngine
         }
     private:
         entt::entity m_EntityHandle{ entt::null };
-        Scene* m_Scene = nullptr;
+        Level* m_Scene = nullptr;
     };
 }

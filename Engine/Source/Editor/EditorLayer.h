@@ -33,7 +33,7 @@ namespace XLEngine
 		void SaveScene();
 		void SaveSceneAs();
 
-		void SerializeScene(Ref<Scene> scene, const std::filesystem::path& path);
+		void SerializeScene(Ref<Level> scene, const std::filesystem::path& path);
 		void OnScenePlay();
 		void OnSceneStop();
 
@@ -50,8 +50,8 @@ namespace XLEngine
 		Ref<Shader> m_FlatColorShader;
 		Ref<Framebuffer> m_Framebuffer;
 		
-		Ref<Scene> m_ActiveScene;
-		Ref<Scene> m_EditorScene;
+		Ref<Level> m_ActiveScene;
+		Ref<Level> m_EditorScene;
 		std::filesystem::path m_EditorScenePath;
 		Entity m_SquareEntity;
 		Entity m_CameraEntity;

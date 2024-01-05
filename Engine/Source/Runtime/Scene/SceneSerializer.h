@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Scene.h"
+#include "Runtime/EcsFramework/Level/Level.h"
 #include "Runtime/Core/Base/Base.h"
 
 namespace XLEngine
@@ -8,7 +8,7 @@ namespace XLEngine
 	class SceneSerializer
 	{
 	public:
-		SceneSerializer(const Ref<Scene>& scene);
+		SceneSerializer(const Ref<Level>& level);
 
 		void Serialize(const std::string& filepath);
 		void SerializeRuntime(const std::string& filepath);
@@ -17,6 +17,6 @@ namespace XLEngine
 		bool DeserializeRuntime(const std::string& filepath);
 
 	private:
-		Ref<Scene> m_Scene;
+		Ref<Level> mLevel;
 	};
 }

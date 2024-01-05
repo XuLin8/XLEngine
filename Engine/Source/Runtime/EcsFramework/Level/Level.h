@@ -5,6 +5,7 @@
 #include "Runtime/Renderer/EditorCamera.h"
 
 #include <entt.hpp>
+#include <unordered_map>
 
 class b2World;
 
@@ -12,13 +13,13 @@ namespace XLEngine
 {
 	class Entity;
 
-	class Scene
+	class Level
 	{
 	public:
-		Scene();
-		~Scene();
+		Level();
+		~Level();
 
-		static Ref<Scene> Copy(Ref<Scene> other);
+		static Ref<Level> Copy(Ref<Level> other);
 
 		Entity CreateEntity(const std::string& name = std::string());
 		Entity CreateEntityWithUUID(UUID uuid, const std::string& name = std::string());

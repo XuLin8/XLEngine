@@ -10,9 +10,9 @@
 #include "Runtime/Renderer/OrthographicCameraController.h"
 #include "Runtime/ImGui/ImGuiLayer.h"
 
-#include "Runtime/Scene/Scene.h"
-#include "Runtime/Scene/Entity.h"
-#include "Runtime/Scene/ScriptableEntity.h"
+#include "Runtime/EcsFramework/Level/Level.h"
+#include "Runtime/EcsFramework/Entity/Entity.h"
+#include "Runtime/EcsFramework/Entity/ScriptableEntity.h"
 
 #include "Runtime/EcsFramework/Component/ComponentGroup.h"
 

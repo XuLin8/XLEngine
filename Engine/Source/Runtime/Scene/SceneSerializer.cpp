@@ -1,6 +1,6 @@
 #include "xlpch.h"
 #include "SceneSerializer.h"
-#include "Entity.h"
+#include "Runtime/EcsFramework/Entity/Entity.h"
 #include "Runtime/EcsFramework/Component/ComponentGroup.h"
 
 #include <yaml-cpp/yaml.h>
@@ -135,8 +135,8 @@ namespace XLEngine
 		return Rigidbody2DComponent::BodyType::Static;
 	}
 
-	SceneSerializer::SceneSerializer(const Ref<Scene>& scene)
-		:m_Scene(scene)
+	SceneSerializer::SceneSerializer(const Ref<Level>& level)
+		:mLevel(level)
 	{
 
 	}
@@ -273,9 +273,9 @@ namespace XLEngine
 		out << YAML::BeginMap;
 		out << YAML::Key << "Scene" << YAML::Value << "Untitled";
 			out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
-			m_Scene->m_Registry.each([&](auto entityID)
+			mLevel->m_Registry.each([&](auto entityID)
 				{
-					Entity entity = { entityID, m_Scene.get() };
+					Entity entity = { entityID, mLevel.get() };
 					if (!entity)
 						return;
 					// Serialize Entity
@@ -322,7 +322,7 @@ namespace XLEngine
 
 				XL_CORE_TRACE("Deserialized entity with ID = {0}, name = {1}", uuid, name);
 
-				Entity deserializedEntity = m_Scene->CreateEntityWithUUID(uuid, name);
+				Entity deserializedEntity = mLevel->CreateEntityWithUUID(uuid, name);
 
 				auto transformComponent = entity["TransformComponent"];
 				if (transformComponent)

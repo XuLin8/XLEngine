@@ -1,9 +1,9 @@
 #include "xlpch.h"
-#include "Scene.h"
-#include "Entity.h"
 
+#include "Runtime/EcsFramework/Entity/Entity.h"
+#include "Runtime/EcsFramework/Entity/ScriptableEntity.h"
+#include "Runtime/EcsFramework/Level/Level.h"
 #include "Runtime/EcsFramework/Component/ComponentGroup.h"
-#include "Runtime/Scene/ScriptableEntity.h"
 #include "Runtime/Renderer/Renderer2D.h"
 
 #include <glm/glm.hpp>
@@ -34,11 +34,11 @@ namespace XLEngine
 		return b2_staticBody;
 	}
 
-	Scene::Scene()
+	Level::Level()
 	{
 	}
 
-	Scene::~Scene()
+	Level::~Level()
 	{
 
 	}
@@ -63,46 +63,46 @@ namespace XLEngine
 			dst.AddOrReplaceComponent<Component>(src.GetComponent<Component>());
 	}
 
-	Ref<Scene> Scene::Copy(Ref<Scene> scene)
+	Ref<Level> Level::Copy(Ref<Level> scene)
 	{
-		Ref<Scene> newScene = CreateRef<Scene>();
+		Ref<Level> newScene = CreateRef<Level>();
 
 		newScene->m_ViewportWidth = scene->m_ViewportWidth;
 		newScene->m_ViewportHeight = scene->m_ViewportHeight;
 
 		std::unordered_map<UUID, entt::entity> enttMap;
 
-		// Create entities in new scene
-		auto& srcSceneRegistry = scene->m_Registry;
-		auto& dstSceneRegistry = newScene->m_Registry;
-		auto idView = srcSceneRegistry.view<IDComponent>();
+		// Create entities in new Level
+		auto& srcLevelRegistry = scene->m_Registry;
+		auto& dstLevelRegistry = newScene->m_Registry;
+		auto idView = srcLevelRegistry.view<IDComponent>();
 		for (auto e : idView)
 		{
-			UUID uuid = srcSceneRegistry.get<IDComponent>(e).ID;
-			const auto& name = srcSceneRegistry.get<TagComponent>(e).Tag;
+			UUID uuid = srcLevelRegistry.get<IDComponent>(e).ID;
+			const auto& name = srcLevelRegistry.get<TagComponent>(e).Tag;
 			Entity newEntity = newScene->CreateEntityWithUUID(uuid, name);
 			enttMap[uuid] = newEntity;
 		}
 
 		// Copy components (except IDComponent and TagComponent)
-		CopyComponent<TransformComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-		CopyComponent<SpriteRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-		CopyComponent<CircleRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-		CopyComponent<CameraComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-		CopyComponent<NativeScriptComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-		CopyComponent<Rigidbody2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-		CopyComponent<BoxCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-		CopyComponent<CircleCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+		CopyComponent<TransformComponent>(dstLevelRegistry, srcLevelRegistry, enttMap);
+		CopyComponent<SpriteRendererComponent>(dstLevelRegistry, srcLevelRegistry, enttMap);
+		CopyComponent<CircleRendererComponent>(dstLevelRegistry, srcLevelRegistry, enttMap);
+		CopyComponent<CameraComponent>(dstLevelRegistry, srcLevelRegistry, enttMap);
+		CopyComponent<NativeScriptComponent>(dstLevelRegistry, srcLevelRegistry, enttMap);
+		CopyComponent<Rigidbody2DComponent>(dstLevelRegistry, srcLevelRegistry, enttMap);
+		CopyComponent<BoxCollider2DComponent>(dstLevelRegistry, srcLevelRegistry, enttMap);
+		CopyComponent<CircleCollider2DComponent>(dstLevelRegistry, srcLevelRegistry, enttMap);
 
 		return newScene;
 	}
 
-	Entity Scene::CreateEntity(const std::string& name)
+	Entity Level::CreateEntity(const std::string& name)
 	{
 		return CreateEntityWithUUID(UUID(), name);
 	}
 
-	Entity Scene::CreateEntityWithUUID(UUID uuid, const std::string& name)
+	Entity Level::CreateEntityWithUUID(UUID uuid, const std::string& name)
 	{
 		Entity entity = { m_Registry.create(), this };
 		entity.AddComponent<IDComponent>(uuid);
@@ -112,12 +112,12 @@ namespace XLEngine
 		return entity;
 	}
 
-	void Scene::DestroyEntity(Entity entity)
+	void Level::DestroyEntity(Entity entity)
 	{
 		m_Registry.destroy(entity);
 	}
 
-	void Scene::OnRuntimeStart()
+	void Level::OnRuntimeStart()
 	{
 		m_PhysicsWorld = new b2World({ 0.0f, -9.8f });
 
@@ -173,19 +173,19 @@ namespace XLEngine
 	
 	}
 
-	void Scene::OnRuntimeStop()
+	void Level::OnRuntimeStop()
 	{
 		delete m_PhysicsWorld;
 		m_PhysicsWorld = nullptr;
 	}
 
-	void Scene::OnUpdateRuntime(Timestep ts)
+	void Level::OnUpdateRuntime(Timestep ts)
 	{
 		// Update scripts
 		{
 			m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& nsc)  // nsc: native script component
 				{
-					// TODO: Move to Scene::OnScenePlay
+					// TODO: Move to Level::OnLevelPlay
 					if (!nsc.Instance)
 					{
 						nsc.Instance = nsc.InstantiateScript();
@@ -267,7 +267,7 @@ namespace XLEngine
 		}
 	}
 
-	void Scene::OnUpdateEditor(Timestep ts, EditorCamera& camera)
+	void Level::OnUpdateEditor(Timestep ts, EditorCamera& camera)
 	{
 		Renderer2D::BeginScene(camera);
 
@@ -282,7 +282,7 @@ namespace XLEngine
 		Renderer2D::EndScene();
 	}
 
-	void Scene::OnViewportResize(uint32_t width, uint32_t height)
+	void Level::OnViewportResize(uint32_t width, uint32_t height)
 	{
 		m_ViewportHeight = height;
 		m_ViewportWidth = width;
@@ -297,7 +297,7 @@ namespace XLEngine
 		}
 	}
 
-	void Scene::DuplicateEntity(Entity entity)
+	void Level::DuplicateEntity(Entity entity)
 	{
 		Entity newEntity = CreateEntity(entity.GetName());
 
@@ -311,7 +311,7 @@ namespace XLEngine
 		CopyComponentIfExists<CircleCollider2DComponent>(newEntity, entity);
 	}
 
-	Entity Scene::GetPrimaryCameraEntity()
+	Entity Level::GetPrimaryCameraEntity()
 	{
 		auto view = m_Registry.view<CameraComponent>();
 		for (auto entity : view)
@@ -324,66 +324,66 @@ namespace XLEngine
 	}
 
 	template<typename T>
-	void Scene::OnComponentAdded(Entity entity, T& component)
+	void Level::OnComponentAdded(Entity entity, T& component)
 	{
 	}
 
 	template<>
-	void Scene::OnComponentAdded<IDComponent>(Entity entity, IDComponent& component)
-	{
-
-	}
-
-	template<>
-	void Scene::OnComponentAdded<TransformComponent>(Entity entity, TransformComponent& component)
+	void Level::OnComponentAdded<IDComponent>(Entity entity, IDComponent& component)
 	{
 
 	}
 
 	template<>
-	void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component)
+	void Level::OnComponentAdded<TransformComponent>(Entity entity, TransformComponent& component)
+	{
+
+	}
+
+	template<>
+	void Level::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component)
 	{
 		if (m_ViewportWidth > 0 && m_ViewportHeight > 0)
 			component.Camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
 	}
 
 	template<>
-	void Scene::OnComponentAdded<SpriteRendererComponent>(Entity entity, SpriteRendererComponent& component)
+	void Level::OnComponentAdded<SpriteRendererComponent>(Entity entity, SpriteRendererComponent& component)
 	{
 
 	}
 
 	template<>
-	void Scene::OnComponentAdded<CircleRendererComponent>(Entity entity, CircleRendererComponent& component)
+	void Level::OnComponentAdded<CircleRendererComponent>(Entity entity, CircleRendererComponent& component)
 	{
 	}
 
 	template<>
-	void Scene::OnComponentAdded<TagComponent>(Entity entity, TagComponent& component)
-	{
-
-	}
-
-	template<>
-	void Scene::OnComponentAdded<NativeScriptComponent>(Entity entity, NativeScriptComponent& component)
+	void Level::OnComponentAdded<TagComponent>(Entity entity, TagComponent& component)
 	{
 
 	}
 
 	template<>
-	void Scene::OnComponentAdded<Rigidbody2DComponent>(Entity entity, Rigidbody2DComponent& component)
+	void Level::OnComponentAdded<NativeScriptComponent>(Entity entity, NativeScriptComponent& component)
 	{
 
 	}
 
 	template<>
-	void Scene::OnComponentAdded<BoxCollider2DComponent>(Entity entity, BoxCollider2DComponent& component)
+	void Level::OnComponentAdded<Rigidbody2DComponent>(Entity entity, Rigidbody2DComponent& component)
 	{
 
 	}
 
 	template<>
-	void Scene::OnComponentAdded<CircleCollider2DComponent>(Entity entity, CircleCollider2DComponent& component)
+	void Level::OnComponentAdded<BoxCollider2DComponent>(Entity entity, BoxCollider2DComponent& component)
+	{
+
+	}
+
+	template<>
+	void Level::OnComponentAdded<CircleCollider2DComponent>(Entity entity, CircleCollider2DComponent& component)
 	{
 
 	}

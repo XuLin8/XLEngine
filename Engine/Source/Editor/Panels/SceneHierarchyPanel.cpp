@@ -12,12 +12,12 @@
 
 namespace XLEngine
 {
-    SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& context)
+    SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Level>& context)
     {
         SetContext(context);
     }
 
-    void SceneHierarchyPanel::SetContext(const Ref<Scene>& context)
+    void SceneHierarchyPanel::SetContext(const Ref<Level>& context)
     {
         m_Context = context;
         m_SelectionContext = {};

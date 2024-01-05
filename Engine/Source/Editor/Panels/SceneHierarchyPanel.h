@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Runtime/Core/Base/Base.h"
-#include "Runtime/Scene/Scene.h"
-#include "Runtime/Scene/Entity.h"
+#include "Runtime/EcsFramework/Level/Level.h"
+#include "Runtime/EcsFramework/Entity/Entity.h"
 
 namespace XLEngine
 {
@@ -10,9 +10,9 @@ namespace XLEngine
     {
     public:
         SceneHierarchyPanel() = default;
-        SceneHierarchyPanel(const Ref<Scene>& context);
+        SceneHierarchyPanel(const Ref<Level>& context);
 
-        void SetContext(const Ref<Scene>& context);
+        void SetContext(const Ref<Level>& context);
 
         void OnImGuiRender(bool* pOpen, bool* pOpenProperties);
 
@@ -22,7 +22,7 @@ namespace XLEngine
         void DrawEntityNode(Entity entity);
         void DrawComponents(Entity entity);
     private:
-        Ref<Scene> m_Context;
+        Ref<Level> m_Context;
         Entity m_SelectionContext;
     };
 }

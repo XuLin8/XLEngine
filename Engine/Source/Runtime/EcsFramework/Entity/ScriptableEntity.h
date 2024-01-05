@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Entity.h"
+#include "Runtime/EcsFramework/Entity/Entity.h"
 
 namespace XLEngine
 {
@@ -21,6 +21,6 @@ namespace XLEngine
 		virtual void OnUpdate(Timestep ts) {}
 	private:
 		Entity m_Entity;
-		friend Scene;
+		friend Level;
 	};
 }

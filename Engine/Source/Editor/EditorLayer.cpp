@@ -49,7 +49,7 @@ namespace XLEngine
         fbSpec.Height = 720;
         m_Framebuffer = Framebuffer::Create(fbSpec);
 
-        m_ActiveScene = CreateRef<Scene>();
+        m_ActiveScene = CreateRef<Level>();
         m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
 
 #if 0
@@ -640,7 +640,7 @@ namespace XLEngine
 
     void EditorLayer::NewScene()
     {
-        m_ActiveScene = CreateRef<Scene>();
+        m_ActiveScene = CreateRef<Level>();
         m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
@@ -664,7 +664,7 @@ namespace XLEngine
             return;
         }
 
-        Ref<Scene> newScene = CreateRef<Scene>();
+        Ref<Level> newScene = CreateRef<Level>();
         SceneSerializer serializer(newScene);
         if (serializer.Deserialize(path.string()))
         {
@@ -695,7 +695,7 @@ namespace XLEngine
         }
     }
 
-    void EditorLayer::SerializeScene(Ref<Scene> scene, const std::filesystem::path& path)
+    void EditorLayer::SerializeScene(Ref<Level> scene, const std::filesystem::path& path)
     {
         SceneSerializer serializer(scene);
         serializer.Serialize(path.string());
@@ -706,7 +706,7 @@ namespace XLEngine
         if (ModeManager::IsEditState())
             ModeManager::ChangeState();
 
-        m_ActiveScene = Scene::Copy(m_EditorScene);
+        m_ActiveScene = Level::Copy(m_EditorScene);
         m_ActiveScene->OnRuntimeStart();
 
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
