@@ -16,12 +16,20 @@
 
 namespace XLEngine
 {
-    //template<class T>
-    //concept Component = std::is_base_o
+    // Every Component Class should be registered in this file
+    
+    // 定义一个 Concept 用于检查是否为组件类型
+    template<typename T>
+    concept Component = std::is_base_of_v<ComponentBase, T>;
 
-    template<typename... Component>
+    // 使用 Concepts 约束 ComponentGroup，要求所有模板参数必须是组件类型
+    template<Component... Components>
     struct ComponentGroup
     {
-
+        // 可以在这里添加 ComponentGroup 的具体实现
+       
     };
+    using AllComponents = ComponentGroup<TransformComponent, CircleRendererComponent, SpriteRendererComponent,
+        CameraComponent, NativeScriptComponent,
+        Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent>;
 }
