@@ -5,6 +5,9 @@
 #include "Runtime/EcsFramework/Component/ComponentGroup.h"
 #include <entt.hpp>
 
+#include <tuple>
+#include <type_traits>
+
 namespace XLEngine
 {
     class Entity
@@ -36,6 +39,20 @@ namespace XLEngine
         {
             XL_CORE_ASSERT(HasComponent<T>(), "Entity does not have component!");
             return m_Scene->m_Registry.get<T>(m_EntityHandle);
+        }
+
+        template<typename... T>
+        std::tuple<T*...> GetComponents()
+        {
+            XL_CORE_ASSERT((HasComponent<T>() && ...), "Entity does not have component!");
+            return std::make_tuple<T*...>((&m_Scene->m_Registry.get<T>(m_EntityHandle))...);
+        }
+
+        template<typename... T>
+        std::tuple<const T* const...> GetConstComponents()
+        {
+            XL_CORE_ASSERT((HasComponent<T>() && ...), "Entity does not have component!");
+            return std::make_tuple(((const T* const)&m_Scene->m_Registry.get<T>(m_EntityHandle))...);
         }
 
         template<typename T>
