@@ -12,6 +12,7 @@ namespace XLEngine
 	{
 		mSystems.push_back(new PhysicSystem2D(this));
 		mSystems.push_back(new NativeScriptSystem(this));
+		mSystems.push_back(new RenderSystem2D(this));
 	}
 
 	Level::~Level()
@@ -114,74 +115,18 @@ namespace XLEngine
 
 	void Level::OnUpdateRuntime(Timestep ts)
 	{
+		for (auto& system : mSystems)
 		{
-			for (auto& system : mSystems)
-			{
-				system->OnUpdate(ts);
-			}
-		}
-
-		// Remderer 2D
-		Camera* mainCamera = nullptr;
-		glm::mat4 cameraTransform;
-		{
-			auto view = m_Registry.view<TransformComponent, CameraComponent>();
-			for (auto entity : view)
-			{
-				auto [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
-
-				if (camera.Primary)
-				{
-					mainCamera = &camera.Camera;
-					cameraTransform = transform.GetTransform();
-					break;
-				}
-			}
-		}
-
-		if (mainCamera)
-		{
-			Renderer2D::BeginScene(*mainCamera, cameraTransform);
-
-			// Draw sprites
-			{
-				auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-				for (auto entity : group)
-				{
-					auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-
-					Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
-				}
-			}
-
-			// Draw circle
-			{
-				auto view = m_Registry.view<TransformComponent, CircleRendererComponent>();
-				for (auto entity : view)
-				{
-					auto [transform, circle] = view.get<TransformComponent, CircleRendererComponent>(entity);
-
-					Renderer2D::DrawCircle(transform.GetTransform(), circle.Color, circle.Thickness, circle.Fade, (int)entity);
-				}
-			}
-
-			Renderer2D::EndScene();
+			system->OnUpdateRuntime(ts);
 		}
 	}
 
 	void Level::OnUpdateEditor(Timestep ts, EditorCamera& camera)
 	{
-		Renderer2D::BeginScene(camera);
-
-		auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-		for (auto entity : group)
+		for (auto& system : mSystems)
 		{
-			auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-
-			Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
+			system->OnUpdateEditor(ts,camera);
 		}
-
-		Renderer2D::EndScene();
 	}
 
 	void Level::OnViewportResize(uint32_t width, uint32_t height)

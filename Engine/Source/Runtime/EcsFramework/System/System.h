@@ -2,6 +2,7 @@
 
 #include "Runtime/Core/Timestep.h"
 #include "Runtime/EcsFramework/Level/Level.h"
+#include "Runtime/Renderer/EditorCamera.h"
 
 namespace XLEngine
 {
@@ -12,7 +13,8 @@ namespace XLEngine
 		System(Level* level):mLevel(level){}
 		virtual ~System() = default;
 	public:
-		virtual void OnUpdate(Timestep ts){}
+		virtual void OnUpdateRuntime(Timestep ts){}
+		virtual void OnUpdateEditor(Timestep ts, EditorCamera& camera) {}
 		virtual void OnRuntimeStart(){}
 		virtual void OnRuntimeStop(){}
 	protected:
