@@ -21,6 +21,6 @@ namespace XLEngine
 		virtual void OnUpdate(Timestep ts) {}
 	private:
 		Entity m_Entity;
-		friend Level;
+		friend class NativeScriptSystem;
 	};
 }
