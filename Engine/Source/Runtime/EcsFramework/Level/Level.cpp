@@ -5,14 +5,15 @@
 #include "Runtime/EcsFramework/Component/ComponentGroup.h"
 #include "Runtime/EcsFramework/System/SystemGroup.h"
 #include "Runtime/Renderer/Renderer2D.h"
+#include "Runtime/Renderer/Renderer3D.h"
 
 namespace XLEngine
 {
 	Level::Level()
 	{
-		mSystems.push_back(new PhysicSystem2D(this));
+		/*mSystems.push_back(new PhysicSystem2D(this));
 		mSystems.push_back(new NativeScriptSystem(this));
-		mSystems.push_back(new RenderSystem2D(this));
+		mSystems.push_back(new RenderSystem2D(this));*/
 	}
 
 	Level::~Level()
