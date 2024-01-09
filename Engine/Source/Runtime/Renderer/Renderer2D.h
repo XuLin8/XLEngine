@@ -1,7 +1,7 @@
 #pragma once
 
 #include "OrthographicCamera.h"
-#include "Texture.h"
+#include "Runtime/Renderer/Texture.h"
 #include "SubTexture2D.h"
 
 #include "Runtime/EcsFramework/Component/ComponentGroup.h"
