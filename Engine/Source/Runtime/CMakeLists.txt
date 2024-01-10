@@ -22,12 +22,14 @@ target_precompile_headers(XLEngineRuntime PUBLIC "xlpch.h")
 
 target_link_libraries(XLEngineRuntime PUBLIC glfw
     PUBLIC Glad
+    PUBLIC glm
+    PUBLIC imgui
     PUBLIC ${OPENGL_LIBRARIES}
     PUBLIC yaml-cpp
     PUBLIC spdlog
-    PUBLIC glm
-    PUBLIC entt
+    PUBLIC headers
     PUBLIC Box2D
     PUBLIC stb
     PUBLIC ImGuizmo
+    PUBLIC assimp
 )

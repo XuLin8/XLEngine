@@ -240,6 +240,7 @@ namespace XLEngine
 
 	void Renderer2D::BeginScene(const EditorCamera& camera)
 	{
+		XL_PROFILE_FUNCTION();
 		glm::mat4 viewProj = camera.GetViewProjection();
 
 		s_Data.QuadShader->Bind();
@@ -250,22 +251,6 @@ namespace XLEngine
 
 		s_Data.LineShader->Bind();
 		s_Data.LineShader->SetMat4("u_ViewProjection", viewProj);
-
-		StartBatch();
-	}
-
-	void Renderer2D::BeginScene(const OrthographicCamera& camera)
-	{
-		XL_PROFILE_FUNCTION();
-
-		s_Data.QuadShader->Bind();
-		s_Data.QuadShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
-
-		s_Data.CircleShader->Bind();
-		s_Data.CircleShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
-
-		s_Data.LineShader->Bind();
-		s_Data.LineShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
 
 		StartBatch();
 	}

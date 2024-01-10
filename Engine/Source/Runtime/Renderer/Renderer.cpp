@@ -28,10 +28,6 @@ namespace XLEngine {
 		RenderCommand::SetViewport(0, 0, width, height);
 	}
 
-	void Renderer::BeginScene(OrthographicCamera& camera)
-	{
-		m_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
-	}
 	void Renderer::EndScene()
 	{
 

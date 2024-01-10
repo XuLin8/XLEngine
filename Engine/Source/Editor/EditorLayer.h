@@ -43,8 +43,6 @@ namespace XLEngine
 		void UI_Toolbar();
 		void LoadDefaultEditorConfig();
 	private:
-		OrthographicCameraController m_CameraController;
-
 		//temp
 		Ref<VertexArray> m_SquareVA;
 		Ref<Shader> m_FlatColorShader;

@@ -7,7 +7,6 @@
 #include "Runtime/Input/KeyCodes.h"
 #include "Runtime/Input/MouseCodes.h"
 #include "Runtime/Core/Timestep.h"
-#include "Runtime/Renderer/OrthographicCameraController.h"
 #include "Runtime/ImGui/ImGuiLayer.h"
 
 #include "Runtime/EcsFramework/Level/Level.h"
@@ -31,4 +30,3 @@
 #include "Runtime/Renderer/Texture.h"
 #include "Runtime/Renderer/SubTexture2D.h"
 #include "Runtime/Renderer/VertexArray.h"
-#include "Runtime/Renderer/OrthographicCamera.h"

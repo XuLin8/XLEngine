@@ -28,7 +28,7 @@ namespace XLEngine
     static bool bShowAboutMe = false;
 
 	EditorLayer::EditorLayer()
-		:Layer("EditorLayer"), m_CameraController(1280.0f / 720.0f)
+		:Layer("EditorLayer")
 	{
 
 	}
@@ -119,7 +119,6 @@ namespace XLEngine
             (spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
         {
             m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-            m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
 
             m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
             m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
@@ -170,8 +169,6 @@ namespace XLEngine
 
         if (ModeManager::IsEditState())
         {
-            if (m_ViewportFocused)
-                m_CameraController.OnUpdate(ts);
             m_EditorCamera.OnUpdate(ts);
             m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
         }
@@ -507,7 +504,6 @@ namespace XLEngine
 
     void EditorLayer::OnEvent(Event& e)
     {
-        m_CameraController.OnEvent(e);
         m_EditorCamera.OnEvent(e);
         EventDispatcher dispatcher(e);
         dispatcher.Dispatch<KeyPressedEvent>(XL_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
