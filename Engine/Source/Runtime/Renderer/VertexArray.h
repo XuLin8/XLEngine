@@ -1,8 +1,8 @@
 #pragma once 
+#include "Runtime/Renderer/VertexBuffer.h"
+#include "Runtime/Renderer/IndexBuffer.h"
 
 #include <memory>
-
-#include "Runtime/Renderer/Buffer.h"
 
 namespace XLEngine
 {
