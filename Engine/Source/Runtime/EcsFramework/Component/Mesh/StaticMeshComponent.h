@@ -1,5 +1,6 @@
 #pragma once
 #include "Runtime/EcsFramework/Component/ComponentBase.h"
+#include "Runtime/Renderer/Model.h"
 
 namespace XLEngine
 {
@@ -10,7 +11,10 @@ namespace XLEngine
 		StaticMeshComponent(const StaticMeshComponent&) = default;
 		StaticMeshComponent(const std::string& Path)
 		{
-			
+			memcpy(path, Path.c_str(), sizeof(char) * Path.size());
 		}
+		Model mesh;
+
+		char path[256];
 	};
 }

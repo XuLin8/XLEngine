@@ -264,6 +264,17 @@ namespace XLEngine
 			
 			out << YAML::EndMap; // CircleCollider2DComponent
 		}
+
+		if (entity.HasComponent<StaticMeshComponent>())
+		{
+			out << YAML::Key << "StaticMeshComponent";
+			out << YAML::BeginMap;
+
+			auto& staticMeshComponent = entity.GetComponent<StaticMeshComponent>();
+			out << YAML::Key << "Path" << YAML::Value << staticMeshComponent.path;
+
+			out << YAML::EndMap;
+		}
 		out << YAML::EndMap;// Entity
 	}
 
@@ -400,6 +411,13 @@ namespace XLEngine
 					cc2d.Friction = circleCollider2DComponent["Friction"].as<float>();
 					cc2d.Restitution = circleCollider2DComponent["Restitution"].as<float>();
 					cc2d.RestitutionThreshold = circleCollider2DComponent["RestitutionThreshold"].as<float>();
+				}
+
+				auto staticMeshComponent = entity["StaticMeshComponent"];
+				if (staticMeshComponent)
+				{
+					std::string str = staticMeshComponent["Path"].as<std::string>();
+					auto& src = deserializedEntity.AddComponent<StaticMeshComponent>(str);
 				}
 			}
 			

@@ -10,6 +10,7 @@
 #include "Runtime/EcsFramework/Component/Shape/CircleRendererComponent.h"
 #include "Runtime/EcsFramework/Component/Shape/SpriteRendererComponent.h"
 #include "Runtime/EcsFramework/Component/Transform/TransformComponent.h" 
+#include "Runtime/EcsFramework/Component/Mesh/StaticMeshComponent.h" 
 
 #include <concepts>
 #include <type_traits>
@@ -31,5 +32,6 @@ namespace XLEngine
     };
     using AllComponents = ComponentGroup<TransformComponent, CircleRendererComponent, SpriteRendererComponent,
         CameraComponent, NativeScriptComponent,
-        Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent>;
+        Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent,
+        StaticMeshComponent>;
 }

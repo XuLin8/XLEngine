@@ -128,6 +128,17 @@ namespace XLEngine
 		{
 			system->OnUpdateEditor(ts,camera);
 		}
+
+		Renderer3D::BeginScene(camera);
+
+		auto group = m_Registry.group<TransformComponent>(entt::get<StaticMeshComponent>);
+
+		for (auto entity : group)
+		{
+			auto [transform, mesh] = group.get<TransformComponent, StaticMeshComponent>(entity);
+			Renderer3D::DrawModel(transform.GetTransform(), mesh, (int)entity);
+		}
+		Renderer3D::EndScene();
 	}
 
 	void Level::OnViewportResize(uint32_t width, uint32_t height)
@@ -232,6 +243,12 @@ namespace XLEngine
 
 	template<>
 	void Level::OnComponentAdded<CircleCollider2DComponent>(Entity entity, CircleCollider2DComponent& component)
+	{
+
+	}
+
+	template<>
+	void Level::OnComponentAdded<StaticMeshComponent>(Entity entity, StaticMeshComponent& component)
 	{
 
 	}
