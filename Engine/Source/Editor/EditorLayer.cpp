@@ -26,6 +26,7 @@ namespace XLEngine
     // Help
     static bool bShowTutorial = false;
     static bool bShowAboutMe = false;
+    static bool bShowDemoImGui = false;
 
 	EditorLayer::EditorLayer()
 		:Layer("EditorLayer")
@@ -249,7 +250,7 @@ namespace XLEngine
         ImGuiIO& io = ImGui::GetIO();
         ImGuiStyle& style = ImGui::GetStyle();
         float minWinSizeX = style.WindowMinSize.x;
-        style.WindowMinSize.x = 470.0f;
+        style.WindowMinSize.x = 110.0;
 
         if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
         {
@@ -297,6 +298,7 @@ namespace XLEngine
             {
                 ImGui::MenuItem("Tutorial", NULL, &bShowTutorial);
                 ImGui::MenuItem("About Me", NULL, &bShowAboutMe);
+                ImGui::MenuItem("Demo ImGui", NULL, &bShowDemoImGui);
                 ImGui::EndMenu();
             }
 
@@ -442,6 +444,10 @@ namespace XLEngine
             ImGui::Begin("About Me", &bShowAboutMe, helpMenuFlags);
             ImGui::Text("My name is Lynn");
             ImGui::End();
+        }
+        if (bShowDemoImGui)
+        {
+            ImGui::ShowDemoWindow(&bShowDemoImGui);
         }
         // ----Help End----
         UI_Toolbar();
