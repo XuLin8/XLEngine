@@ -60,6 +60,6 @@ cmake --build build --parallel 4
 2.3 Visual Studio: Open Folder, then choose XLEngine folder)
 
 ## Credits
-* HEngine
-* Cherno Hazel
-* BoomingTech Pilot
+* hebohang [HEngine](https://github.com/hebohang/HEngine)
+* Cherno [Hazel](https://github.com/TheCherno/Hazel)
+* BoomingTech [Pilot](https://github.com/BoomingTech/Pilot)
