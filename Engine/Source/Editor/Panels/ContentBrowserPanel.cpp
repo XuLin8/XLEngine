@@ -17,7 +17,7 @@ namespace XLEngine
 	{
 
 		// from imgui_demo.cpp: ShowAboutWindow function, should we add flag ImGuiWindowFlags_AlwaysAutoResize?
-		if (!ImGui::Begin("Content Browser"), pOpen)
+		if (!ImGui::Begin("Content Browser", pOpen))
 		{
 			ImGui::End();
 			return;
@@ -25,7 +25,7 @@ namespace XLEngine
 
 		if (m_CurrentDirectory != std::filesystem::path(ConfigManager::GetInstance().GetAssetsFolder()))
 		{
-			if (ImGui::Button("<-"))
+			if (ImGui::Button("<<"))
 			{
 				m_CurrentDirectory = m_CurrentDirectory.parent_path();
 			}
