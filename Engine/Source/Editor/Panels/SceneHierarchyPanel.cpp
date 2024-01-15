@@ -3,6 +3,7 @@
 #include "Runtime/EcsFramework/Component/ComponentGroup.h"
 #include "Runtime/Renderer/Texture.h"
 #include "Runtime/Resource/ConfigManager/ConfigManager.h"
+#include "Editor/ImGuiWrapper/ImGuiWrapper.h"
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
@@ -119,7 +120,7 @@ namespace XLEngine
         ImGui::Text(label.c_str());
         ImGui::NextColumn();
 
-        ImGui::BeginTable("table_padding", 3, ImGuiTableFlags_BordersV | ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_NoPadInnerX);
+        ImGui::BeginTable("table_padding", 3, ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_NoPadInnerX);
 
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
@@ -295,6 +296,14 @@ namespace XLEngine
                     ImGui::CloseCurrentPopup();
                 }
             }
+            if (!m_SelectionContext.HasComponent<StaticMeshComponent>())
+            {
+                if (ImGui::MenuItem("Static Mesh Renderer"))
+                {
+                    m_SelectionContext.AddComponent<StaticMeshComponent>();
+                    ImGui::CloseCurrentPopup();
+                }
+            }
             ImGui::EndPopup();
         }
 
@@ -445,6 +454,14 @@ namespace XLEngine
             ImGui::DragFloat("Friction", &component.Friction, 0.01f, 0.0f, 1.0f);
             ImGui::DragFloat("Restitution", &component.Restitution, 0.01f, 0.0f, 1.0f);
             ImGui::DragFloat("Restitution Threshold", &component.RestitutionThreshold, 0.01f, 0.0f);
+        });
+
+        DrawComponent<StaticMeshComponent>("Static Mesh Renderer", entity, [](auto& component)
+        {
+            if (ImGuiWrapper::InputTextLeft("Mesh Path", component.path, sizeof(component.path)))
+            {
+                component.mesh = Model(component.path);
+            }
         });
     }
 }
