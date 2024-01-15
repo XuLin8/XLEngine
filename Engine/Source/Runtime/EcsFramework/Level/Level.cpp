@@ -250,6 +250,6 @@ namespace XLEngine
 	template<>
 	void Level::OnComponentAdded<StaticMeshComponent>(Entity entity, StaticMeshComponent& component)
 	{
-
+		component.Mesh = Model(component.Path.string());
 	}
 }

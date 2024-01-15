@@ -22,7 +22,7 @@ namespace XLEngine
 
 	void Renderer3D::DrawModel(const glm::mat4& transform, StaticMeshComponent& MeshComponent, int EntityID)
 	{
-		MeshComponent.mesh.Draw(transform, mShader, EntityID);
+		MeshComponent.Mesh.Draw(transform, mShader, EntityID);
 	}
 
 	void Renderer3D::BeginScene(const Camera& camera, const glm::mat4& transform)

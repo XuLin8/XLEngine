@@ -2,6 +2,8 @@
 #include "Runtime/EcsFramework/Component/ComponentBase.h"
 #include "Runtime/Renderer/Model.h"
 
+#include <filesystem>
+
 namespace XLEngine
 {
 	class StaticMeshComponent : public ComponentBase
@@ -9,12 +11,16 @@ namespace XLEngine
 	public:
 		StaticMeshComponent() = default;
 		StaticMeshComponent(const StaticMeshComponent&) = default;
-		StaticMeshComponent(const std::string& Path)
+		StaticMeshComponent(const std::string& path)
+			:Path(path)
 		{
-			memcpy(path, Path.c_str(), sizeof(char) * Path.size());
 		}
-		Model mesh;
+		StaticMeshComponent(const std::filesystem::path& path)
+			:Path(path)
+		{
+		}
 
-		char path[256];
+		Model Mesh;
+		std::filesystem::path Path;
 	};
 }

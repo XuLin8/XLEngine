@@ -271,7 +271,7 @@ namespace XLEngine
 			out << YAML::BeginMap;
 
 			auto& staticMeshComponent = entity.GetComponent<StaticMeshComponent>();
-			out << YAML::Key << "Path" << YAML::Value << staticMeshComponent.path;
+			out << YAML::Key << "Path" << YAML::Value << staticMeshComponent.Path.c_str();
 
 			out << YAML::EndMap;
 		}
