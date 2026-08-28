@@ -12,3 +12,7 @@ out/
 *.vcxproj.filters
 
 *.log
+
+#IDE / Editor
+.vscode/
+imgui.ini
