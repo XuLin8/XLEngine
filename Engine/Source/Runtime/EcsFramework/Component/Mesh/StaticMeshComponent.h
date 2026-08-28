@@ -3,6 +3,7 @@
 #include "Runtime/Renderer/Model.h"
 
 #include <filesystem>
+#include <glm/glm.hpp>
 
 namespace XLEngine
 {
@@ -19,8 +20,13 @@ namespace XLEngine
 			:Path(path)
 		{
 		}
+		StaticMeshComponent(const StaticMesh& mesh)
+			:Mesh(mesh)
+		{
+		}
 
 		Model Mesh;
 		std::filesystem::path Path;
+		glm::vec4 Color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	};
 }

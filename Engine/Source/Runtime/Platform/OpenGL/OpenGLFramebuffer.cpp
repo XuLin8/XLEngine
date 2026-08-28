@@ -72,6 +72,7 @@ namespace XLEngine
 			switch (format)
 			{
 			case XLEngine::FramebufferTextureFormat::DEPTH24STENCIL8:
+			case XLEngine::FramebufferTextureFormat::DEPTH32F:
 				return true;
 				break;
 			}
@@ -85,8 +86,10 @@ namespace XLEngine
 			{
 			case XLEngine::FramebufferTextureFormat::None:				break;
 			case XLEngine::FramebufferTextureFormat::RGBA8:				return GL_RGBA8;
+			case XLEngine::FramebufferTextureFormat::RGBA16F:			return GL_RGBA16F;
 			case XLEngine::FramebufferTextureFormat::RED_INTEGER:		return GL_RED_INTEGER;
 			case XLEngine::FramebufferTextureFormat::DEPTH24STENCIL8:	break;
+			case XLEngine::FramebufferTextureFormat::DEPTH32F:			return GL_DEPTH_COMPONENT32F;
 			default:													break;
 			}
 
@@ -105,7 +108,7 @@ namespace XLEngine
 			else
 				m_DepthAttachmentSpecification = spec;
 		}
-		// µ÷ÓÃRefreshº¯ÊýÀ´³õÊ¼»¯Ö¡»º³å
+		// ï¿½ï¿½ï¿½ï¿½Refreshï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½Ö¡ï¿½ï¿½ï¿½ï¿½
 		Refresh();
 	}
 
@@ -124,7 +127,7 @@ namespace XLEngine
 		glDeleteTextures(1, &m_DepthAttachment);
 	}
 
-	// ÖØÐÂ³õÊ¼»¯Ö¡»º³å
+	// ï¿½ï¿½ï¿½Â³ï¿½Ê¼ï¿½ï¿½Ö¡ï¿½ï¿½ï¿½ï¿½
 	void OpenGLFramebuffer::Refresh()
 	{
 		if (m_RendererID)
@@ -136,9 +139,9 @@ namespace XLEngine
 			m_DepthAttachment = 0;
 		}
 
-		// ´´½¨Ò»¸öÖ¡»º³å¶ÔÏó
+		// ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ö¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		glCreateFramebuffers(1, &m_RendererID);
-		// ½«Õâ¸öÖ¡»º³å°ó¶¨Îªµ±Ç°¼¤»îµÄÖ¡»º³å
+		// ï¿½ï¿½ï¿½ï¿½ï¿½Ö¡ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½Ö¡ï¿½ï¿½ï¿½ï¿½
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
 
 		bool multisample = m_Specification.Samples > 1;
@@ -155,6 +158,9 @@ namespace XLEngine
 				case FramebufferTextureFormat::RGBA8:
 					Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples, GL_RGBA8, GL_RGBA, m_Specification.Width, m_Specification.Height, i);
 					break;
+				case FramebufferTextureFormat::RGBA16F:
+					Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples, GL_RGBA16F, GL_RGBA, m_Specification.Width, m_Specification.Height, i);
+					break;
 				case FramebufferTextureFormat::RED_INTEGER:
 					Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples, GL_R32I, GL_RED_INTEGER, m_Specification.Width, m_Specification.Height, i);
 					break;
@@ -170,6 +176,9 @@ namespace XLEngine
 			case FramebufferTextureFormat::DEPTH24STENCIL8:
 				Utils::AttachDepthTexture(m_DepthAttachment, m_Specification.Samples, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, m_Specification.Width, m_Specification.Height);
 				break;
+			case FramebufferTextureFormat::DEPTH32F:
+				Utils::AttachDepthTexture(m_DepthAttachment, m_Specification.Samples, GL_DEPTH_COMPONENT32F, GL_DEPTH_ATTACHMENT, m_Specification.Width, m_Specification.Height);
+				break;
 			}
 		}
 		if (m_ColorAttachments.size() > 1)
@@ -184,10 +193,10 @@ namespace XLEngine
 			glDrawBuffer(GL_NONE);
 		}
 
-		// ¼ì²éÖ¡»º³åµÄÍêÕûÐÔ
+		// ï¿½ï¿½ï¿½Ö¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		XL_CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete!");
 
-		// È¡Ïûµ±Ç°Ö¡»º³åµÄ°ó¶¨,½«äÖÈ¾Ä¿±êÇÐ»»»ØÄ¬ÈÏµÄ´°¿Úºó±¸»º³åÇø
+		// È¡ï¿½ï¿½ï¿½ï¿½Ç°Ö¡ï¿½ï¿½ï¿½ï¿½Ä°ï¿½,ï¿½ï¿½ï¿½ï¿½È¾Ä¿ï¿½ï¿½ï¿½Ð»ï¿½ï¿½ï¿½Ä¬ï¿½ÏµÄ´ï¿½ï¿½Úºó±¸»ï¿½ï¿½ï¿½ï¿½ï¿½
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
@@ -199,7 +208,7 @@ namespace XLEngine
 
 	void OpenGLFramebuffer::Unbind()
 	{
-		// ½«äÖÈ¾Ä¿±êÇÐ»»»ØÄ¬ÈÏµÄ´°¿Úºó±¸»º³åÇø
+		// ï¿½ï¿½ï¿½ï¿½È¾Ä¿ï¿½ï¿½ï¿½Ð»ï¿½ï¿½ï¿½Ä¬ï¿½ÏµÄ´ï¿½ï¿½Úºó±¸»ï¿½ï¿½ï¿½ï¿½ï¿½
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 

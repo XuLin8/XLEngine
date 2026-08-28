@@ -11,6 +11,7 @@
 #include "Runtime/EcsFramework/Component/Shape/SpriteRendererComponent.h"
 #include "Runtime/EcsFramework/Component/Transform/TransformComponent.h" 
 #include "Runtime/EcsFramework/Component/Mesh/StaticMeshComponent.h" 
+#include "Runtime/EcsFramework/Component/Terrain/TerrainComponent.h" 
 
 #include <concepts>
 #include <type_traits>
@@ -19,19 +20,19 @@ namespace XLEngine
 {
     // Every Component Class should be registered in this file
     
-    // 定义一个 Concept 用于检查是否为组件类型
+    // 锟斤拷锟斤拷一锟斤拷 Concept 锟斤拷锟节硷拷锟斤拷欠锟轿拷锟斤拷锟斤拷锟斤拷
     template<typename T>
     concept Component = std::is_base_of_v<ComponentBase, T>;
 
-    // 使用 Concepts 约束 ComponentGroup，要求所有模板参数必须是组件类型
+    // 使锟斤拷 Concepts 约锟斤拷 ComponentGroup锟斤拷要锟斤拷锟斤拷锟斤拷模锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷
     template<Component... Components>
     struct ComponentGroup
     {
-        // 可以在这里添加 ComponentGroup 的具体实现
+        // 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷 ComponentGroup 锟侥撅拷锟斤拷实锟斤拷
        
     };
     using AllComponents = ComponentGroup<TransformComponent, CircleRendererComponent, SpriteRendererComponent,
         CameraComponent, NativeScriptComponent,
         Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent,
-        StaticMeshComponent>;
+        StaticMeshComponent, TerrainComponent>;
 }

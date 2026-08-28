@@ -4,14 +4,14 @@
 
 namespace XLEngine
 {
-	//TODO:ÊÂ¼þ»º³å
+	//TODO:ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½
 	enum class EventType
 	{
 		None = 0,
-		WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,	// ´°¿Ú
+		WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,	// ï¿½ï¿½ï¿½ï¿½
 		AppTick, AppUpdate, AppRender,											// App
-		KeyPressed, KeyReleased, KeyTyped,										// °´¼ü
-		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled		// Êó±ê
+		KeyPressed, KeyReleased, KeyTyped,										// ï¿½ï¿½ï¿½ï¿½
+		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled		// ï¿½ï¿½ï¿½
 	};
 
 	enum EventCategory
@@ -24,8 +24,8 @@ namespace XLEngine
 		EventCategoryMouseButton = BIT(4)
 	};
 
-	//##type ÓÃÓÚÁ¬½ÓÎÄ±¾£¬¶ø #type ÓÃÓÚ½«²ÎÊý×ª»»Îª×Ö·û´®¡£
-#define EVENT_CLASS_TYPE(type) static EventType GetStaticType() {return EventType::##type;}\
+	//##type ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä±ï¿½ï¿½ï¿½ï¿½ï¿½ #type ï¿½ï¿½ï¿½Ú½ï¿½ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½Îªï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½
+#define EVENT_CLASS_TYPE(type) static EventType GetStaticType() {return EventType::type;}\
 								virtual EventType GetEventType() const override {return GetStaticType();}\
 								virtual const char* GetName() const override {return #type;}
 

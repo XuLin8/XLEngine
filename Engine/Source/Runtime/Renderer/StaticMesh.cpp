@@ -12,9 +12,10 @@ namespace XLEngine
 		mVB = VertexBuffer::Create(sizeof(Vertex) * vertices.size());
 		mVB->SetLayout({
 			{ShaderDataType::Float3,	"a_Pos"		},
-			{ShaderDataType::Float3,	"a_Noraml"	},
+			{ShaderDataType::Float3,	"a_Normal"	},
 			{ShaderDataType::Float3,	"a_Tangent"	},
 			{ShaderDataType::Float2,	"a_TexCoord"},
+			{ShaderDataType::Float4,	"a_Color"	},
 			{ShaderDataType::Int,		"a_EntityID"},
 			});
 		mVertexArray->AddVertexBuffer(mVB);
@@ -26,25 +27,25 @@ namespace XLEngine
 	{
 		SetupMesh(entityID);
 		shader->Bind();
-		shader->SetMat4("u_Model.Transform", transform);
+		shader->SetMat4("u_Model", transform);
 		mVertexArray->Bind();
 		RenderCommand::DrawIndexed(mVertexArray, mIB->GetCount());
 	}
 
 	void StaticMesh::SetupMesh(int entityID)
 	{
-		if (entityID == -1)
-		{
-			mEntityID = entityID;
-			mVertexArray->Bind();
+		if (mEntityID == entityID)
+			return;
 
-			for (int i = 0; i < mVertices.size(); i++)
-				mVertices[i].EntityID = entityID;
+		mEntityID = entityID;
+		mVertexArray->Bind();
 
-			mVB->SetData(mVertices.data(), sizeof(Vertex) * mVertices.size());
-			mIB->SetData(mIndices.data(), mIndices.size());
+		for (int i = 0; i < mVertices.size(); i++)
+			mVertices[i].EntityID = entityID;
 
-			mVertexArray->Unbind();
-		}
+		mVB->SetData(mVertices.data(), sizeof(Vertex) * mVertices.size());
+		mIB->SetData(mIndices.data(), mIndices.size());
+
+		mVertexArray->Unbind();
 	}
 }

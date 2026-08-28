@@ -47,6 +47,11 @@ namespace XLEngine
 		Ref<VertexArray> m_SquareVA;
 		Ref<Shader> m_FlatColorShader;
 		Ref<Framebuffer> m_Framebuffer;
+
+		// Post-processing
+		Ref<Framebuffer> m_PostFramebuffer;
+		Ref<Shader> m_PostProcessShader;
+		Ref<VertexArray> m_ScreenQuadVA;
 		
 		Ref<Level> m_ActiveScene;
 		Ref<Level> m_EditorScene;

@@ -10,10 +10,14 @@ namespace XLEngine
 
 		// Color
 		RGBA8,
+		RGBA16F,
 		RED_INTEGER,
 
 		// Depth/stencil
-		DEPTH24STENCIL8,
+	DEPTH24STENCIL8,
+	// Float depth texture: reliable to sample as a plain texture in the
+	// post-process pass (DEPTH24STENCIL8 can read as 1.0 on some drivers).
+	DEPTH32F,
 
 		// Defaults
 		Depth = DEPTH24STENCIL8
@@ -39,7 +43,7 @@ namespace XLEngine
 
 	};
 
-	// ¹æ¸ñ
+	// ï¿½ï¿½ï¿½
 	struct FramebufferSpecification
 	{
 		uint32_t Width, Height;
@@ -63,6 +67,8 @@ namespace XLEngine
 		virtual void ClearAttachment(uint32_t attachmentIndex, int value) = 0;
 
 		[[nodiscard]] virtual uint32_t GetColorAttachmentRendererID(uint32_t index = 0) const = 0;
+
+		[[nodiscard]] virtual uint32_t GetDepthAttachmentRendererID() const = 0;
 
 		[[nodiscard]] virtual const FramebufferSpecification& GetSpecification() const = 0;
 

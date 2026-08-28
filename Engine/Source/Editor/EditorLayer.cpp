@@ -5,6 +5,8 @@
 #include "Runtime/Resource/ConfigManager/ConfigManager.h"
 #include "Runtime/Resource/AssetManager/AssetManager.h"
 
+#include <glad/glad.h>
+
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 #include <ImGuizmo.h>
@@ -42,16 +44,59 @@ namespace XLEngine
 
         FramebufferSpecification fbSpec;
         fbSpec.Attachments = { 
-            FramebufferTextureFormat::RGBA8,
-            FramebufferTextureFormat::RED_INTEGER,
-            FramebufferTextureFormat::Depth 
+            FramebufferTextureFormat::RGBA8,       // 0: color
+            FramebufferTextureFormat::RED_INTEGER, // 1: entity id
+            FramebufferTextureFormat::RGBA16F,     // 2: world normal (ink outline)
+            FramebufferTextureFormat::DEPTH32F 
         };
         fbSpec.Width = 1280;
         fbSpec.Height = 720;
         m_Framebuffer = Framebuffer::Create(fbSpec);
 
+        // Post-processing framebuffer (styled output shown in the viewport)
+        FramebufferSpecification postSpec;
+        postSpec.Attachments = {
+            FramebufferTextureFormat::RGBA8,
+            FramebufferTextureFormat::DEPTH32F
+        };
+        postSpec.Width = 1280;
+        postSpec.Height = 720;
+        m_PostFramebuffer = Framebuffer::Create(postSpec);
+
+        m_PostProcessShader = Shader::Create(AssetManager::GetInstance().GetFullPath("Shaders/PostProcess.glsl"));
+
+        // Fullscreen triangle for the post-processing pass
+        float screenVertices[] = {
+            // pos            // uv
+            -1.0f, -1.0f,      0.0f, 0.0f,
+             3.0f, -1.0f,      2.0f, 0.0f,
+            -1.0f,  3.0f,      0.0f, 2.0f,
+        };
+        m_ScreenQuadVA = VertexArray::Create();
+        Ref<VertexBuffer> screenVB = VertexBuffer::Create(screenVertices, sizeof(screenVertices), VertexBufferUsage::Static);
+        screenVB->SetLayout({
+            { ShaderDataType::Float2, "a_Pos"     },
+            { ShaderDataType::Float2, "a_TexCoord" },
+        });
+        m_ScreenQuadVA->AddVertexBuffer(screenVB);
+        uint32_t screenIndices[] = { 0, 1, 2 };
+        Ref<IndexBuffer> screenIB = IndexBuffer::Create(3);
+        screenIB->SetData(screenIndices, 3);
+        m_ScreenQuadVA->SetIndexBuffer(screenIB);
+
         m_ActiveScene = CreateRef<Level>();
         m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
+
+        // M1 pure-visual demo scene: 2.5D oblique framing of the procedural terrain
+        m_EditorCamera.SetDistance(135.0f);
+        m_EditorCamera.SetPitch(52.0f);
+        m_EditorCamera.SetYaw(45.0f);
+
+        // Procedural terrain (CPU-generated mesh + 6-color palette, zero assets)
+        Entity terrain = m_ActiveScene->CreateEntity("Procedural Terrain");
+        terrain.AddComponent<TerrainComponent>(); // OnComponentAdded generates the mesh
+
+        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
 #if 0
         // Entity
@@ -120,6 +165,7 @@ namespace XLEngine
             (spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
         {
             m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+            m_PostFramebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 
             m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
             m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
@@ -195,6 +241,42 @@ namespace XLEngine
         OnOverlayRender();
 
         m_Framebuffer->Unbind();
+
+        // ---- Post-processing pass: ink outline / grain / grade / vignette / depth fog ----
+        {
+            m_PostFramebuffer->Bind();
+            RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
+            RenderCommand::Clear();
+
+            m_PostProcessShader->Bind();
+            m_PostProcessShader->SetInt("u_SceneColor", 0);
+            m_PostProcessShader->SetInt("u_SceneDepth", 1);
+            m_PostProcessShader->SetInt("u_SceneNormal", 2);
+
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, m_Framebuffer->GetColorAttachmentRendererID(0));
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, m_Framebuffer->GetDepthAttachmentRendererID());
+            glActiveTexture(GL_TEXTURE2);
+            glBindTexture(GL_TEXTURE_2D, m_Framebuffer->GetColorAttachmentRendererID(2));
+
+            // Stylized post-processing parameters (art-direction locked)
+            m_PostProcessShader->SetFloat("u_OutlineStrength", 1.0f);
+            m_PostProcessShader->SetFloat("u_GrainAmount", 0.028f);
+            m_PostProcessShader->SetFloat("u_Contrast", 1.08f);
+            m_PostProcessShader->SetFloat("u_Saturation", 0.82f);
+            m_PostProcessShader->SetFloat("u_Brightness", 1.0f);
+            m_PostProcessShader->SetFloat("u_Vignette", 0.85f);
+            m_PostProcessShader->SetFloat("u_FogStrength", 0.4f);
+            m_PostProcessShader->SetFloat("u_Near", 0.1f);
+            m_PostProcessShader->SetFloat("u_Far", 1000.0f);
+
+            m_ScreenQuadVA->Bind();
+            RenderCommand::DrawIndexed(m_ScreenQuadVA, 3);
+            m_ScreenQuadVA->Unbind();
+            m_PostProcessShader->Unbind();
+            m_PostFramebuffer->Unbind();
+        }
     }
 
     void EditorLayer::OnImGuiRender()
@@ -363,7 +445,7 @@ namespace XLEngine
             ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
             m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 
-            uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
+            uint32_t textureID = m_PostFramebuffer->GetColorAttachmentRendererID(); // styled output (outline/grain/grade/fog)
             ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
             if (ImGui::BeginDragDropTarget())

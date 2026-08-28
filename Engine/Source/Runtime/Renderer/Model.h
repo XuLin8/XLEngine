@@ -19,6 +19,10 @@ namespace XLEngine
 		{
 			LoadModel(path);
 		}
+		Model(const StaticMesh& mesh)
+		{
+			mMeshes.push_back(mesh);
+		}
 		
 		void Draw(const glm::mat4& transform, Ref<Shader>& shader, int entityID);
 	private:

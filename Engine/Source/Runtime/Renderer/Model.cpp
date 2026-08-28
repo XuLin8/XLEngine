@@ -55,7 +55,6 @@ namespace XLEngine
             vector.y = mesh->mVertices[i].y;
             vector.z = mesh->mVertices[i].z;
             vertex.Pos = vector;
-            //XL_CORE_INFO("vertex.Pos:{0},{1}", vertex.Pos.x, vertex.Pos.y);
 
             //normal
             vector.x = mesh->mNormals[i].x;
@@ -63,13 +62,8 @@ namespace XLEngine
             vector.z = mesh->mNormals[i].z;
             vertex.Normal = vector;
 
-            //XL_CORE_INFO("vertex.Normal:{0},{1}", vertex.Normal.x, vertex.Normal.y);
-
-            //tangent
-            //vector.x = mesh->mTangents[i].x;
-            //vector.y = mesh->mTangents[i].y;
-            //vector.z = mesh->mTangents[i].z;
-            //vertex.Tangent = vector;
+            //tangent (unused for now)
+            vertex.Tangent = glm::vec3(0.0f);
 
             //tex coord
             if (mesh->mTextureCoords[0])
@@ -80,6 +74,7 @@ namespace XLEngine
                 vertex.TexCoord = vec;
             }
 
+            vertex.Color = glm::vec4(1.0f);
             vertex.EntityID = -1;
 
             vertices.push_back(vertex);

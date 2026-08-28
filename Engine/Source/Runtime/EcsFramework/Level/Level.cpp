@@ -138,6 +138,15 @@ namespace XLEngine
 			auto [transform, mesh] = group.get<TransformComponent, StaticMeshComponent>(entity);
 			Renderer3D::DrawModel(transform.GetTransform(), mesh, (int)entity);
 		}
+
+		// Procedural terrain (programmatic mesh + vertex colors, zero assets)
+		auto terrainGroup = m_Registry.group<TransformComponent>(entt::get<TerrainComponent>);
+		for (auto entity : terrainGroup)
+		{
+			auto [transform, terrain] = terrainGroup.get<TransformComponent, TerrainComponent>(entity);
+			Renderer3D::DrawModel(transform.GetTransform(), terrain.Mesh, terrain.Color, (int)entity);
+		}
+
 		Renderer3D::EndScene();
 	}
 
@@ -251,5 +260,12 @@ namespace XLEngine
 	void Level::OnComponentAdded<StaticMeshComponent>(Entity entity, StaticMeshComponent& component)
 	{
 		component.Mesh = Model(component.Path.string());
+	}
+
+	template<>
+	void Level::OnComponentAdded<TerrainComponent>(Entity entity, TerrainComponent& component)
+	{
+		// CPU-generate the terrain mesh the moment the component is added
+		component.Generate();
 	}
 }
