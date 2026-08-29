@@ -8,6 +8,10 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 project(XLEngine LANGUAGES C CXX)
 
+# 导出 compile_commands.json，供 VSCode C/C++ 扩展 / clangd 等工具
+# 获得与真实编译一致的 include/宏 信息（IDE 跳转、IntelliSense 依赖此文件）
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # GCC >= 13 起对标准头文件的自包含检查更严格，部分第三方源码
 # （yaml-cpp / assimp / ...）直接使用 uint8_t 等类型但未包含 <cstdint>。
 # 强制预包含 <cstdint> 以兼容 GCC/Clang 的严格模式（仅对 C++ 源生效）。
