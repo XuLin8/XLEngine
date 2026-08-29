@@ -140,8 +140,11 @@ namespace XLEngine
 		constexpr int atlasW = nchars * (cols + stride);
 		constexpr int atlasH = rows;
 
-		uint8_t* pixels = new uint8_t[atlasW * atlasH];
-		memset(pixels, 0, atlasW * atlasH);
+		// 纹理 API 统一为 RGBA（每像素 4 字节），把点阵灰度展开到 RGBA 四通道：
+		// 填充字形处 (255,255,255,255)，空白处 (0,0,0,0)。
+		// 着色器按 texture * v_Color 调制，后缀为颜色×覆盖度，空白透明。
+		uint8_t* pixels = new uint8_t[atlasW * atlasH * 4];
+		memset(pixels, 0, atlasW * atlasH * 4);
 
 		for (int c = 0; c < nchars; c++)
 		{
@@ -153,13 +156,18 @@ namespace XLEngine
 					bool on = (bits >> r) & 0x01;
 					int px = c * (cols + stride) + col;
 					int py = r; // 顶行为 atlas 顶部
-					pixels[py * atlasW + px] = on ? 255 : 0;
+					uint8_t v = on ? 255 : 0;
+					int off = (py * atlasW + px) * 4;
+					pixels[off + 0] = v;
+					pixels[off + 1] = v;
+					pixels[off + 2] = v;
+					pixels[off + 3] = v;
 				}
 			}
 		}
 
 		s_Atlas = Texture2D::Create((uint32_t)atlasW, (uint32_t)atlasH);
-		s_Atlas->SetData(pixels, atlasW * atlasH);
+		s_Atlas->SetData(pixels, atlasW * atlasH * 4);
 		delete[] pixels;
 
 		s_AtlasInvW = 1.0f / (float)atlasW;
