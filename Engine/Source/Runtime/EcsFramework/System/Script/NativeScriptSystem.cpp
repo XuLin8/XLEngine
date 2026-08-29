@@ -4,20 +4,44 @@
 #include "Runtime/EcsFramework/Entity/ScriptableEntity.h"
 #include "Runtime/EcsFramework/Component/ComponentGroup.h"
 
-
 namespace XLEngine
 {
-	void NativeScriptSystem::OnUpdateRuntime(Timestep ts)
+	void NativeScriptSystem::OnRuntimeStart()
 	{
-		// Update scripts
-		mLevel->m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& nsc)  // nsc: native script component
+		// 一次性实例化所有脚本（并保存其所属实体），避免在更新里反复创建/泄漏
+		mLevel->m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& nsc)
 		{
-			// TODO: Move to Level::OnScenePlay
+			// 已有实例则先销毁（防重复挂载）
+			if (nsc.Instance && nsc.DestroyScript)
+			{
+				nsc.Instance->OnDestory();
+				nsc.DestroyScript(&nsc);
+			}
 			nsc.Instance = nsc.InstantiateScript();
 			nsc.Instance->m_Entity = Entity{ entity, mLevel };
 			nsc.Instance->OnCreate();
+		});
+	}
 
-			nsc.Instance->OnUpdate(ts);
+	void NativeScriptSystem::OnUpdateRuntime(Timestep ts)
+	{
+		mLevel->m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& nsc)
+		{
+			if (nsc.Instance)
+				nsc.Instance->OnUpdate(ts);
+		});
+	}
+
+	void NativeScriptSystem::OnRuntimeStop()
+	{
+		mLevel->m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& nsc)
+		{
+			if (nsc.Instance)
+			{
+				nsc.Instance->OnDestory();
+				if (nsc.DestroyScript)
+					nsc.DestroyScript(&nsc);
+			}
 		});
 	}
 }

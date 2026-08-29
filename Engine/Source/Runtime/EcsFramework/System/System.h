@@ -17,6 +17,8 @@ namespace XLEngine
 		virtual void OnUpdateEditor(Timestep ts, EditorCamera& camera) {}
 		virtual void OnRuntimeStart(){}
 		virtual void OnRuntimeStop(){}
+		// 在 Level 的 BeginScene/EndScene 之间调用的 3D 渲染钩子（供玩法物件等在场景中绘制）
+		virtual void OnRender3D(EditorCamera& camera) {}
 	protected:
 		Level* mLevel = nullptr;
 	};

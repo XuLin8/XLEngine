@@ -8,11 +8,13 @@ namespace XLEngine
 	{
 	public:
 		NativeScriptSystem(Level* level)
-			:System(level) 
+			:System(level)
 		{
 		}
 		virtual ~NativeScriptSystem() = default;
 	public:
+		void OnRuntimeStart() override;
+		void OnRuntimeStop() override;
 		void OnUpdateRuntime(Timestep ts) override;
 	};
 }

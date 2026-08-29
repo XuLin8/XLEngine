@@ -4,6 +4,8 @@
 #include "Runtime/EcsFramework/Level/Level.h"
 #include "Runtime/EcsFramework/Component/ComponentGroup.h"
 #include "Runtime/EcsFramework/System/SystemGroup.h"
+#include "Runtime/EcsFramework/System/Script/NativeScriptSystem.h"
+#include "Runtime/EcsFramework/System/Game/GameSystem.h"
 #include "Runtime/Renderer/Renderer2D.h"
 #include "Runtime/Renderer/Renderer3D.h"
 
@@ -11,9 +13,8 @@ namespace XLEngine
 {
 	Level::Level()
 	{
-		/*mSystems.push_back(new PhysicSystem2D(this));
-		mSystems.push_back(new NativeScriptSystem(this));
-		mSystems.push_back(new RenderSystem2D(this));*/
+		mSystems.push_back(new NativeScriptSystem(this)); // 实体脚本（实例化/更新）
+		mSystems.push_back(new GameSystem(this));        // M2 核心循环（探索/收集/点亮/黎明）
 	}
 
 	Level::~Level()
@@ -151,6 +152,12 @@ namespace XLEngine
 		for (auto [entity, transform, prop] : propView.each())
 		{
 			Renderer3D::DrawModel(transform.GetTransform(), prop.Mesh, prop.Color, (int)entity);
+		}
+
+		// 玩法物件（玩家 / 光尘 / 灯台）在 Begin/End 之间绘制（M2）
+		for (auto& system : mSystems)
+		{
+			system->OnRender3D(camera);
 		}
 
 		Renderer3D::EndScene();
