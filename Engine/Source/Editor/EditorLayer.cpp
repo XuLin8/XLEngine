@@ -839,9 +839,14 @@ namespace XLEngine
             if (!ImGui::GetIO().WantTextInput)
                 m_FlyMode = !m_FlyMode;
             break;
+
+        // 未列出的按键一律安全跳过，否则 GCC 会用 ud2 作为 default 目标，
+        // 任意按键进入 switch 都会执行到非法指令而崩溃（c000001d）
+        default:
+            break;
         }
 
-       
+        return false;
     }
 
     bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e)

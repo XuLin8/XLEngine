@@ -68,7 +68,10 @@ public static class KeyInj
     public static extern bool AttachThreadInput(uint idAttach, uint idAttachTo, bool fAttach);
 
     [DllImport("user32.dll")]
-    public static extern uint GetWindowThreadProcessId(IntPtr hWnd, IntPtr pid);
+    public static extern uint GetWindowThreadProcessId(IntPtr h, IntPtr pid);
+
+    [DllImport("user32.dll")]
+    public static extern uint GetWindowThreadProcessId(IntPtr h, out uint pid);
 
     [DllImport("kernel32.dll")]
     public static extern uint GetCurrentThreadId();
@@ -107,6 +110,17 @@ public static class KeyInj
         AttachThreadInput(curThread, targetThread, false);
     }
 
+    public delegate bool EnumProc(IntPtr h, IntPtr l);
+
+    [DllImport("user32.dll")]
+    public static extern bool EnumWindows(EnumProc cb, IntPtr l);
+
+    [DllImport("user32.dll", CharSet = CharSet.Auto)]
+    public static extern int GetClassName(IntPtr h, System.Text.StringBuilder sb, int c);
+
+    [DllImport("user32.dll")]
+    public static extern bool IsWindowVisible(IntPtr h);
+
     // 发送单个虚拟键的一次按下+抬起（可带修饰标志，见 user32 KEYEVENTF_*）
     public static void Press(ushort vk, uint flags)
     {
@@ -115,6 +129,24 @@ public static class KeyInj
         seq[1].type = 1; seq[1].ki.wVk = vk; seq[1].ki.dwFlags = flags | 0x0002; // KEYEVENTF_KEYUP
         SendInput(2, seq, Marshal.SizeOf(typeof(INPUT)));
     }
+
+    // 定位进程的实际渲染窗口（GLFW30 类名、可见）。注意：进程的 MainWindowHandle
+    // 在 console 子系统下返回的是控制台窗口，键盘事件不会到达 GLFW，必须用 GLFW 窗口。
+    public static IntPtr FindGLFW(uint pid)
+    {
+        IntPtr found = IntPtr.Zero;
+        EnumWindows(delegate(IntPtr h, IntPtr l) {
+            if (found != IntPtr.Zero) return true;
+            uint p; GetWindowThreadProcessId(h, out p);
+            if (p != pid) return true;
+            if (!IsWindowVisible(h)) return true;
+            var sb = new System.Text.StringBuilder(64);
+            GetClassName(h, sb, sb.Capacity);
+            if (sb.ToString() == "GLFW30") { found = h; return false; }
+            return true;
+        }, IntPtr.Zero);
+        return found;
+    }
 }
 '@ -ReferencedAssemblies 'System.Runtime.InteropServices'
 
@@ -122,6 +154,7 @@ public static class KeyInj
 $VK_W = 0x57; $VK_A = 0x41; $VK_S = 0x53; $VK_D = 0x44
 $VK_E = 0x45
 $VK_SHIFT = 0x10
+$VK_SPACE = 0x20   # 无 switch case 的按键：压测 EditorLayer::OnKeyPressed 的 default 分支不崩溃
 
 # =============================================================================
 # 1. 构建
@@ -159,14 +192,21 @@ try {
     }
     Write-Pass "引擎已稳定运行 {$StableSeconds}s，PID=$($engineProc.Id)"
 
-    # 让引擎窗口获得前台焦点
+    # 让引擎窗口获得前台焦点。console 子系统下 MainWindowHandle 是控制台窗口，
+    # 键盘事件不会到达 GLFW，必须用 GLFW30 渲染窗口（否则注入永远落空，冒烟成假通过）。
     $engineProc.Refresh()
-    $hwnd = $engineProc.MainWindowHandle
+    $hwnd = [KeyInj]::FindGLFW([uint32]$engineProc.Id)
+    if ($hwnd -eq [IntPtr]::Zero) {
+        $hwnd = $engineProc.MainWindowHandle   # 兜底：实在找不到 GLFW 窗口再退回主窗口
+        Write-Warn '未定位到 GLFW30 渲染窗口，退回 process.MainWindowHandle（注入可能落空）'
+    } else {
+        Write-Pass "已定位引擎 GLFW 渲染窗口（hwnd=$hwnd）"
+    }
     if ($hwnd -ne [IntPtr]::Zero) {
         [KeyInj]::Focus($hwnd)
         Write-Pass "已请求前台焦点（hwnd=$hwnd）"
     } else {
-        Write-Warn '未取到引擎主窗口句柄，输入注入可能落空'
+        Write-Warn '未取到引擎窗口句柄，输入注入可能落空'
     }
 
     Write-Step "注入关键输入 {$InputSeconds}s（WASD 移动 / E 点亮灯台 / Shift 压力）"
@@ -198,6 +238,7 @@ try {
         [KeyInj]::Press($VK_D, 0); Start-Sleep -Milliseconds 60
         [KeyInj]::Press($VK_E, 0); Start-Sleep -Milliseconds 60
         [KeyInj]::Press($VK_SHIFT, 0); Start-Sleep -Milliseconds 60
+        [KeyInj]::Press($VK_SPACE, 0); Start-Sleep -Milliseconds 60
         Start-Sleep -Milliseconds 200
     }
 
