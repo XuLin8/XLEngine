@@ -2,6 +2,7 @@
 #include "Runtime/EcsFramework/System/System.h"
 #include "Runtime/EcsFramework/Level/Level.h"
 #include "Runtime/Renderer/Model.h"
+#include "Runtime/Renderer/ParticleSystem.h"
 
 #include <glm/glm.hpp>
 #include <vector>
@@ -49,6 +50,9 @@ namespace XLEngine
 		float m_Time = 0.0f;
 
 		bool m_InteractPrev = false;
+
+		// P1-3 粒子反馈（收集爆发 / 点亮爆发 / 光尘漂浮流）
+		ParticleSystem m_Particles;
 
 		static constexpr float kCollectRadius = 4.0f;
 		static constexpr float kInteractRadius = 6.5f;

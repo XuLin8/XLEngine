@@ -5,6 +5,7 @@
 #include "Runtime/Renderer/StaticMesh.h"
 #include "Runtime/Input/InputAction.h"
 #include "Runtime/Utils/Procedural/TerrainNoise.h"
+#include "Runtime/Audio/AudioSystem.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -200,6 +201,10 @@ namespace XLEngine
 			{
 				mote.Collected = true;
 				m_MotesCollected++;
+				// P1-3 收集爆发：荧绿光尘四散
+				m_Particles.EmitBurst(mote.Pos, kMoteColor, 14, 2.6f, 0.30f, 1.1f);
+				// P1-4 收集叮：明亮短促
+				AudioSystem::PlayCollect();
 			}
 		}
 
@@ -213,6 +218,11 @@ namespace XLEngine
 			{
 				beacon.LitTime = m_Time;
 				m_BeaconsLit++;
+				// P1-3 点亮爆发：余烬橙冲天火光 + 惨白回响
+				m_Particles.EmitBurst(beacon.Pos, kEmberColor, 26, 4.2f, 0.40f, 1.4f);
+				m_Particles.EmitBurst(beacon.Pos + glm::vec3(0.0f, 1.0f, 0.0f), kPaleColor, 12, 2.0f, 0.24f, 0.8f);
+				// P1-4 点亮钟鸣：长余韵
+				AudioSystem::PlayLight();
 			}
 		}
 
@@ -225,6 +235,15 @@ namespace XLEngine
 			float next = cur + (kDawnTime - cur) * 0.03f;
 			if (std::abs(next - kDawnTime) < 0.0005f) next = kDawnTime;
 			Renderer3D::SetTime(glm::clamp(next, 0.0f, 1.0f));
+		}
+
+		// P1-3 漂浮粒子更新 + 未收集光尘的漂浮引导流
+		m_Particles.Update(ts);
+		for (const auto& mote : mMotes)
+		{
+			if (mote.Collected)
+				continue;
+			m_Particles.EmitStream(mote.Pos, { 0.0f, 0.5f, 0.0f }, kMoteColor, 2.5f, ts, 0.16f, 1.0f);
 		}
 	}
 
@@ -262,5 +281,8 @@ namespace XLEngine
 			DrawOrb(beacon.Pos, 1.2f + t * 0.8f, kEmberColor);
 			DrawOrb(beacon.Pos + glm::vec3(0.0f, 1.4f, 0.0f), 0.7f * t, kPaleColor);
 		}
+
+		// P1-3 粒子层最后叠加（收集 / 点亮 / 漂浮引导）
+		m_Particles.Render(camera);
 	}
 }

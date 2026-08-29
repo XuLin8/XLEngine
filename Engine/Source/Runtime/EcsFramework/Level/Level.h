@@ -12,6 +12,7 @@ class b2World;
 namespace XLEngine
 {
 	class Entity;
+	class GameSystem;
 
 	class Level
 	{
@@ -35,6 +36,9 @@ namespace XLEngine
 		void DuplicateEntity(Entity entity);
 		
 		Entity GetPrimaryCameraEntity();
+
+		// M2 玩法系统：供 HUD 查询光尘/灯台进度
+		GameSystem* GetGameSystem();
 
 		template<typename... Componets>
 		auto GetAllEntitiesWith()

@@ -204,6 +204,16 @@ namespace XLEngine
 		return {};
 	}
 
+	GameSystem* Level::GetGameSystem()
+	{
+		for (auto& system : mSystems)
+		{
+			if (auto* gs = dynamic_cast<GameSystem*>(system))
+				return gs;
+		}
+		return nullptr;
+	}
+
 	template<typename T>
 	void Level::OnComponentAdded(Entity entity, T& component)
 	{

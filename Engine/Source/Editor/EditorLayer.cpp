@@ -4,6 +4,9 @@
 #include "Runtime/Utils/MathUtils/MathUtils.h"
 #include "Runtime/Utils/Procedural/TerrainNoise.h"
 #include "Runtime/EcsFramework/Component/Prop/PropComponent.h"
+#include "Runtime/EcsFramework/System/Game/GameSystem.h"
+#include "Runtime/Renderer/TextRenderer.h"
+#include "Runtime/Audio/AudioSystem.h"
 #include "Runtime/Resource/ConfigManager/ConfigManager.h"
 #include "Runtime/Resource/AssetManager/AssetManager.h"
 
@@ -96,6 +99,10 @@ namespace XLEngine
         m_EditorCamera.SetDistance(135.0f);
         m_EditorCamera.SetPitch(52.0f);
         m_EditorCamera.SetYaw(45.0f);
+
+        // Set the window title-bar / taskbar icon from an Asset-folder PNG
+        Application::GetInstance().GetWindow().SetTitleIcon(
+            AssetManager::GetInstance().GetFullPath("Assets/Textures/SiluokayiLogo.png").string());
 
         // Procedural terrain (CPU-generated mesh + 6-color palette, zero assets)
         Entity terrain = m_ActiveScene->CreateEntity("Procedural Terrain");
@@ -243,12 +250,20 @@ namespace XLEngine
         m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
         m_SecondCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 #endif
+
+        // P1-1 内置 5x7 点阵字体纹理（HUD / 提示用）
+        TextRenderer::Init();
+
+        // P1-4 WinMM 合成音频（环境氛音在 Init 内起播）
+        AudioSystem::Init();
     }
 
     
 
     void EditorLayer::OnDetach()
     {
+        // P1-4 停止环境音并释放缓冲
+        AudioSystem::Shutdown();
     }
 
     void EditorLayer::OnUpdate(Timestep ts)
@@ -346,6 +361,38 @@ namespace XLEngine
         }
         
         OnOverlayRender();
+
+        // ---- P1-1 HUD: screen-space bitmap text over the 3D scene (drawn into the color framebuffer) ----
+        {
+            const auto& fboSpec = m_Framebuffer->GetSpecification();
+            const float H = (float)fboSpec.Height;
+
+            const glm::vec4 pale  = { 0.788f, 0.784f, 0.722f, 1.0f }; // #C9C8B8 惨白
+            const glm::vec4 ember = { 0.788f, 0.431f, 0.227f, 1.0f }; // #C96E3A 余烬橙
+            const glm::vec4 mote  = { 0.616f, 0.722f, 0.290f, 1.0f }; // #9DB84A 荧绿
+
+            if (GameSystem* gs = m_ActiveScene ? m_ActiveScene->GetGameSystem() : nullptr)
+            {
+                // Close depth test so HUD stays on top of terrain / props.
+                glDisable(GL_DEPTH_TEST);
+                TextRenderer::BeginScene(fboSpec.Width, fboSpec.Height);
+
+                // 光尘进度（顶栏，惨白）
+                std::string motes = "MOTES  " + std::to_string(gs->GetMotesCollected())
+                                  + "/" + std::to_string(gs->GetMotesTotal());
+                TextRenderer::DrawString(motes, 14.0f, H - 7.0f * 2.0f - 14.0f, 2.0f, pale);
+
+                // 黎明达成（顶栏下方，荧绿）
+                if (gs->IsDawn())
+                    TextRenderer::DrawString("DAWN  HAS  COME", 14.0f, H - 7.0f * 2.0f * 2.0f - 26.0f, 1.5f, mote);
+
+                // 底部操作提示（余烬橙）
+                TextRenderer::DrawString("WASD  MOVE    E  LIGHT  BEACON", 14.0f, 14.0f, 1.5f, ember);
+
+                TextRenderer::EndScene();
+                glEnable(GL_DEPTH_TEST);
+            }
+        }
 
         m_Framebuffer->Unbind();
 
