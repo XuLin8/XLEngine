@@ -79,6 +79,17 @@ namespace XLEngine
 
 		bool m_ShowPhysicsColliders = false;
 
+		// M1 stylized viewport: fullscreen ink output by default, diagnostic split opt-in
+		bool m_ShowDiagnostics = false;
+
+		// Day-night cycle (t in [0,1), 0=midnight, 0.5=noon)
+		bool m_AutoDayNight = true;
+		float m_DayTime = 0.0f;
+		float m_DayNightSpeed = 0.015f;
+
+		// FPS free-roam (roam mode): WASD + RMB look, toggled by F / Settings checkbox
+		bool m_FlyMode = false;
+
 		// Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;
 		ContentBrowserPanel m_ContentBrowserPanel;

@@ -12,6 +12,7 @@
 #include "Runtime/EcsFramework/Component/Transform/TransformComponent.h" 
 #include "Runtime/EcsFramework/Component/Mesh/StaticMeshComponent.h" 
 #include "Runtime/EcsFramework/Component/Terrain/TerrainComponent.h" 
+#include "Runtime/EcsFramework/Component/Prop/PropComponent.h" 
 
 #include <concepts>
 #include <type_traits>
@@ -34,5 +35,5 @@ namespace XLEngine
     using AllComponents = ComponentGroup<TransformComponent, CircleRendererComponent, SpriteRendererComponent,
         CameraComponent, NativeScriptComponent,
         Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent,
-        StaticMeshComponent, TerrainComponent>;
+        StaticMeshComponent, TerrainComponent, PropComponent>;
 }

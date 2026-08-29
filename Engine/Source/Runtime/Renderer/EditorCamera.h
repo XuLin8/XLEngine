@@ -24,6 +24,14 @@ namespace XLEngine
 
 		inline void SetViewportSize(float width, float height) { m_ViewportWidth = width; m_ViewportHeight = height; UpdateProjection(); }
 
+		// FPS free-roam mode (WASD + RMB look), linked with the gizmo for object manipulation
+		void SetFlyMode(bool enabled);
+		[[nodiscard]] bool IsFlyMode() const { return m_FlyMode; }
+		inline void SetFlySpeed(float speed) { m_FlySpeed = speed; }
+		[[nodiscard]] inline float GetFlySpeed() const { return m_FlySpeed; }
+		// Roam input is only consumed while the viewport is hovered/focused
+		inline void SetViewportActive(bool active) { m_ViewportActive = active; }
+
 		[[nodiscard]] const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
 		[[nodiscard]] glm::mat4 GetViewProjection() const { return m_Projection * m_ViewMatrix; }
 
@@ -45,6 +53,8 @@ namespace XLEngine
 		void MouseRotate(const glm::vec2& delta);
 		void MouseZoom(float delta);
 
+		void FlyUpdate(Timestep ts);
+
 		glm::vec3 CalculatePosition() const;
 
 		std::pair<float, float> PanSpeed() const;
@@ -63,6 +73,12 @@ namespace XLEngine
 		float m_Pitch = 0.0f, m_Yaw = 0.0f;
 
 		float m_ViewportWidth = 1280, m_ViewportHeight = 720;
+
+		// FPS free-roam state
+		bool m_FlyMode = false;
+		float m_FlySpeed = 25.0f;
+		bool m_ViewportActive = true;
+		glm::vec2 m_LastMousePosition = { 0.0f, 0.0f };
 
 	};
 }

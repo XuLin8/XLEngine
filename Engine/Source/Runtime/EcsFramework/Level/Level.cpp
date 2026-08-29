@@ -131,20 +131,26 @@ namespace XLEngine
 
 		Renderer3D::BeginScene(camera);
 
-		auto group = m_Registry.group<TransformComponent>(entt::get<StaticMeshComponent>);
-
-		for (auto entity : group)
+		// Static meshes (view, not group: several views share TransformComponent and
+		// owning groups over the same owned component would conflict in enTT)
+		auto meshView = m_Registry.view<TransformComponent, StaticMeshComponent>();
+		for (auto [entity, transform, mesh] : meshView.each())
 		{
-			auto [transform, mesh] = group.get<TransformComponent, StaticMeshComponent>(entity);
 			Renderer3D::DrawModel(transform.GetTransform(), mesh, (int)entity);
 		}
 
 		// Procedural terrain (programmatic mesh + vertex colors, zero assets)
-		auto terrainGroup = m_Registry.group<TransformComponent>(entt::get<TerrainComponent>);
-		for (auto entity : terrainGroup)
+		auto terrainView = m_Registry.view<TransformComponent, TerrainComponent>();
+		for (auto [entity, transform, terrain] : terrainView.each())
 		{
-			auto [transform, terrain] = terrainGroup.get<TransformComponent, TerrainComponent>(entity);
 			Renderer3D::DrawModel(transform.GetTransform(), terrain.Mesh, terrain.Color, (int)entity);
+		}
+
+		// Procedural props (trees / ruins / rocks, mesh generated on component add)
+		auto propView = m_Registry.view<TransformComponent, PropComponent>();
+		for (auto [entity, transform, prop] : propView.each())
+		{
+			Renderer3D::DrawModel(transform.GetTransform(), prop.Mesh, prop.Color, (int)entity);
 		}
 
 		Renderer3D::EndScene();
@@ -266,6 +272,13 @@ namespace XLEngine
 	void Level::OnComponentAdded<TerrainComponent>(Entity entity, TerrainComponent& component)
 	{
 		// CPU-generate the terrain mesh the moment the component is added
+		component.Generate();
+	}
+
+	template<>
+	void Level::OnComponentAdded<PropComponent>(Entity entity, PropComponent& component)
+	{
+		// CPU-generate the prop mesh (height baked in) the moment the component is added
 		component.Generate();
 	}
 }

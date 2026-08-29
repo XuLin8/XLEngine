@@ -2,6 +2,8 @@
 #include "Runtime/Scene/SceneSerializer.h"
 #include "Runtime/Utils/PlatformUtils.h"
 #include "Runtime/Utils/MathUtils/MathUtils.h"
+#include "Runtime/Utils/Procedural/TerrainNoise.h"
+#include "Runtime/EcsFramework/Component/Prop/PropComponent.h"
 #include "Runtime/Resource/ConfigManager/ConfigManager.h"
 #include "Runtime/Resource/AssetManager/AssetManager.h"
 
@@ -13,6 +15,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include <cmath>
 
 
 namespace XLEngine
@@ -38,6 +42,7 @@ namespace XLEngine
 
     void EditorLayer::OnAttach()
     {
+        XL_CORE_INFO("OnAttach: begin");
         m_CheckerboardTexture = Texture2D::Create(AssetManager::GetInstance().GetFullPath("Assets/textures/Checkerboard.png"));
         m_IconPlay = Texture2D::Create(AssetManager::GetInstance().GetFullPath("Resources/Icons/PlayButton.png"));
         m_IconStop = Texture2D::Create(AssetManager::GetInstance().GetFullPath("Resources/Icons/StopButton.png"));
@@ -64,6 +69,7 @@ namespace XLEngine
         m_PostFramebuffer = Framebuffer::Create(postSpec);
 
         m_PostProcessShader = Shader::Create(AssetManager::GetInstance().GetFullPath("Shaders/PostProcess.glsl"));
+        XL_CORE_INFO("OnAttach: post shader created");
 
         // Fullscreen triangle for the post-processing pass
         float screenVertices[] = {
@@ -86,7 +92,6 @@ namespace XLEngine
 
         m_ActiveScene = CreateRef<Level>();
         m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
-
         // M1 pure-visual demo scene: 2.5D oblique framing of the procedural terrain
         m_EditorCamera.SetDistance(135.0f);
         m_EditorCamera.SetPitch(52.0f);
@@ -95,6 +100,97 @@ namespace XLEngine
         // Procedural terrain (CPU-generated mesh + 6-color palette, zero assets)
         Entity terrain = m_ActiveScene->CreateEntity("Procedural Terrain");
         terrain.AddComponent<TerrainComponent>(); // OnComponentAdded generates the mesh
+        XL_CORE_INFO("OnAttach: terrain generated");
+
+        // Procedural props: 45 trees / 6 ruins / 25 rocks, M0-consistent scatter (zero assets)
+        {
+            XL_CORE_INFO("OnAttach: scatter begin");
+            TerrainNoise sNoise(20260829u);
+            auto hAt = [&](float x, float z) { return TerrainHeightAt(sNoise, x, z); };
+
+            // M0 LCG scatter RNG (seed 7): deterministic, reproducible scene layout
+            uint32_t seed = 7u;
+            auto srand = [&]() -> float {
+                seed = (seed * 16807u) % 2147483647u;
+                return (float)seed / 2147483647.0f;
+            };
+
+            // Special-variant trees anchored near the walkway (bent / fallen / root) for near-view variety
+            const struct { float x, z; int v; } treeAnchors[] = {
+                { -12.0f, 12.0f, 1 }, { 7.0f, -14.0f, 3 }, { 15.0f, 5.0f, 2 },
+            };
+            int treeCount = 0;
+            for (const auto& a : treeAnchors)
+            {
+                Entity e = m_ActiveScene->CreateEntity("Tree");
+                e.AddComponent<PropComponent>(a.x, a.z, (PropType)a.v, 1.15f);
+                treeCount++;
+            }
+
+            // Remaining trees: random scatter in ±64.5, on higher ground, away from center
+            int tries = 0;
+            while (treeCount < 45 && tries < 500)
+            {
+                tries++;
+                const float x = (srand() - 0.5f) * 150.0f * 0.86f;
+                const float z = (srand() - 0.5f) * 150.0f * 0.86f;
+                const float h = hAt(x, z);
+                const float d = std::hypot(x, z);
+                if (h > 1.2f && d > 14.0f)
+                {
+                    Entity e = m_ActiveScene->CreateEntity("Tree");
+                    e.AddComponent<PropComponent>(x, z, (PropType)(int)(srand() * 4.0f), 0.8f + srand() * 1.5f);
+                    treeCount++;
+                }
+            }
+            XL_CORE_INFO("OnAttach: trees done, count={0}", treeCount);
+
+            // Rocks: 25 in ±67.5, away from center, scaled 1.2..3.4
+            int rockCount = 0;
+            tries = 0;
+            while (rockCount < 25 && tries < 400)
+            {
+                tries++;
+                const float x = (srand() - 0.5f) * 150.0f * 0.9f;
+                const float z = (srand() - 0.5f) * 150.0f * 0.9f;
+                const float d = std::hypot(x, z);
+                if (d > 18.0f)
+                {
+                    Entity e = m_ActiveScene->CreateEntity("Rock");
+                    e.AddComponent<PropComponent>(x, z, PropType::Rock, 1.2f + srand() * 2.2f);
+                    rockCount++;
+                }
+            }
+            XL_CORE_INFO("OnAttach: rocks done, count={0}", rockCount);
+
+            // Ruins: 6 — 4 fixed anchors (in-frame) + 2 random, avoiding the toxic glow point (24,-18)
+            const struct { float x, z; int t; } ruinAnchors[] = {
+                { -9.0f, 7.0f, 0 }, { 13.0f, 12.0f, 1 }, { -21.0f, -8.0f, 0 }, { 2.0f, -20.0f, 1 },
+            };
+            int ruinCount = 0;
+            for (const auto& a : ruinAnchors)
+            {
+                Entity e = m_ActiveScene->CreateEntity("Ruins");
+                e.AddComponent<PropComponent>(a.x, a.z, (PropType)(4 + a.t), 1.0f); // 4=RuinsMetal, 5=RuinsRubble
+                ruinCount++;
+            }
+            tries = 0;
+            while (ruinCount < 6 && tries < 200)
+            {
+                tries++;
+                const float x = (srand() - 0.5f) * 150.0f * 0.6f;
+                const float z = (srand() - 0.5f) * 150.0f * 0.6f;
+                const float dLight = std::hypot(x - 24.0f, z + 18.0f);
+                const float dC = std::hypot(x, z);
+                if (dLight > 18.0f && dC > 12.0f)
+                {
+                    Entity e = m_ActiveScene->CreateEntity("Ruins");
+                    e.AddComponent<PropComponent>(x, z, (PropType)(4 + (int)(srand() * 2.0f)), 1.0f);
+                    ruinCount++;
+                }
+            }
+            XL_CORE_INFO("OnAttach: ruins done, count={0}", ruinCount);
+        }
 
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
@@ -172,8 +268,19 @@ namespace XLEngine
         }
 
         m_Framebuffer->ClearAttachment(1, -1);
-        
+
+        m_EditorCamera.SetFlyMode(m_FlyMode);
+        m_EditorCamera.SetViewportActive(m_ViewportHovered || m_ViewportFocused);
         m_EditorCamera.OnUpdate(ts);
+
+        // Day-night cycle: advance clock and drive the toon lighting + sky
+        if (m_AutoDayNight)
+        {
+            m_DayTime += ts * m_DayNightSpeed;
+            if (m_DayTime >= 1.0f)
+                m_DayTime -= 1.0f;
+        }
+        Renderer3D::SetTime(m_DayTime);
 
         // Render
         Renderer2D::ResetStats();
@@ -270,6 +377,12 @@ namespace XLEngine
             m_PostProcessShader->SetFloat("u_FogStrength", 0.4f);
             m_PostProcessShader->SetFloat("u_Near", 0.1f);
             m_PostProcessShader->SetFloat("u_Far", 1000.0f);
+
+            // Viewport mode + day-night / sky-parallax uniforms for the post pass
+            m_PostProcessShader->SetInt("u_ShowDiagnostics", m_ShowDiagnostics ? 1 : 0);
+            m_PostProcessShader->SetFloat("u_Time", m_DayTime);
+            m_PostProcessShader->SetFloat3("u_CameraPos", m_EditorCamera.GetPosition());
+            m_PostProcessShader->SetMat4("u_InvViewProj", glm::inverse(m_EditorCamera.GetViewProjection()));
 
             m_ScreenQuadVA->Bind();
             RenderCommand::DrawIndexed(m_ScreenQuadVA, 3);
@@ -423,6 +536,15 @@ namespace XLEngine
         {
             ImGui::Begin("Settings", &bShowSettings);
             ImGui::Checkbox("Show physics colliders", &m_ShowPhysicsColliders);
+            ImGui::Separator();
+            ImGui::Text("M1 Stylized Viewport");
+            ImGui::Checkbox("Diagnostic split view", &m_ShowDiagnostics);
+            ImGui::Checkbox("Auto day-night cycle", &m_AutoDayNight);
+            if (!m_AutoDayNight)
+                ImGui::SliderFloat("Time of day", &m_DayTime, 0.0f, 1.0f);
+            ImGui::Separator();
+            ImGui::Text("Camera");
+            ImGui::Checkbox("Roam mode (FPS)", &m_FlyMode);
             ImGui::End();
         }
 
@@ -456,6 +578,14 @@ namespace XLEngine
                     OpenScene(std::filesystem::path(ConfigManager::GetInstance().GetAssetsFolder()) / path);
                 }
                 ImGui::EndDragDropTarget();
+            }
+
+            // Roam-mode control hint (overlay, top-left of the viewport)
+            if (m_FlyMode)
+            {
+                ImGui::SetCursorScreenPos(ImVec2(m_ViewportBounds[0].x + 10.0f, m_ViewportBounds[0].y + 10.0f));
+                ImGui::TextColored(ImVec4(1.0f, 0.85f, 0.3f, 1.0f),
+                    "ROAM  [WASD] move  [Space] up  [Q] down  [RMB] look  [Shift] sprint  [F] exit");
             }
 
             // Gizmos
@@ -639,18 +769,28 @@ namespace XLEngine
             break;
         }
 
-        // Gizmos
+        // Gizmos (disabled while roaming so W/A/S/D/Q drive the camera instead of the gizmo)
         case Key::Q:
-            m_GizmoType = -1;
+            if (!m_FlyMode)
+                m_GizmoType = -1;
             break;
         case Key::W:
-            m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+            if (!m_FlyMode)
+                m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
             break;
         case Key::E:
-            m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+            if (!m_FlyMode)
+                m_GizmoType = ImGuizmo::OPERATION::ROTATE;
             break;
         case Key::R:
-            m_GizmoType = ImGuizmo::OPERATION::SCALE;
+            if (!m_FlyMode)
+                m_GizmoType = ImGuizmo::OPERATION::SCALE;
+            break;
+
+        // Camera roam
+        case Key::F:
+            if (!ImGui::GetIO().WantTextInput)
+                m_FlyMode = !m_FlyMode;
             break;
         }
 
