@@ -21,7 +21,7 @@ namespace XLEngine
 		}
 	};
 
-	//����Windowsϵͳ�Ĵ��ڵĽ���
+	//基于Windows系统的窗口的界面
 	class XLENGINE_API Window
 	{
 	public:
