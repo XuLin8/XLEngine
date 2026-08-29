@@ -9,6 +9,9 @@
 
 #include <stb_image.h>
 
+#include <cstring>
+#include <vector>
+
 namespace XLEngine
 {
 	static uint8_t s_GLFWWindowCount = 0;
@@ -40,13 +43,13 @@ namespace XLEngine
 		m_Data.Width = props.Width;
 		m_Data.Height = props.Height;
 		
-		XL_CORE_INFO("�������� {0} {1}, {2}", props.Title, props.Width, props.Height);
+		XL_CORE_INFO("Initializing {0} {1}, {2}", props.Title, props.Width, props.Height);
 
 		if (s_GLFWWindowCount == 0)
 		{
 			XL_PROFILE_SCOPE("glfwInit");
 			int success = glfwInit();
-			XL_CORE_ASSERT(success, "�޷���ʼ��GLFW");
+			XL_CORE_ASSERT(success, "Could not initialize GLFW");
 			glfwSetErrorCallback(GLFWErrorCallback);
 		}
 
@@ -209,10 +212,21 @@ namespace XLEngine
 			return;
 		}
 
+		// stbi_load reads image rows top-to-bottom, while GLFW/Bitmap renders
+		// them bottom-to-top, so the icon appears vertically flipped. Fix it by
+		// reversing the row order before handing the buffer to glfwSetWindowIcon.
+		std::vector<uint8_t> flipped(size_t(width) * height * 4);
+		for (int y = 0; y < height; ++y)
+		{
+			memcpy(flipped.data() + size_t(height - 1 - y) * width * 4,
+			       data + size_t(y) * width * 4,
+			       size_t(width) * 4);
+		}
+
 		GLFWimage image;
 		image.width = width;
 		image.height = height;
-		image.pixels = data;
+		image.pixels = flipped.data();
 
 		glfwSetWindowIcon(m_Window, 1, &image);
 
