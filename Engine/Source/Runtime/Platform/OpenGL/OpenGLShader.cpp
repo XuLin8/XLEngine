@@ -74,41 +74,41 @@ namespace XLEngine
 
 		std::unordered_map<GLenum, std::string> shaderSources;
 
-		// ¶¨Òå×ÅÉ«Æ÷ÀàĞÍ±êÊ¶·û
+		// å®šä¹‰ç€è‰²å™¨ç±»å‹æ ‡è¯†ç¬¦
 		const char* typeToken = "#type";
 
-		// ¼ÆËã×ÅÉ«Æ÷ÀàĞÍ±êÊ¶·ûµÄ³¤¶È
+		// è®¡ç®—ç€è‰²å™¨ç±»å‹æ ‡è¯†ç¬¦çš„é•¿åº¦
 		size_t typeTokenLength = strlen(typeToken);
 
-		// ÔÚÔ´´úÂëÖĞ²éÕÒµÚÒ»¸ö×ÅÉ«Æ÷ÀàĞÍ±êÊ¶·ûµÄÎ»ÖÃ
+		// åœ¨æºä»£ç ä¸­æŸ¥æ‰¾ç¬¬ä¸€ä¸ªç€è‰²å™¨ç±»å‹æ ‡è¯†ç¬¦çš„ä½ç½®
 		size_t pos = source.find(typeToken, 0);
 
-		// Ñ­»·Ö±µ½Ã»ÓĞÕÒµ½¸ü¶àµÄ±êÊ¶·û
+		// å¾ªç¯ç›´åˆ°æ²¡æœ‰æ‰¾åˆ°æ›´å¤šçš„æ ‡è¯†ç¬¦
 		while (pos != std::string::npos)
 		{
-			// ²éÕÒ±êÊ¶·ûºóµÄĞĞ½áÊø·û£¨»»ĞĞ·û»ò»Ø³µ·û£©
+			// æŸ¥æ‰¾æ ‡è¯†ç¬¦åçš„è¡Œç»“æŸç¬¦ï¼ˆæ¢è¡Œç¬¦æˆ–å›è½¦ç¬¦ï¼‰
 			size_t eol = source.find_first_of("\r\n", pos);
 			XL_CORE_ASSERT(eol != std::string::npos, "Syntax error");
 
-			// ¼ÆËã±êÊ¶·ûÖµµÄÆğÊ¼Î»ÖÃ
+			// è®¡ç®—æ ‡è¯†ç¬¦å€¼çš„èµ·å§‹ä½ç½®
 			size_t begin = pos + typeTokenLength + 1;
 
-			// ÌáÈ¡±êÊ¶·ûÖµ£¨×ÅÉ«Æ÷ÀàĞÍ£¬Èç"vertex"»ò"fragment"£©
+			// æå–æ ‡è¯†ç¬¦å€¼ï¼ˆç€è‰²å™¨ç±»å‹ï¼Œå¦‚"vertex"æˆ–"fragment"ï¼‰
 			std::string type = source.substr(begin, eol - begin);
 			XL_CORE_ASSERT(ShaderTypeFromString(type), "Invalid shader type specified");
 
-			// ²éÕÒÏÂÒ»¸ö·Ç¿Õ°××Ö·ûµÄÎ»ÖÃ£¬ÒÔÈ·¶¨×ÅÉ«Æ÷Ô´´úÂëµÄÆğÊ¼Î»ÖÃ
+			// æŸ¥æ‰¾ä¸‹ä¸€ä¸ªéç©ºç™½å­—ç¬¦çš„ä½ç½®ï¼Œä»¥ç¡®å®šç€è‰²å™¨æºä»£ç çš„èµ·å§‹ä½ç½®
 			size_t nextLinePos = source.find_first_not_of("\r\n", eol);
 
-			// ²éÕÒÏÂÒ»¸ö×ÅÉ«Æ÷ÀàĞÍ±êÊ¶·ûµÄÎ»ÖÃ
+			// æŸ¥æ‰¾ä¸‹ä¸€ä¸ªç€è‰²å™¨ç±»å‹æ ‡è¯†ç¬¦çš„ä½ç½®
 			pos = source.find(typeToken, nextLinePos);
 
-			// ½«ÌáÈ¡µÄ×ÅÉ«Æ÷Ô´´úÂë´æ´¢µ½Ó³ÉäÖĞ£¬ÒÔ×ÅÉ«Æ÷ÀàĞÍ×÷Îª¼ü
-			// Èç¹ûÃ»ÓĞÕÒµ½ÏÂÒ»¸ö±êÊ¶·û£¬Ôò½«Ê£ÓàµÄÔ´´úÂë¶¼°üÀ¨ÔÚÄÚ
+			// å°†æå–çš„ç€è‰²å™¨æºä»£ç å­˜å‚¨åˆ°æ˜ å°„ä¸­ï¼Œä»¥ç€è‰²å™¨ç±»å‹ä½œä¸ºé”®
+			// å¦‚æœæ²¡æœ‰æ‰¾åˆ°ä¸‹ä¸€ä¸ªæ ‡è¯†ç¬¦ï¼Œåˆ™å°†å‰©ä½™çš„æºä»£ç éƒ½åŒ…æ‹¬åœ¨å†…
 			shaderSources[ShaderTypeFromString(type)] = source.substr(nextLinePos, pos - (nextLinePos == std::string::npos ? source.size() - 1 : nextLinePos));
 		}
 
-		// ·µ»Ø°üº¬²»Í¬ÀàĞÍ×ÅÉ«Æ÷Ô´´úÂëµÄÓ³Éä
+		// è¿”å›åŒ…å«ä¸åŒç±»å‹ç€è‰²å™¨æºä»£ç çš„æ˜ å°„
 		return shaderSources;
 	}
 
@@ -117,90 +117,90 @@ namespace XLEngine
 	{
 		XL_PROFILE_FUNCTION();
 
-		// ´´½¨Ò»¸öOpenGL×ÅÉ«Æ÷³ÌĞò
+		// åˆ›å»ºä¸€ä¸ªOpenGLç€è‰²å™¨ç¨‹åº
 		GLuint program = glCreateProgram();
 
 		XL_CORE_ASSERT(shaderSources.size() <= 2, "We only support 2 shaders for now");
-		// ÓÃÓÚ´æ´¢×ÅÉ«Æ÷¶ÔÏóµÄÈİÆ÷
+		// ç”¨äºå­˜å‚¨ç€è‰²å™¨å¯¹è±¡çš„å®¹å™¨
 		std::array<GLenum, 2>glShaderIDs;
 		int glShaderIDIndex = 0;
 
-		// ±éÀú×ÅÉ«Æ÷Ô´´úÂëµÄunordered_map
+		// éå†ç€è‰²å™¨æºä»£ç çš„unordered_map
 		for (auto& kv : shaderSources)
 		{
-			GLenum type = kv.first;                 // ×ÅÉ«Æ÷ÀàĞÍ (ÈçGL_VERTEX_SHADER»òGL_FRAGMENT_SHADER)
-			const std::string& source = kv.second;  // ×ÅÉ«Æ÷Ô´´úÂë
+			GLenum type = kv.first;                 // ç€è‰²å™¨ç±»å‹ (å¦‚GL_VERTEX_SHADERæˆ–GL_FRAGMENT_SHADER)
+			const std::string& source = kv.second;  // ç€è‰²å™¨æºä»£ç 
 
-			// ´´½¨Ò»¸öĞÂµÄ×ÅÉ«Æ÷¶ÔÏó
+			// åˆ›å»ºä¸€ä¸ªæ–°çš„ç€è‰²å™¨å¯¹è±¡
 			GLuint shader = glCreateShader(type);
 
-			// ½«×ÅÉ«Æ÷Ô´´úÂëÓë×ÅÉ«Æ÷¶ÔÏó¹ØÁª
+			// å°†ç€è‰²å™¨æºä»£ç ä¸ç€è‰²å™¨å¯¹è±¡å…³è”
 			const GLchar* sourceCStr = source.c_str();
 			glShaderSource(shader, 1, &sourceCStr, 0);
 
-			// ±àÒë×ÅÉ«Æ÷
+			// ç¼–è¯‘ç€è‰²å™¨
 			glCompileShader(shader);
 
-			// ¼ì²é×ÅÉ«Æ÷ÊÇ·ñ±àÒë³É¹¦
+			// æ£€æŸ¥ç€è‰²å™¨æ˜¯å¦ç¼–è¯‘æˆåŠŸ
 			GLint isCompiled = 0;
 			glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
 			if (isCompiled == GL_FALSE)
 			{
-				// »ñÈ¡±àÒë´íÎóĞÅÏ¢µÄ³¤¶È
+				// è·å–ç¼–è¯‘é”™è¯¯ä¿¡æ¯çš„é•¿åº¦
 				GLint maxLength = 0;
 				glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
 
-				// ´´½¨Ò»¸ö´æ´¢´íÎóĞÅÏ¢µÄ»º³åÇø
+				// åˆ›å»ºä¸€ä¸ªå­˜å‚¨é”™è¯¯ä¿¡æ¯çš„ç¼“å†²åŒº
 				std::vector<GLchar> infoLog(maxLength);
 				glGetShaderInfoLog(shader, maxLength, &maxLength, &infoLog[0]);
 
-				// É¾³ıÊ§°ÜµÄ×ÅÉ«Æ÷¶ÔÏó
+				// åˆ é™¤å¤±è´¥çš„ç€è‰²å™¨å¯¹è±¡
 				glDeleteShader(shader);
 
-				// Êä³ö´íÎóĞÅÏ¢²¢¶ÏÑÔÊ§°Ü
+				// è¾“å‡ºé”™è¯¯ä¿¡æ¯å¹¶æ–­è¨€å¤±è´¥
 				XL_CORE_ERROR("{0}", infoLog.data());
 				XL_CORE_ASSERT(false, "Shader compilation failure!");
 				break;
 			}
 
-			// ½«×ÅÉ«Æ÷¸½¼Óµ½×ÅÉ«Æ÷³ÌĞòÉÏ
+			// å°†ç€è‰²å™¨é™„åŠ åˆ°ç€è‰²å™¨ç¨‹åºä¸Š
 			glAttachShader(program, shader);
 
-			// ´æ´¢×ÅÉ«Æ÷¶ÔÏóµÄID
+			// å­˜å‚¨ç€è‰²å™¨å¯¹è±¡çš„ID
 			glShaderIDs[glShaderIDIndex++] = shader;
 		}
 
-		// ½«±àÒëºÃµÄ×ÅÉ«Æ÷³ÌĞòµÄID´æ´¢ÔÚÀà³ÉÔ±±äÁ¿ÖĞ
+		// å°†ç¼–è¯‘å¥½çš„ç€è‰²å™¨ç¨‹åºçš„IDå­˜å‚¨åœ¨ç±»æˆå‘˜å˜é‡ä¸­
 		m_RendererID = program;
 
-		// Á´½Ó×ÅÉ«Æ÷³ÌĞò
+		// é“¾æ¥ç€è‰²å™¨ç¨‹åº
 		glLinkProgram(program);
 
-		// ¼ì²é×ÅÉ«Æ÷³ÌĞòÁ´½ÓÊÇ·ñ³É¹¦
+		// æ£€æŸ¥ç€è‰²å™¨ç¨‹åºé“¾æ¥æ˜¯å¦æˆåŠŸ
 		GLint isLinked = 0;
 		glGetProgramiv(program, GL_LINK_STATUS, (int*)&isLinked);
 		if (isLinked == GL_FALSE)
 		{
-			// »ñÈ¡Á´½Ó´íÎóĞÅÏ¢µÄ³¤¶È
+			// è·å–é“¾æ¥é”™è¯¯ä¿¡æ¯çš„é•¿åº¦
 			GLint maxLength = 0;
 			glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
 
-			// ´´½¨Ò»¸ö´æ´¢´íÎóĞÅÏ¢µÄ»º³åÇø
+			// åˆ›å»ºä¸€ä¸ªå­˜å‚¨é”™è¯¯ä¿¡æ¯çš„ç¼“å†²åŒº
 			std::vector<GLchar> infoLog(maxLength);
 			glGetProgramInfoLog(program, maxLength, &maxLength, &infoLog[0]);
 
-			// É¾³ı×ÅÉ«Æ÷³ÌĞòºÍ×ÅÉ«Æ÷¶ÔÏó
+			// åˆ é™¤ç€è‰²å™¨ç¨‹åºå’Œç€è‰²å™¨å¯¹è±¡
 			glDeleteProgram(program);
 			for (auto id : glShaderIDs)
 				glDeleteShader(id);
 
-			// Êä³ö´íÎóĞÅÏ¢²¢¶ÏÑÔÊ§°Ü
+			// è¾“å‡ºé”™è¯¯ä¿¡æ¯å¹¶æ–­è¨€å¤±è´¥
 			XL_CORE_ERROR("{0}", infoLog.data());
 			XL_CORE_ASSERT(false, "Shader link failure!");
 			return;
 		}
 
-		// ·ÖÀë²¢É¾³ı×ÅÉ«Æ÷¶ÔÏó£¬ÒòÎªËüÃÇÒÑ¾­±»Á´½Óµ½³ÌĞòÖĞ
+		// åˆ†ç¦»å¹¶åˆ é™¤ç€è‰²å™¨å¯¹è±¡ï¼Œå› ä¸ºå®ƒä»¬å·²ç»è¢«é“¾æ¥åˆ°ç¨‹åºä¸­
 		for (auto id : glShaderIDs)
 			glDetachShader(program, id);
 	}

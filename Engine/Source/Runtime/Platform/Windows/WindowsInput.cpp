@@ -9,7 +9,7 @@ namespace XLEngine
 {
 	bool Input::IsKeyPressed(KeyCode key)
 	{
-		//类型强转+编译器自动解引用指针（如果对象是指针）并调用相应的成员函数。这是C++的一种语法糖
+		//绫诲瀷寮鸿浆+缂栬瘧鍣ㄨ嚜鍔ㄨВ寮曠敤鎸囬拡锛堝鏋滃璞℃槸鎸囬拡锛夊苟璋冪敤鐩稿簲鐨勬垚鍛樺嚱鏁般�傝繖鏄疌++鐨勪竴绉嶈娉曠硸
 		auto window = static_cast<GLFWwindow*>(Application::GetInstance().GetWindow().GetNativeWindow());
 		auto state = glfwGetKey(window, static_cast<int32_t>(key));
 		return state == GLFW_PRESS || state == GLFW_REPEAT;

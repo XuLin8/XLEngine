@@ -12,7 +12,7 @@ namespace XLEngine {
 
 		glCreateBuffers(1, &m_RendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
-		//Îª»º³å¶ÔÏó£¨VBO£¬IBO µÈ£©·ÖÅä¿Õ¼ä²¢´æ´¢Êı¾İ
+		//ä¸ºç¼“å†²å¯¹è±¡ï¼ˆVBOï¼ŒIBO ç­‰ï¼‰åˆ†é…ç©ºé—´å¹¶å­˜å‚¨æ•°æ®
 		glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
 	}
 
@@ -52,7 +52,7 @@ namespace XLEngine {
 		XL_PROFILE_FUNCTION();
 
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
-		//¸üĞÂVBOÖĞµÄ²¿·ÖÊı¾İ
+		//æ›´æ–°VBOä¸­çš„éƒ¨åˆ†æ•°æ®
 		glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
 	}
 }

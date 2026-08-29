@@ -1,0 +1,87 @@
+<svg width="720" height="700" viewBox="0 0 720 700" xmlns="http://www.w3.org/2000/svg" font-family="'SF Pro Text','PingFang SC',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif" role="img" aria-label="XLEngine 六层单向依赖分层架构图">
+  <title>XLEngine 六层单向依赖分层架构图</title>
+
+  <style>
+    :root { color-scheme: light; }
+    .t { fill: #171717; font: 500 14px/1 'SF Pro Text','PingFang SC',system-ui,sans-serif; }
+    .ts { fill: #52525B; font: 400 12px/1 'SF Pro Text','PingFang SC',system-ui,sans-serif; }
+    .titleTxt { fill: #171717; font: 600 14px/1 'SF Pro Text','PingFang SC',system-ui,sans-serif; }
+    .neutral > rect { fill: #FFFFFF; stroke: rgba(23,23,23,0.12); }
+    .chip > rect { fill: #EFF0F3; stroke: rgba(23,23,23,0.12); }
+    .wchip > rect { fill: #FDF4E3; stroke: #EFAA17; }
+    .arr { stroke: #4B3FE3; stroke-width: 1.5; fill: none; }
+    @media (prefers-color-scheme: dark) {
+      .t { fill: #E5E5E5; }
+      .ts { fill: #A1A1AA; }
+      .titleTxt { fill: #E5E5E5; }
+      .neutral > rect { fill: #171717; stroke: rgba(229,229,229,0.12); }
+      .chip > rect { fill: #262626; stroke: rgba(229,229,229,0.12); }
+      .wchip > rect { fill: #3A2F14; stroke: #EFAA17; }
+      .arr { stroke: #6054F1; }
+    }
+  </style>
+
+  <defs>
+    <marker id="arrBrand" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto">
+      <path d="M1 1 L7 4 L1 7 Z" fill="#4B3FE3"/>
+    </marker>
+  </defs>
+
+  <text x="40" y="30" class="titleTxt">XLEngine 分层架构 · 六层 · 单向依赖</text>
+
+  <!-- 工具层 -->
+  <g class="neutral"><rect x="40" y="40" width="640" height="56" rx="8"/></g>
+  <text x="56" y="64" class="t">工具层 Tool</text>
+  <text x="56" y="82" class="ts">编辑器 UI 面板 · 运行时入口 · 依赖注入</text>
+
+  <!-- 应用框架层 -->
+  <g class="neutral"><rect x="40" y="132" width="640" height="56" rx="8"/></g>
+  <text x="56" y="156" class="t">应用框架层 App / Framework</text>
+  <text x="56" y="174" class="ts">Application · LayerStack · Window · Launch</text>
+
+  <!-- 功能层 -->
+  <g class="neutral"><rect x="40" y="224" width="640" height="114" rx="8"/></g>
+  <text x="56" y="246" class="t">功能层 Functional</text>
+  <g class="chip"><rect x="56" y="258" width="192" height="32" rx="8"/></g>
+  <text x="68" y="278" class="t">渲染抽象 RHI</text>
+  <g class="chip"><rect x="264" y="258" width="192" height="32" rx="8"/></g>
+  <text x="276" y="278" class="t">渲染器 Renderer</text>
+  <g class="chip"><rect x="472" y="258" width="192" height="32" rx="8"/></g>
+  <text x="484" y="278" class="t">场景 / ECS</text>
+  <g class="wchip"><rect x="56" y="298" width="192" height="32" rx="8"/></g>
+  <text x="68" y="318" class="t">输入 Input</text>
+  <path d="M238 302 v-6 a6 6 0 0 0 -6 -6 H216" fill="none" stroke="#EFAA17" stroke-width="1.5"/>
+  <g class="chip"><rect x="264" y="298" width="192" height="32" rx="8"/></g>
+  <text x="276" y="318" class="t">音频 Audio</text>
+  <g class="chip"><rect x="472" y="298" width="192" height="32" rx="8"/></g>
+  <text x="484" y="318" class="t">调试 UI / 工具</text>
+
+  <!-- 资源层 -->
+  <g class="neutral"><rect x="40" y="374" width="640" height="56" rx="8"/></g>
+  <text x="56" y="398" class="t">资源层 Resource</text>
+  <text x="56" y="416" class="ts">AssetManager · ConfigManager · ModeManager</text>
+
+  <!-- 核心层 -->
+  <g class="neutral"><rect x="40" y="466" width="640" height="56" rx="8"/></g>
+  <text x="56" y="490" class="t">核心层 Core</text>
+  <text x="56" y="508" class="ts">Log · UUID · Event · Timestep · Assert</text>
+
+  <!-- 平台层 -->
+  <g class="neutral"><rect x="40" y="558" width="640" height="80" rx="8"/></g>
+  <text x="56" y="582" class="t">平台层 Platform</text>
+  <text x="56" y="606" class="ts">Windows · OpenGL 原生实现</text>
+
+  <!-- 单向依赖连线 -->
+  <path class="arr" marker-end="url(#arrBrand)" d="M360 96 L360 131"/>
+  <path class="arr" marker-end="url(#arrBrand)" d="M360 188 L360 223"/>
+  <path class="arr" marker-end="url(#arrBrand)" d="M360 338 L360 373"/>
+  <path class="arr" marker-end="url(#arrBrand)" d="M360 430 L360 465"/>
+  <path class="arr" marker-end="url(#arrBrand)" d="M360 522 L360 557"/>
+
+  <!-- 图例 -->
+  <g class="neutral"><rect x="40" y="650" width="640" height="36" rx="8"/></g>
+  <circle cx="64" cy="668" r="5" fill="#4B3FE3"/>
+  <text x="76" y="673" class="ts">单向依赖（下层不反向引用上层）</text>
+  <circle cx="330" cy="668" r="5" fill="#EFAA17"/>
+  <text x="342" y="673" class="ts">Input↔App 已知逆依赖（P0 待修）</text>
+</svg>

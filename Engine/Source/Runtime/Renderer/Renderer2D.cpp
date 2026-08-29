@@ -11,14 +11,14 @@
 
 namespace XLEngine
 {
-	// ¶¥µã½á¹¹Ìå£¬±íÊ¾Ò»¸öËÄ±ßĞÎµÄ¶¥µãÊôĞÔ
+	// é¡¶ç‚¹ç»“æ„ä½“ï¼Œè¡¨ç¤ºä¸€ä¸ªå››è¾¹å½¢çš„é¡¶ç‚¹å±æ€§
 	struct QuadVertex
 	{
-		glm::vec3 Position;  // ¶¥µãÎ»ÖÃ
-		glm::vec4 Color;     // ¶¥µãÑÕÉ«
-		glm::vec2 TexCoord;  // ÎÆÀí×ø±ê
-		float TexIndex;		 // ÎÆÀíË÷Òı£¬ÓÃÓÚÑ¡ÔñÎÆÀíµ¥ÔªÖĞµÄÎÆÀí
-		float TilingFactor;  // ÎÆÀíÆ½ÆÌÒò×Ó£¬¿ØÖÆÎÆÀíµÄÆ½ÆÌĞ§¹û
+		glm::vec3 Position;  // é¡¶ç‚¹ä½ç½®
+		glm::vec4 Color;     // é¡¶ç‚¹é¢œè‰²
+		glm::vec2 TexCoord;  // çº¹ç†åæ ‡
+		float TexIndex;		 // çº¹ç†ç´¢å¼•ï¼Œç”¨äºé€‰æ‹©çº¹ç†å•å…ƒä¸­çš„çº¹ç†
+		float TilingFactor;  // çº¹ç†å¹³é“ºå› å­ï¼Œæ§åˆ¶çº¹ç†çš„å¹³é“ºæ•ˆæœ
 
 		// Editor-only
 		int EntityID;
@@ -44,23 +44,23 @@ namespace XLEngine
 		// Editor-only
 		int EntityID;
 	};
-	// äÖÈ¾Æ÷2DÊı¾İ½á¹¹£¬´æ´¢äÖÈ¾Æ÷µÄ×´Ì¬ºÍ×ÊÔ´
+	// æ¸²æŸ“å™¨2Dæ•°æ®ç»“æ„ï¼Œå­˜å‚¨æ¸²æŸ“å™¨çš„çŠ¶æ€å’Œèµ„æº
 	struct Renderer2DData
 	{
-		static const int IndexCoe = 6;				//Ë÷ÒıÏµÊı
-		static const uint32_t MaxQuads = 20000;          // ×î´óËÄ±ßĞÎÊıÁ¿
-		static const uint32_t MaxVertices = MaxQuads * 4; // ×î´ó¶¥µãÊıÁ¿
-		static const uint32_t MaxIndices = MaxQuads * IndexCoe;  // ×î´óË÷ÒıÊıÁ¿
+		static const int IndexCoe = 6;				//ç´¢å¼•ç³»æ•°
+		static const uint32_t MaxQuads = 20000;          // æœ€å¤§å››è¾¹å½¢æ•°é‡
+		static const uint32_t MaxVertices = MaxQuads * 4; // æœ€å¤§é¡¶ç‚¹æ•°é‡
+		static const uint32_t MaxIndices = MaxQuads * IndexCoe;  // æœ€å¤§ç´¢å¼•æ•°é‡
 		static const uint32_t MaxTextureSlots = 32;// TODO: RenderCaps
 
-		Ref<VertexArray> QuadVertexArray;          // ËÄ±ßĞÎ¶¥µãÊı×é¶ÔÏó(VAO)
-		Ref<VertexBuffer> QuadVertexBuffer;        // ËÄ±ßĞÎ¶¥µã»º³åÇø(VBO)
-		Ref<Shader> QuadShader;                 // ÎÆÀíäÖÈ¾×ÅÉ«Æ÷
-		Ref<Texture2D> WhiteTexture;              // °×É«ÎÆÀí
+		Ref<VertexArray> QuadVertexArray;          // å››è¾¹å½¢é¡¶ç‚¹æ•°ç»„å¯¹è±¡(VAO)
+		Ref<VertexBuffer> QuadVertexBuffer;        // å››è¾¹å½¢é¡¶ç‚¹ç¼“å†²åŒº(VBO)
+		Ref<Shader> QuadShader;                 // çº¹ç†æ¸²æŸ“ç€è‰²å™¨
+		Ref<Texture2D> WhiteTexture;              // ç™½è‰²çº¹ç†
 
-		uint32_t QuadIndexCount = 0;               // µ±Ç°äÖÈ¾µÄËÄ±ßĞÎË÷Òı¼ÆÊı
-		QuadVertex* QuadVertexBufferBase = nullptr; // ËÄ±ßĞÎ¶¥µã»º³åÇø»ùµØÖ·
-		QuadVertex* QuadVertexBufferPtr = nullptr;  // ËÄ±ßĞÎ¶¥µã»º³åÇøÖ¸Õë
+		uint32_t QuadIndexCount = 0;               // å½“å‰æ¸²æŸ“çš„å››è¾¹å½¢ç´¢å¼•è®¡æ•°
+		QuadVertex* QuadVertexBufferBase = nullptr; // å››è¾¹å½¢é¡¶ç‚¹ç¼“å†²åŒºåŸºåœ°å€
+		QuadVertex* QuadVertexBufferPtr = nullptr;  // å››è¾¹å½¢é¡¶ç‚¹ç¼“å†²åŒºæŒ‡é’ˆ
 
 		// ------Line------
 		Ref<VertexArray> LineVertexArray;
@@ -96,40 +96,40 @@ namespace XLEngine
 
 	void Renderer2D::Init()
 	{
-		// ¿ªÊ¼ĞÔÄÜ·ÖÎö
+		// å¼€å§‹æ€§èƒ½åˆ†æ
 		XL_PROFILE_FUNCTION();
 
-		// ´´½¨Ò»¸ö¶¥µãÊı×é¶ÔÏó£¨VAO£©
+		// åˆ›å»ºä¸€ä¸ªé¡¶ç‚¹æ•°ç»„å¯¹è±¡ï¼ˆVAOï¼‰
 		s_Data.QuadVertexArray = VertexArray::Create();
 
-		// ´´½¨¶¥µã»º³å¶ÔÏó£¨VBO£©
+		// åˆ›å»ºé¡¶ç‚¹ç¼“å†²å¯¹è±¡ï¼ˆVBOï¼‰
 		s_Data.QuadVertexBuffer = VertexBuffer::Create(s_Data.MaxVertices * sizeof(QuadVertex));
 
-		// ÉèÖÃ¶¥µãÊı¾İµÄ²¼¾Ö£¬Õâ¸æËßäÖÈ¾Æ÷¶¥µãÊı¾İµÄ½á¹¹
+		// è®¾ç½®é¡¶ç‚¹æ•°æ®çš„å¸ƒå±€ï¼Œè¿™å‘Šè¯‰æ¸²æŸ“å™¨é¡¶ç‚¹æ•°æ®çš„ç»“æ„
 		s_Data.QuadVertexBuffer->SetLayout({
-			{ ShaderDataType::Float3,	"a_Position"	},// ¶¥µãÎ»ÖÃ
-			{ ShaderDataType::Float4,	"a_Color"		},// ¶¥µãÑÕÉ«
-			{ ShaderDataType::Float2,	"a_TexCoord"	},// ÎÆÀí×ø±ê
+			{ ShaderDataType::Float3,	"a_Position"	},// é¡¶ç‚¹ä½ç½®
+			{ ShaderDataType::Float4,	"a_Color"		},// é¡¶ç‚¹é¢œè‰²
+			{ ShaderDataType::Float2,	"a_TexCoord"	},// çº¹ç†åæ ‡
 			{ ShaderDataType::Float,	"a_TexIndex"	},
 			{ ShaderDataType::Float,	"a_TilingFactor"},
 			{ ShaderDataType::Int,		"a_EntityID"	},
 			});
 
-		// ½«¶¥µã»º³å¶ÔÏóÌí¼Óµ½¶¥µãÊı×é¶ÔÏó
+		// å°†é¡¶ç‚¹ç¼“å†²å¯¹è±¡æ·»åŠ åˆ°é¡¶ç‚¹æ•°ç»„å¯¹è±¡
 		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
 
-		// ·ÖÅäÄÚ´æÀ´´æ´¢ËÄ±ßĞÎ¶¥µãÊı¾İ
+		// åˆ†é…å†…å­˜æ¥å­˜å‚¨å››è¾¹å½¢é¡¶ç‚¹æ•°æ®
 		s_Data.QuadVertexBufferBase = new QuadVertex[s_Data.MaxVertices];
 
-		// ´´½¨Ë÷Òı»º³å¶ÔÏó£¨IndexBuffer£©À´´æ´¢ËÄ±ßĞÎµÄ¶¥µãË÷Òı
+		// åˆ›å»ºç´¢å¼•ç¼“å†²å¯¹è±¡ï¼ˆIndexBufferï¼‰æ¥å­˜å‚¨å››è¾¹å½¢çš„é¡¶ç‚¹ç´¢å¼•
 		uint32_t* quadIndices = new uint32_t[s_Data.MaxIndices];
 
 		uint32_t offset = 0;
 		for (uint32_t i = 0; i < s_Data.MaxIndices; i += 6)
 		{
-			// ¶¨ÒåËÄ±ßĞÎµÄÁ½¸öÈı½ÇĞÎ£¬Ã¿¸öÈı½ÇĞÎÓÉÈı¸ö¶¥µãË÷Òı×é³É
-			// ×¢Òâ£ºÕâÀïµÄ¶¥µãË÷Òı±íÊ¾ÁËÒ»¸öÈı½ÇĞÎµÄÈı¸ö¶¥µã
-			// ÕâÀïµÄ»æÖÆË³Ğò´´½¨ÁËÒ»¸ö°üº¬ËÄ¸ö¶¥µãµÄ¾ØĞÎ
+			// å®šä¹‰å››è¾¹å½¢çš„ä¸¤ä¸ªä¸‰è§’å½¢ï¼Œæ¯ä¸ªä¸‰è§’å½¢ç”±ä¸‰ä¸ªé¡¶ç‚¹ç´¢å¼•ç»„æˆ
+			// æ³¨æ„ï¼šè¿™é‡Œçš„é¡¶ç‚¹ç´¢å¼•è¡¨ç¤ºäº†ä¸€ä¸ªä¸‰è§’å½¢çš„ä¸‰ä¸ªé¡¶ç‚¹
+			// è¿™é‡Œçš„ç»˜åˆ¶é¡ºåºåˆ›å»ºäº†ä¸€ä¸ªåŒ…å«å››ä¸ªé¡¶ç‚¹çš„çŸ©å½¢
 			quadIndices[i + 0] = offset + 0;
 			quadIndices[i + 1] = offset + 1;
 			quadIndices[i + 2] = offset + 2;
@@ -138,16 +138,16 @@ namespace XLEngine
 			quadIndices[i + 4] = offset + 3;
 			quadIndices[i + 5] = offset + 0;
 
-			offset += 4;  // ËÄ¸ö¶¥µã¶ÔÓ¦Ò»¸öËÄ±ßĞÎ
+			offset += 4;  // å››ä¸ªé¡¶ç‚¹å¯¹åº”ä¸€ä¸ªå››è¾¹å½¢
 		}
 
-		// ´´½¨Ë÷Òı»º³å¶ÔÏó²¢ÉèÖÃË÷ÒıÊı¾İ
+		// åˆ›å»ºç´¢å¼•ç¼“å†²å¯¹è±¡å¹¶è®¾ç½®ç´¢å¼•æ•°æ®
 		Ref<IndexBuffer> quadIB = IndexBuffer::Create(quadIndices, s_Data.MaxIndices);
 
-		// ½«Ë÷Òı»º³å¶ÔÏóÌí¼Óµ½¶¥µãÊı×é¶ÔÏó
+		// å°†ç´¢å¼•ç¼“å†²å¯¹è±¡æ·»åŠ åˆ°é¡¶ç‚¹æ•°ç»„å¯¹è±¡
 		s_Data.QuadVertexArray->SetIndexBuffer(quadIB);
 
-		// ÊÍ·Å´´½¨Ë÷Òı»º³å¶ÔÏóÊ±·ÖÅäµÄÄÚ´æ
+		// é‡Šæ”¾åˆ›å»ºç´¢å¼•ç¼“å†²å¯¹è±¡æ—¶åˆ†é…çš„å†…å­˜
 		delete[] quadIndices;
 
 		// ------Circles------
@@ -181,9 +181,9 @@ namespace XLEngine
 		// ------Lines------
 
 
-		// ´´½¨Ò»¸ö°×É«ÎÆÀí£¬ÓÃÓÚÎ´ÉèÖÃÎÆÀíµÄËÄ±ßĞÎ
+		// åˆ›å»ºä¸€ä¸ªç™½è‰²çº¹ç†ï¼Œç”¨äºæœªè®¾ç½®çº¹ç†çš„å››è¾¹å½¢
 		s_Data.WhiteTexture = Texture2D::Create(1, 1);
-		uint32_t whiteTextureData = 0xffffffff;  // °×É«ÎÆÀíÏñËØÊı¾İ
+		uint32_t whiteTextureData = 0xffffffff;  // ç™½è‰²çº¹ç†åƒç´ æ•°æ®
 		s_Data.WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 
 		int32_t samplers[s_Data.MaxTextureSlots];
@@ -191,7 +191,7 @@ namespace XLEngine
 			samplers[i] = i;
 		
 
-		// ´´½¨ÎÆÀí×ÅÉ«Æ÷²¢°ó¶¨Ëü
+		// åˆ›å»ºçº¹ç†ç€è‰²å™¨å¹¶ç»‘å®šå®ƒ
 		s_Data.QuadShader = Shader::Create(AssetManager::GetInstance().GetFullPath("Shaders/Renderer2D_Quad.glsl"));
 		s_Data.CircleShader = Shader::Create(AssetManager::GetInstance().GetFullPath("Shaders/Renderer2D_Circle.glsl"));
 		s_Data.LineShader = Shader::Create(AssetManager::GetInstance().GetFullPath("Shaders/Renderer2D_Line.glsl"));
@@ -202,7 +202,7 @@ namespace XLEngine
 		// Set all texture slots to 0
 		s_Data.TextureSlots[0] = s_Data.WhiteTexture;
 
-		/*¶¥µãÎ»ÖÃ:
+		/*é¡¶ç‚¹ä½ç½®:
 		3----2
 		|  / |
 		| /  |
@@ -567,14 +567,14 @@ namespace XLEngine
 	{
 		if (s_Data.TextureSlotIndex >= s_Data.MaxTextureSlots)
 		{
-			// ÎÆÀí²ÛÒÑÂú£¬ÕâÀï¿ÉÒÔÌí¼Ó´íÎó´¦ÀíÂß¼­
+			// çº¹ç†æ§½å·²æ»¡ï¼Œè¿™é‡Œå¯ä»¥æ·»åŠ é”™è¯¯å¤„ç†é€»è¾‘
 			XL_CORE_ASSERT(false, "Renderer2D::AllocateTextureSlot TextureSlots overflow");
 			return 0;
 		}
 
 		float textureIndex = 0.0f;
 
-		// ±éÀúÒÑ·ÖÅäµÄÎÆÀí²Û£¬²éÕÒÊÇ·ñÒÑ¾­´æÔÚÏàÍ¬µÄÎÆÀí
+		// éå†å·²åˆ†é…çš„çº¹ç†æ§½ï¼ŒæŸ¥æ‰¾æ˜¯å¦å·²ç»å­˜åœ¨ç›¸åŒçš„çº¹ç†
 		for (uint32_t i = 1; i < s_Data.TextureSlotIndex; i++)
 		{
 			if (*s_Data.TextureSlots[i].get() == *texture.get())
@@ -586,9 +586,9 @@ namespace XLEngine
 
 		if (textureIndex == 0.0f)
 		{
-			textureIndex = (float)s_Data.TextureSlotIndex;	// Èç¹ûÃ»ÓĞÕÒµ½ÏàÍ¬µÄÎÆÀí£¬Ê¹ÓÃÏÂÒ»¸ö¿ÉÓÃµÄ²Û
-			s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;	// ½«ÎÆÀí´æ´¢ÔÚĞÂµÄ²ÛÖĞ
-			s_Data.TextureSlotIndex++;	// Ôö¼ÓÒÑÊ¹ÓÃµÄÎÆÀí²ÛÊıÁ¿
+			textureIndex = (float)s_Data.TextureSlotIndex;	// å¦‚æœæ²¡æœ‰æ‰¾åˆ°ç›¸åŒçš„çº¹ç†ï¼Œä½¿ç”¨ä¸‹ä¸€ä¸ªå¯ç”¨çš„æ§½
+			s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;	// å°†çº¹ç†å­˜å‚¨åœ¨æ–°çš„æ§½ä¸­
+			s_Data.TextureSlotIndex++;	// å¢åŠ å·²ä½¿ç”¨çš„çº¹ç†æ§½æ•°é‡
 		}
 
 		return textureIndex;

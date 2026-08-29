@@ -110,7 +110,7 @@ namespace XLEngine
 			long long start = std::chrono::time_point_cast<std::chrono::microseconds>(m_StartTimepoint).time_since_epoch().count();
 			long long end = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch().count();
 
-			//threadIDÊÇ¹şÏ£»¯Ïß³Ì±êÊ¶·ûºóµÄ½á¹û
+			//threadIDæ˜¯å“ˆå¸ŒåŒ–çº¿ç¨‹æ ‡è¯†ç¬¦åçš„ç»“æœ
 			uint32_t threadID = std::hash<std::thread::id>{}(std::this_thread::get_id());
 			Instrumentor::Get().WriteProfile({ m_Name, start, end, threadID });
 

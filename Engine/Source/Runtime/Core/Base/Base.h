@@ -79,7 +79,7 @@
 
 #define BIT(x) (1 << x)
 
-//½«ÊÂ¼þµÄ´¦Àíº¯Êý£¨ÈçOnEvent£©ÓëÆäËûº¯Êý£¨Èç m_Window->SetEventCallback£©°ó¶¨ÆðÀ´
+//å°†äº‹ä»¶çš„å¤„ç†å‡½æ•°ï¼ˆå¦‚OnEventï¼‰ä¸Žå…¶ä»–å‡½æ•°ï¼ˆå¦‚ m_Window->SetEventCallbackï¼‰ç»‘å®šèµ·æ¥
 #define XL_BIND_EVENT_FN(x) [this](auto&&... args) -> decltype(auto) { return this->x(std::forward<decltype(args)>(args)...); }
 
 namespace XLEngine

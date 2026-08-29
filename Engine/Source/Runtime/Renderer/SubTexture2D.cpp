@@ -2,7 +2,7 @@
 #include "SubTexture2D.h"
 namespace XLEngine
 {
-	// min,maxµÄ·¶Î§ÔÚ[0,1]
+	// min,maxçš„èŒƒå›´åœ¨[0,1]
 	SubTexture2D::SubTexture2D(const Ref<Texture2D>& texture, const glm::vec2& min, const glm::vec2& max)
 		:m_Texture(texture)
 	{
@@ -12,7 +12,7 @@ namespace XLEngine
 		m_TexCoords[3] = { min.x, max.y };
 	}
 
-	// textureÍ¼Ô´,coordsÎªÔÚ´óÍ¼ÖĞµÄ×óÉÏ×ø±ê£¬cellSizeÎªÎÆÀíµ¥Ôª´óĞ¡£¬spriteSizeÎªÒªÌáÈ¡µÄ×ÓÎÆÀíµÄ´óĞ¡
+	// textureå›¾æº,coordsä¸ºåœ¨å¤§å›¾ä¸­çš„å·¦ä¸Šåæ ‡ï¼ŒcellSizeä¸ºçº¹ç†å•å…ƒå¤§å°ï¼ŒspriteSizeä¸ºè¦æå–çš„å­çº¹ç†çš„å¤§å°
 	Ref<SubTexture2D> SubTexture2D::CreateFromCoords(const Ref<Texture2D>& texture, const glm::vec2& coords, const glm::vec2& cellSize, const glm::vec2& spriteSize)
 	{
 		glm::vec2 min = { coords.x * cellSize.x / texture->GetWidth(), coords.y * cellSize.y / texture->GetHeight() };

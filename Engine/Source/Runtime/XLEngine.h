@@ -1,6 +1,6 @@
 #pragma once
 
-//¸øÓ¦ÓÃ³ÌĞòÊ¹ÓÃ
+//ç»™åº”ç”¨ç¨‹åºä½¿ç”¨
 #include "Runtime/Core/AppFramework/Application.h"
 #include "Runtime/Core/Log/Log.h"
 #include "Runtime/Input/Input.h"

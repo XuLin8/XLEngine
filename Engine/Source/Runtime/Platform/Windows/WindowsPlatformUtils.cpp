@@ -10,7 +10,7 @@
 
 namespace XLEngine
 {
-	// ¸¨Öúº¯Êı£º½«Õ­×Ö·û×ª»»Îª¿í×Ö·û
+	// è¾…åŠ©å‡½æ•°ï¼šå°†çª„å­—ç¬¦è½¬æ¢ä¸ºå®½å­—ç¬¦
 	static std::wstring ConvertToWideString(const char* narrowString)
 	{
 		int length = MultiByteToWideChar(CP_ACP, 0, narrowString, -1, nullptr, 0);
@@ -32,9 +32,9 @@ namespace XLEngine
 		ofn.hwndOwner = glfwGetWin32Window((GLFWwindow*)Application::GetInstance().GetWindow().GetNativeWindow());
 		ofn.lpstrFile = szFile;
 		ofn.nMaxFile = sizeof(szFile);
-		// Ê¹ÓÃ¸¨Öúº¯Êı½øĞĞ×ª»»
+		// ä½¿ç”¨è¾…åŠ©å‡½æ•°è¿›è¡Œè½¬æ¢
 		std::wstring wideFilter = ConvertToWideString(filter);
-		ofn.lpstrFilter = reinterpret_cast<LPCSTR>(wideFilter.c_str()); // ½«¿í×Ö·û×Ö·û´®Ç¿ÖÆ×ª»»ÎªÕ­×Ö·û×Ö·û´®
+		ofn.lpstrFilter = reinterpret_cast<LPCSTR>(wideFilter.c_str()); // å°†å®½å­—ç¬¦å­—ç¬¦ä¸²å¼ºåˆ¶è½¬æ¢ä¸ºçª„å­—ç¬¦å­—ç¬¦ä¸²
 		ofn.nFilterIndex = 1;
 		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
 		if (GetOpenFileNameA(&ofn) == TRUE)
@@ -53,9 +53,9 @@ namespace XLEngine
 		ofn.hwndOwner = glfwGetWin32Window((GLFWwindow*)Application::GetInstance().GetWindow().GetNativeWindow());
 		ofn.lpstrFile = szFile;
 		ofn.nMaxFile = sizeof(szFile);
-		// Ê¹ÓÃ¸¨Öúº¯Êı½øĞĞ×ª»»
+		// ä½¿ç”¨è¾…åŠ©å‡½æ•°è¿›è¡Œè½¬æ¢
 		std::wstring wideFilter = ConvertToWideString(filter);
-		ofn.lpstrFilter = reinterpret_cast<LPCSTR>(wideFilter.c_str()); // ½«¿í×Ö·û×Ö·û´®Ç¿ÖÆ×ª»»ÎªÕ­×Ö·û×Ö·û´®
+		ofn.lpstrFilter = reinterpret_cast<LPCSTR>(wideFilter.c_str()); // å°†å®½å­—ç¬¦å­—ç¬¦ä¸²å¼ºåˆ¶è½¬æ¢ä¸ºçª„å­—ç¬¦å­—ç¬¦ä¸²
 		ofn.nFilterIndex = 1;
 		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
 		if (GetSaveFileNameA(&ofn) == TRUE)
