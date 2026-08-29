@@ -18,10 +18,12 @@ namespace XLEngine
 		inline uint32_t GetWidth() const override { return m_Data.Width; }
 		inline uint32_t GetHeight() const override { return m_Data.Height; }
 
-		//´°¿ÚÊôÐÔ
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		inline void SetEventCallback(const EventCallbackFn& callback) override { m_Data.EventCallback = callback; }
 		void SetVSync(bool enabled) override;
 		bool IsVSync()const override;
+
+		void SetTitleIcon(const std::string& pngPath) override;
 		
 		inline virtual void* GetNativeWindow() const { return m_Window; }
 	private:

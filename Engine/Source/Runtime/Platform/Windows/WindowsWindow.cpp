@@ -7,6 +7,8 @@
 
 #include "Platform/OpenGL/OpenGLContext.h"
 
+#include <stb_image.h>
+
 namespace XLEngine
 {
 	static uint8_t s_GLFWWindowCount = 0;
@@ -38,13 +40,13 @@ namespace XLEngine
 		m_Data.Width = props.Width;
 		m_Data.Height = props.Height;
 		
-		XL_CORE_INFO("´´½¨´°¿Ú {0} {1}, {2}", props.Title, props.Width, props.Height);
+		XL_CORE_INFO("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ {0} {1}, {2}", props.Title, props.Width, props.Height);
 
 		if (s_GLFWWindowCount == 0)
 		{
 			XL_PROFILE_SCOPE("glfwInit");
 			int success = glfwInit();
-			XL_CORE_ASSERT(success, "ÎÞ·¨³õÊ¼»¯GLFW");
+			XL_CORE_ASSERT(success, "ï¿½Þ·ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½GLFW");
 			glfwSetErrorCallback(GLFWErrorCallback);
 		}
 
@@ -60,7 +62,7 @@ namespace XLEngine
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
 
-		//GLFW»Øµ÷
+		//GLFWï¿½Øµï¿½
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
 			{
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
@@ -193,5 +195,27 @@ namespace XLEngine
 	bool WindowsWindow::IsVSync() const
 	{
 		return m_Data.VSync;
+	}
+
+	void WindowsWindow::SetTitleIcon(const std::string& pngPath)
+	{
+		// Load an arbitrary-size RGBA icon from a PNG and hand it to GLFW.
+		// glfwSetWindowIcon deep-copies the pixel data, so we can free it right after.
+		int width = 0, height = 0, channels = 0;
+		stbi_uc* data = stbi_load(pngPath.c_str(), &width, &height, &channels, 4);
+		if (!data)
+		{
+			XL_CORE_ERROR("SetTitleIcon: failed to load icon {0}", pngPath);
+			return;
+		}
+
+		GLFWimage image;
+		image.width = width;
+		image.height = height;
+		image.pixels = data;
+
+		glfwSetWindowIcon(m_Window, 1, &image);
+
+		stbi_image_free(data);
 	}
 }

@@ -21,7 +21,7 @@ namespace XLEngine
 		}
 	};
 
-	//����Windowsϵͳ�Ĵ��ڵĽ���
+	//����Windowsϵͳ�Ĵ��ڵĽ���
 	class XLENGINE_API Window
 	{
 	public:
@@ -38,6 +38,10 @@ namespace XLEngine
 		virtual bool IsVSync() const = 0;
 
 		virtual void* GetNativeWindow() const = 0;
+
+		// 为窗口设置标题栏/任务栏图标（加载 PNG，Bitmap 级零 GPU 依赖）
+		virtual void SetTitleIcon(const std::string& pngPath) {}
+
 		static Scope<Window> Create(const WindowProps& props = WindowProps());
 	};
 }
