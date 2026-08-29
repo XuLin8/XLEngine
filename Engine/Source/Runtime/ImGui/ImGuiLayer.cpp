@@ -81,7 +81,7 @@ namespace XLEngine {
 	}
 
 
-	void ImGuiLayer::Begin()
+	void ImGuiLayer::OnImGuiBegin()
 	{
 		XL_PROFILE_FUNCTION();
 
@@ -91,7 +91,7 @@ namespace XLEngine {
 		ImGuizmo::BeginFrame();
 	}
 
-	void ImGuiLayer::End()
+	void ImGuiLayer::OnImGuiEnd()
 	{
 		XL_PROFILE_FUNCTION();
 

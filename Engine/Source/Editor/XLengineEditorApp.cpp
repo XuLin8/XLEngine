@@ -7,6 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Runtime/ImGui/ImGuiLayer.h"
 #include "EditorLayer.h"
 
 namespace XLEngine
@@ -14,6 +15,12 @@ namespace XLEngine
 	void MyAppInitialize(Application& app)
 	{
 		app.Init("XLEngine Editor");
-		app.PushLayer(new EditorLayer());
+
+		// 工具层构造具体 UI 实现并注入，Application 仅依赖 Layer 抽象
+		ImGuiLayer* imguiLayer = new ImGuiLayer();
+		app.SetImGuiLayer(imguiLayer);
+		app.PushOverlay(imguiLayer);
+
+		app.PushLayer(new EditorLayer(imguiLayer));
 	}
 }

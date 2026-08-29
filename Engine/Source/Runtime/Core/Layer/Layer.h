@@ -16,6 +16,8 @@ namespace XLEngine
 		virtual void OnDetach() {};
 		virtual void OnUpdate(Timestep ts) {};
 		virtual void OnImGuiRender() {};
+		virtual void OnImGuiBegin() {};
+		virtual void OnImGuiEnd() {};
 		virtual void OnEvent(Event& event) {};
 		
 		[[nodiscard]] inline const std::string& GetName()const { return m_DebugName; }

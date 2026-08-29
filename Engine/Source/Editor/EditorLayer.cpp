@@ -37,8 +37,8 @@ namespace XLEngine
     static bool bShowAboutMe = false;
     static bool bShowDemoImGui = false;
 
-	EditorLayer::EditorLayer()
-		:Layer("EditorLayer")
+	EditorLayer::EditorLayer(ImGuiLayer* imguiLayer)
+		:Layer("EditorLayer"), m_ImGuiLayer(imguiLayer)
 	{
 
 	}
@@ -608,7 +608,7 @@ namespace XLEngine
 
             m_ViewportFocused = ImGui::IsWindowFocused();
             m_ViewportHovered = ImGui::IsWindowHovered();
-            Application::GetInstance().GetImGuiLayer()->BlockEvents(!m_ViewportFocused && !m_ViewportHovered);
+            if (m_ImGuiLayer) m_ImGuiLayer->BlockEvents(!m_ViewportFocused && !m_ViewportHovered);
 
 
             ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();

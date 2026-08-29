@@ -3,12 +3,11 @@
 #include "Runtime/Core/Base/Base.h"
 #include "Runtime/Core/Base/PublicSingleton.h"
 #include "Runtime/Core/Window.h"
+#include "Runtime/Core/Layer/Layer.h"
 #include "Runtime/Core/Layer/LayerStack.h"
 #include "Runtime/Core/Timestep.h"
 #include "Runtime/Events/Event.h"
 #include "Runtime/Events/ApplicationEvent.h"
-
-#include "Runtime/ImGui/ImGuiLayer.h"
 
 int main(int argc, char** argv);
 
@@ -26,11 +25,15 @@ namespace XLEngine
 		void PushOverlay(Layer* layer);
 		void PopLayer(Layer* layer);
 
+		// 由工具层注入具体 UI 实现（如 ImGuiLayer）
+		void SetImGuiLayer(Layer* layer);
+
 		[[nodiscard]] Window& GetWindow() { return *mWindow; }
 
-		void Close();
+		// UI 层（如 ImGuiLayer）通过 Layer 抽象驱动，Application 不依赖具体 UI 实现
+		[[nodiscard]] Layer* GetImGuiLayer() { return m_ImGuiLayer; }
 
-		[[nodiscard]] ImGuiLayer* GetImGuiLayer() { return mImGuiLayer; }
+		void Close();
 	private:
 		void Init(const std::string& name);
 		void Run();
@@ -39,7 +42,7 @@ namespace XLEngine
 		bool OnWindowResize(WindowResizeEvent& e);
 	private:
 		Scope<Window> mWindow;
-		ImGuiLayer* mImGuiLayer;
+		Layer* m_ImGuiLayer = nullptr;   // 抽象 UI 层，由工具层注入（如 ImGuiLayer）
 		bool bRunning = true;
 		bool bMinimized = false;
 		LayerStack mLayerStack;

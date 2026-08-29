@@ -4,6 +4,7 @@
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/ContentBrowserPanel.h"
 
+#include "Runtime/ImGui/ImGuiLayer.h"
 #include "Runtime/Renderer/EditorCamera.h"
 
 namespace XLEngine
@@ -11,7 +12,7 @@ namespace XLEngine
 	class EditorLayer : public Layer
 	{
 	public:
-		EditorLayer();
+		EditorLayer(ImGuiLayer* imguiLayer);
 		virtual ~EditorLayer() = default;
 
 		virtual void OnAttach() override;
@@ -96,5 +97,7 @@ namespace XLEngine
 
 		// Editor resources
 		Ref<Texture2D> m_IconPlay, m_IconStop;
+
+		ImGuiLayer* m_ImGuiLayer = nullptr;   // 由入口注入，工具层合法依赖具体 UI 实现
 	};
 }

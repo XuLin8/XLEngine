@@ -51,10 +51,14 @@ namespace XLEngine
 		mWindow = Window::Create(WindowProps(name));
 		mWindow->SetEventCallback(XL_BIND_EVENT_FN(Application::OnEvent));
 
-		mImGuiLayer = new ImGuiLayer();
-		PushOverlay(mImGuiLayer);
-
+		// UI 层不再由 Application 创建：由工具层构造具体实现（如 ImGuiLayer）
+		// 并通过 SetImGuiLayer + PushOverlay 注入，Application 仅依赖 Layer 抽象
 		Renderer::Init();
+	}
+
+	void Application::SetImGuiLayer(Layer* layer)
+	{
+		m_ImGuiLayer = layer;
 	}
 
 	void Application::Run()
@@ -67,10 +71,10 @@ namespace XLEngine
 
 			if (!bMinimized)
 				for (Layer* layer : mLayerStack) layer->OnUpdate(timestep);
-					
-			mImGuiLayer->Begin();
+
+			if (m_ImGuiLayer) m_ImGuiLayer->OnImGuiBegin();
 			for (Layer* layer : mLayerStack) layer->OnImGuiRender();
-			mImGuiLayer->End();
+			if (m_ImGuiLayer) m_ImGuiLayer->OnImGuiEnd();
 
 			mWindow->OnUpdate();
 		}

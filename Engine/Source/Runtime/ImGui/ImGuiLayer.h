@@ -19,8 +19,9 @@ namespace XLEngine {
 		virtual void OnDetach() override;
 		virtual void OnEvent(Event& e) override;
 
-		void Begin();
-		void End();
+		// UI 帧生命周期：Application 通过 Layer 虚接口驱动，而非持有具体 ImGuiLayer
+		virtual void OnImGuiBegin() override;
+		virtual void OnImGuiEnd() override;
 
 		void BlockEvents(bool block) { m_BlockEvents = block; }
 
