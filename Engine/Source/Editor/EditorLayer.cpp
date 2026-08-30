@@ -94,11 +94,11 @@ namespace XLEngine
         m_ScreenQuadVA->SetIndexBuffer(screenIB);
 
         m_ActiveScene = CreateRef<Level>();
-        m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
+        m_EditorCameraController = CameraController(30.0f, 1.778f, 0.1f, 1000.0f);
         // M1 pure-visual demo scene: 2.5D oblique framing of the procedural terrain
-        m_EditorCamera.SetDistance(135.0f);
-        m_EditorCamera.SetPitch(52.0f);
-        m_EditorCamera.SetYaw(45.0f);
+        m_EditorCameraController.GetCamera().SetDistance(135.0f);
+        m_EditorCameraController.GetCamera().SetPitch(52.0f);
+        m_EditorCameraController.GetCamera().SetYaw(45.0f);
 
         // Set the window title-bar / taskbar icon from an Asset-folder PNG
         Application::GetInstance().GetWindow().SetTitleIcon(
@@ -278,15 +278,15 @@ namespace XLEngine
             m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
             m_PostFramebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 
-            m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
+            m_EditorCameraController.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
             m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
         }
 
         m_Framebuffer->ClearAttachment(1, -1);
 
-        m_EditorCamera.SetFlyMode(m_FlyMode);
-        m_EditorCamera.SetViewportActive(m_ViewportHovered || m_ViewportFocused);
-        m_EditorCamera.OnUpdate(ts);
+        m_EditorCameraController.SetFlyMode(m_FlyMode);
+        m_EditorCameraController.SetViewportActive(m_ViewportHovered || m_ViewportFocused);
+        m_EditorCameraController.OnUpdate(ts);
 
         // Day-night cycle: advance clock and drive the toon lighting + sky
         if (m_AutoDayNight)
@@ -338,8 +338,8 @@ namespace XLEngine
 
         if (ModeManager::IsEditState())
         {
-            m_EditorCamera.OnUpdate(ts);
-            m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
+            m_EditorCameraController.OnUpdate(ts);
+            m_ActiveScene->OnUpdateEditor(ts, m_EditorCameraController.GetCamera());
         }
         else
         {
@@ -428,8 +428,8 @@ namespace XLEngine
             // Viewport mode + day-night / sky-parallax uniforms for the post pass
             m_PostProcessShader->SetInt("u_ShowDiagnostics", m_ShowDiagnostics ? 1 : 0);
             m_PostProcessShader->SetFloat("u_Time", m_DayTime);
-            m_PostProcessShader->SetFloat3("u_CameraPos", m_EditorCamera.GetPosition());
-            m_PostProcessShader->SetMat4("u_InvViewProj", glm::inverse(m_EditorCamera.GetViewProjection()));
+            m_PostProcessShader->SetFloat3("u_CameraPos", m_EditorCameraController.GetCamera().GetPosition());
+            m_PostProcessShader->SetMat4("u_InvViewProj", glm::inverse(m_EditorCameraController.GetCamera().GetViewProjection()));
 
             m_ScreenQuadVA->Bind();
             RenderCommand::DrawIndexed(m_ScreenQuadVA, 3);
@@ -651,8 +651,8 @@ namespace XLEngine
                 glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());*/
 
                 // Editor camera
-                const glm::mat4& cameraProjection = m_EditorCamera.GetProjection();
-                glm::mat4 cameraView = m_EditorCamera.GetViewMatrix();
+                const glm::mat4& cameraProjection = m_EditorCameraController.GetCamera().GetProjection();
+                glm::mat4 cameraView = m_EditorCameraController.GetCamera().GetViewMatrix();
 
                 // Entity transform
                 auto& tc = selectedEntity.GetComponent<TransformComponent>();
@@ -769,7 +769,7 @@ namespace XLEngine
 
     void EditorLayer::OnEvent(Event& e)
     {
-        m_EditorCamera.OnEvent(e);
+        m_EditorCameraController.OnEvent(e);
         EventDispatcher dispatcher(e);
         dispatcher.Dispatch<KeyPressedEvent>(XL_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
         dispatcher.Dispatch<MouseButtonPressedEvent>(XL_BIND_EVENT_FN(EditorLayer::OnMouseButtonPressed));
@@ -863,7 +863,7 @@ namespace XLEngine
     {
         if (ModeManager::IsEditState())
         {
-            Renderer2D::BeginScene(m_EditorCamera);
+            Renderer2D::BeginScene(m_EditorCameraController.GetCamera());
         }
         else
         {

@@ -6,6 +6,7 @@
 
 #include "Runtime/Input/Input.h"
 #include "Runtime/Resource/ConfigManager/ConfigManager.h"
+#include "Runtime/Utils/PlatformUtils.h"
 
 #include <glfw/glfw3.h>
 
@@ -50,6 +51,11 @@ namespace XLEngine
 
 		mWindow = Window::Create(WindowProps(name));
 		mWindow->SetEventCallback(XL_BIND_EVENT_FN(Application::OnEvent));
+
+		// 窗口创建后注入到功能层与平台层（Input/FileDialogs），
+		// 使这些下层组件不反向依赖 Application 单例。
+		Input::SetWindow(mWindow.get());
+		FileDialogs::SetOwnerWindow(mWindow->GetNativeWindow());
 
 		// UI 层不再由 Application 创建：由工具层构造具体实现（如 ImGuiLayer）
 		// 并通过 SetImGuiLayer + PushOverlay 注入，Application 仅依赖 Layer 抽象

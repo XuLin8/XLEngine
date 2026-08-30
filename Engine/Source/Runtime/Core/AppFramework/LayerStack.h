@@ -1,11 +1,12 @@
 #pragma once
 #include "Runtime/Core/Base/Base.h"
-#include "Layer.h"
+#include "Runtime/Core/Layer/Layer.h"
 
 #include <vector>
 
 namespace XLEngine
 {
+	// 层栈属于应用框架层（APP 装配逻辑）：管理 Layer 的生命周期与调度顺序
 	class LayerStack {
 	public:
 		LayerStack();

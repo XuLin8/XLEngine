@@ -1,11 +1,6 @@
 #include "xlpch.h"
 #include "EditorCamera.h"
 
-#include "Runtime/Input/Input.h"
-#include "Runtime/Input/KeyCodes.h"
-#include "Runtime/Input/MouseCodes.h"
-
-#include <glfw/glfw3.h>
 #include <glm/gtx/quaternion.hpp>
 
 namespace XLEngine
@@ -58,32 +53,6 @@ namespace XLEngine
 		return speed;
 	}
 
-	void EditorCamera::OnUpdate(Timestep ts)
-	{
-		if (m_FlyMode)
-		{
-			FlyUpdate(ts);
-			UpdateView();
-			return;
-		}
-
-		if (Input::IsKeyPressed(Key::LeftAlt))
-		{
-			const glm::vec2& mouse{ Input::GetMouseX(), Input::GetMouseY() };
-			glm::vec2 delta = (mouse - m_InitialMousePosition) * 0.003f;
-			m_InitialMousePosition = mouse;
-
-			if (Input::IsMouseButtonPressed(Mouse::ButtonMiddle))
-				MousePan(delta);
-			else if (Input::IsMouseButtonPressed(Mouse::ButtonLeft))
-				MouseRotate(delta);
-			else if (Input::IsMouseButtonPressed(Mouse::ButtonRight))
-				MouseZoom(delta.y);
-		}
-
-		UpdateView();
-	}
-
 	void EditorCamera::SetFlyMode(bool enabled)
 	{
 		if (m_FlyMode == enabled)
@@ -94,7 +63,6 @@ namespace XLEngine
 		{
 			// Enter roam: take over the current orbit viewport and start walking from it
 			m_Position = CalculatePosition();
-			m_LastMousePosition = { Input::GetMouseX(), Input::GetMouseY() };
 		}
 		else
 		{
@@ -104,80 +72,25 @@ namespace XLEngine
 		UpdateView();
 	}
 
-	void EditorCamera::FlyUpdate(Timestep ts)
-	{
-		// Roam input is only consumed while the viewport is hovered/focused, so typing in a
-		// panel (or using Ctrl+ shortcuts) never moves the camera. Last mouse is still tracked
-		// every frame to avoid a look-jump when the pointer re-enters the viewport.
-		const glm::vec2& mouse{ Input::GetMouseX(), Input::GetMouseY() };
-		if (m_ViewportActive)
-		{
-			// Mouse-look: hold Right Mouse Button inside the viewport to turn the camera
-			if (Input::IsMouseButtonPressed(Mouse::ButtonRight))
-			{
-				glm::vec2 delta = (mouse - m_LastMousePosition) * 0.003f;
-				m_Yaw -= delta.x * RotationSpeed();
-				m_Pitch -= delta.y * RotationSpeed();
-				m_Pitch = std::clamp(m_Pitch, -89.0f, 89.0f);
-			}
+	// ---- Orbit ----
 
-			// WASD move in the camera plane, Space/Q up/down, Shift sprints
-			float speed = m_FlySpeed;
-			if (Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift))
-				speed *= 4.0f;
-
-			const glm::vec3 forward = GetForwardDirection();
-			const glm::vec3 right = GetRightDirection();
-			glm::vec3 move{ 0.0f };
-			if (Input::IsKeyPressed(Key::W)) move += forward;
-			if (Input::IsKeyPressed(Key::S)) move -= forward;
-			if (Input::IsKeyPressed(Key::A)) move -= right;
-			if (Input::IsKeyPressed(Key::D)) move += right;
-			if (Input::IsKeyPressed(Key::Space)) move += glm::vec3(0.0f, 1.0f, 0.0f);
-			if (Input::IsKeyPressed(Key::Q)) move -= glm::vec3(0.0f, 1.0f, 0.0f);
-
-			if (glm::length(move) > 0.0f)
-				m_Position += glm::normalize(move) * (speed * ts);
-		}
-		m_LastMousePosition = mouse;
-	}
-
-	void EditorCamera::OnEvent(Event& e)
-	{
-		EventDispatcher dispatcher(e);
-		dispatcher.Dispatch<MouseScrolledEvent>(XL_BIND_EVENT_FN(EditorCamera::OnMouseScroll));
-	}
-
-	bool EditorCamera::OnMouseScroll(MouseScrolledEvent& e)
-	{
-		float delta = e.GetYOffset() * 0.1f;
-		if (m_FlyMode)
-		{
-			// In roam mode the wheel glides along the view direction instead of zooming orbit distance
-			m_Position += GetForwardDirection() * delta * m_FlySpeed * 0.1f;
-			UpdateView();
-			return false;
-		}
-		MouseZoom(delta);
-		UpdateView();
-		return false;
-	}
-
-	void EditorCamera::MousePan(const glm::vec2& delta)
+	void EditorCamera::OrbitPan(const glm::vec2& delta)
 	{
 		auto [xSpeed, ySpeed] = PanSpeed();
 		m_FocalPoint += -GetRightDirection() * delta.x * xSpeed * m_Distance;
 		m_FocalPoint += GetUpDirection() * delta.y * ySpeed * m_Distance;
+		UpdateView();
 	}
 
-	void EditorCamera::MouseRotate(const glm::vec2& delta)
+	void EditorCamera::OrbitRotate(const glm::vec2& delta)
 	{
 		float yawSign = GetUpDirection().y < 0 ? -1.0f : 1.0f;
 		m_Yaw += yawSign * delta.x * RotationSpeed();
 		m_Pitch += delta.y * RotationSpeed();
+		UpdateView();
 	}
 
-	void EditorCamera::MouseZoom(float delta)
+	void EditorCamera::OrbitZoom(float delta)
 	{
 		m_Distance -= delta * ZoomSpeed();
 		if (m_Distance < 1.0f)
@@ -185,6 +98,30 @@ namespace XLEngine
 			m_FocalPoint += GetForwardDirection();
 			m_Distance = 1.0f;
 		}
+		UpdateView();
+	}
+
+	// ---- Fly ----
+
+	void EditorCamera::FlyLook(const glm::vec2& delta)
+	{
+		m_Yaw -= delta.x * RotationSpeed();
+		m_Pitch -= delta.y * RotationSpeed();
+		m_Pitch = std::clamp(m_Pitch, -89.0f, 89.0f);
+		UpdateView();
+	}
+
+	void EditorCamera::FlyMove(const glm::vec3& moveDir, float speed, Timestep ts)
+	{
+		m_Position += moveDir * (speed * ts);
+		UpdateView();
+	}
+
+	void EditorCamera::FlyScroll(float delta)
+	{
+		// In roam mode the wheel glides along the view direction instead of zooming orbit distance
+		m_Position += GetForwardDirection() * delta * m_FlySpeed * 0.1f;
+		UpdateView();
 	}
 
 	glm::vec3 EditorCamera::GetUpDirection() const

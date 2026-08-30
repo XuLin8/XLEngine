@@ -6,8 +6,6 @@
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
 
-#include "Runtime/Core/AppFramework/Application.h"
-
 namespace XLEngine
 {
 	// 辅助函数：将窄字符转换为宽字符
@@ -23,13 +21,20 @@ namespace XLEngine
 		return wideString;
 	}
 
+	void* FileDialogs::s_OwnerWindow = nullptr;
+
+	void FileDialogs::SetOwnerWindow(void* nativeWindow)
+	{
+		s_OwnerWindow = nativeWindow;
+	}
+
 	std::string FileDialogs::OpenFile(const char* filter)
 	{
 		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
 		ZeroMemory(&ofn, sizeof(OPENFILENAMEA));
 		ofn.lStructSize = sizeof(OPENFILENAMEA);
-		ofn.hwndOwner = glfwGetWin32Window((GLFWwindow*)Application::GetInstance().GetWindow().GetNativeWindow());
+		ofn.hwndOwner = glfwGetWin32Window((GLFWwindow*)s_OwnerWindow);
 		ofn.lpstrFile = szFile;
 		ofn.nMaxFile = sizeof(szFile);
 		// 使用辅助函数进行转换
@@ -50,8 +55,7 @@ namespace XLEngine
 		CHAR szFile[260] = { 0 };
 		ZeroMemory(&ofn, sizeof(OPENFILENAMEA));
 		ofn.lStructSize = sizeof(OPENFILENAMEA);
-		ofn.hwndOwner = glfwGetWin32Window((GLFWwindow*)Application::GetInstance().GetWindow().GetNativeWindow());
-		ofn.lpstrFile = szFile;
+		ofn.hwndOwner = glfwGetWin32Window((GLFWwindow*)s_OwnerWindow);
 		ofn.nMaxFile = sizeof(szFile);
 		// 使用辅助函数进行转换
 		std::wstring wideFilter = ConvertToWideString(filter);

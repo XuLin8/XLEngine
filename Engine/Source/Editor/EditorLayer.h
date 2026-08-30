@@ -5,7 +5,7 @@
 #include "Panels/ContentBrowserPanel.h"
 
 #include "Runtime/ImGui/ImGuiLayer.h"
-#include "Runtime/Renderer/EditorCamera.h"
+#include "Runtime/Renderer/CameraController.h"
 
 namespace XLEngine
 {
@@ -64,7 +64,7 @@ namespace XLEngine
 
 		bool m_PrimaryCamera = true;
 
-		EditorCamera m_EditorCamera;
+		CameraController m_EditorCameraController;
 
 		Ref<Texture2D> m_CheckerboardTexture;
 		
