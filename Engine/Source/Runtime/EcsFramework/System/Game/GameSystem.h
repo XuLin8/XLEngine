@@ -19,6 +19,7 @@ namespace XLEngine
 
 		void OnRuntimeStart() override;
 		void OnUpdateEditor(Timestep ts, EditorCamera& camera) override;
+		void OnUpdateRuntime(Timestep ts) override;
 		void OnRender3D(EditorCamera& camera) override;
 
 		[[nodiscard]] int GetMotesCollected() const { return m_MotesCollected; }

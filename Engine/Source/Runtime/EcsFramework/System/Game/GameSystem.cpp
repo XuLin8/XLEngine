@@ -111,6 +111,19 @@ namespace XLEngine
 		Simulate(ts, camera);
 	}
 
+	// 运行模式：无编辑器相机，使用 Level 注入的运行时渲染相机方向作为移动基准
+	void GameSystem::OnUpdateRuntime(Timestep ts)
+	{
+		if (!m_Init)
+		{
+			m_Init = true;
+			SpawnLevel();
+		}
+		EditorCamera* cam = mLevel ? mLevel->GetRuntimeCamera() : nullptr;
+		if (cam)
+			Simulate(ts, *cam);
+	}
+
 	void GameSystem::SpawnLevel()
 	{
 		// 最低限字：确保输入动作映射已就绪，并在首次进入时用确定性种子重建一局

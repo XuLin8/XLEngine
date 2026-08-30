@@ -201,6 +201,9 @@ namespace XLEngine
 
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
+        // P1 运行模式入口：以当前编辑场景作为 Play 的来源场景（Play 时 Level::Copy 它）
+        m_EditorScene = m_ActiveScene;
+
 #if 0
         // Entity
         Entity square = m_ActiveScene->CreateEntity("Green Square");
@@ -286,7 +289,9 @@ namespace XLEngine
 
         m_EditorCameraController.SetFlyMode(m_FlyMode);
         m_EditorCameraController.SetViewportActive(m_ViewportHovered || m_ViewportFocused);
-        m_EditorCameraController.OnUpdate(ts);
+        // 运行模式下冻结编辑器相机，避免与玩法输入（WASD）冲突
+        if (ModeManager::IsEditState())
+            m_EditorCameraController.OnUpdate(ts);
 
         // Day-night cycle: advance clock and drive the toon lighting + sky
         if (m_AutoDayNight)
@@ -343,6 +348,8 @@ namespace XLEngine
         }
         else
         {
+            // 运行模式：把冻结的编辑器相机注入 Level，作为玩法移动基准与渲染相机
+            m_ActiveScene->SetRuntimeCamera(&m_EditorCameraController.GetCamera());
             m_ActiveScene->OnUpdateRuntime(ts);
         }
 

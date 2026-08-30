@@ -75,6 +75,10 @@ namespace XLEngine
 		CopyComponent<Rigidbody2DComponent>(dstLevelRegistry, srcLevelRegistry, enttMap);
 		CopyComponent<BoxCollider2DComponent>(dstLevelRegistry, srcLevelRegistry, enttMap);
 		CopyComponent<CircleCollider2DComponent>(dstLevelRegistry, srcLevelRegistry, enttMap);
+		// 3D 网格件：运行模式需保留地形/Prop/静态网格，避免 Play 后场景只剩光尘/灯台
+		CopyComponent<StaticMeshComponent>(dstLevelRegistry, srcLevelRegistry, enttMap);
+		CopyComponent<TerrainComponent>(dstLevelRegistry, srcLevelRegistry, enttMap);
+		CopyComponent<PropComponent>(dstLevelRegistry, srcLevelRegistry, enttMap);
 
 		return newScene;
 	}
@@ -121,15 +125,15 @@ namespace XLEngine
 		{
 			system->OnUpdateRuntime(ts);
 		}
+
+		// 运行模式同样走 3D 渲染闭环（用注入的渲染相机），否则玩法物件（光尘/灯台/玩家）不会显示
+		if (m_RuntimeCamera)
+			Render3D(*m_RuntimeCamera);
 	}
 
-	void Level::OnUpdateEditor(Timestep ts, EditorCamera& camera)
+	// 共享 3D 渲染：编辑与运行模式复用同一绘制流程
+	void Level::Render3D(EditorCamera& camera)
 	{
-		for (auto& system : mSystems)
-		{
-			system->OnUpdateEditor(ts,camera);
-		}
-
 		Renderer3D::BeginScene(camera);
 
 		// Static meshes (view, not group: several views share TransformComponent and
@@ -163,6 +167,16 @@ namespace XLEngine
 		Renderer3D::EndScene();
 	}
 
+	void Level::OnUpdateEditor(Timestep ts, EditorCamera& camera)
+	{
+		for (auto& system : mSystems)
+		{
+			system->OnUpdateEditor(ts,camera);
+		}
+
+		Render3D(camera);
+	}
+
 	void Level::OnViewportResize(uint32_t width, uint32_t height)
 	{
 		m_ViewportHeight = height;
@@ -190,6 +204,9 @@ namespace XLEngine
 		CopyComponentIfExists<Rigidbody2DComponent>(newEntity, entity);
 		CopyComponentIfExists<BoxCollider2DComponent>(newEntity, entity);
 		CopyComponentIfExists<CircleCollider2DComponent>(newEntity, entity);
+		CopyComponentIfExists<StaticMeshComponent>(newEntity, entity);
+		CopyComponentIfExists<TerrainComponent>(newEntity, entity);
+		CopyComponentIfExists<PropComponent>(newEntity, entity);
 	}
 
 	Entity Level::GetPrimaryCameraEntity()
