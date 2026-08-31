@@ -348,6 +348,11 @@ namespace XLEngine
 		}
 		}
 
+		// 世界坐标烘焙：此前仅用 X/Z 采样地面高度、未做水平偏移，导致所有物件堆在地图中心 (0,*,0)。
+		// 统一平移到世界坐标 (X, ground, Z)（与 TerrainComponent 一致，模型使用单位变换渲染）。
+		const glm::mat4 world = glm::translate(glm::mat4(1.0f), glm::vec3(X, 0.0f, Z));
+		mb.ApplyTransform(world);
+
 		Mesh = Model(StaticMesh(mb.Verts, mb.Idx));
 	}
 }

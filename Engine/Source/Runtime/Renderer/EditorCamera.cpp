@@ -105,8 +105,8 @@ namespace XLEngine
 
 	void EditorCamera::FlyLook(const glm::vec2& delta)
 	{
-		m_Yaw -= delta.x * RotationSpeed();
-		m_Pitch -= delta.y * RotationSpeed();
+		m_Yaw += delta.x * RotationSpeed();
+		m_Pitch += delta.y * RotationSpeed();
 		m_Pitch = std::clamp(m_Pitch, -89.0f, 89.0f);
 		UpdateView();
 	}
