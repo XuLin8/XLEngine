@@ -2,6 +2,8 @@
 #include "SceneSerializer.h"
 #include "Runtime/EcsFramework/Entity/Entity.h"
 #include "Runtime/EcsFramework/Component/ComponentGroup.h"
+#include "Runtime/Resource/AssetDescriptor.h"
+#include "Runtime/Resource/AssetHandle.h"
 
 #include <yaml-cpp/yaml.h>
 
@@ -282,6 +284,17 @@ namespace XLEngine
 	{
 		YAML::Emitter out;
 		out << YAML::BeginMap;
+
+		// 统一资源头（URDF），与 AssetDescriptor 描述的资产头一致，把场景纳入统一格式
+		out << YAML::Key << AssetDescriptor::RootKey << YAML::Value;
+		out << YAML::BeginMap;
+		out << YAML::Key << "FormatVersion" << YAML::Value << AssetDescriptor::FormatVersion;
+		out << YAML::Key << "Handle" << YAML::Value << AssetHandleHash(filepath);
+		out << YAML::Key << "Type" << YAML::Value << "Scene";
+		out << YAML::Key << "RelativePath" << YAML::Value << filepath;
+		out << YAML::Key << "Dependencies" << YAML::Value << YAML::BeginSeq << YAML::EndSeq;
+		out << YAML::EndMap;
+
 		out << YAML::Key << "Scene" << YAML::Value << "Untitled";
 			out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
 			mLevel->m_Registry.each([&](auto entityID)
@@ -315,6 +328,14 @@ namespace XLEngine
 
 		if (!data["Scene"])
 			return false;
+
+		// 读取统一资源头（兼容旧版无头场景文件）
+		auto assetNode = data[AssetDescriptor::RootKey];
+		if (assetNode)
+		{
+			AssetHandle handle = assetNode["Handle"].as<std::uint64_t>(0);
+			XL_CORE_TRACE("Scene carries unified asset header (Handle={0})", handle.Get());
+		}
 
 		std::string sceneName = data["Scene"].as<std::string>();
 		XL_CORE_TRACE("Deserializing scene '{0}'", sceneName);

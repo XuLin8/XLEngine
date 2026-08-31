@@ -9,6 +9,7 @@
 #include "Runtime/Audio/AudioSystem.h"
 #include "Runtime/Resource/ConfigManager/ConfigManager.h"
 #include "Runtime/Resource/AssetManager/AssetManager.h"
+#include "Runtime/Resource/AssetRegistry.h"
 
 #include <glad/glad.h>
 
@@ -46,6 +47,20 @@ namespace XLEngine
     void EditorLayer::OnAttach()
     {
         XL_CORE_INFO("OnAttach: begin");
+        // 资源层：初始化统一资产注册表（扫描 Assets 目录，生成/核对 URDF 描述）
+        AssetRegistry::GetInstance().Initialize();
+        AssetRegistry& registry = AssetRegistry::GetInstance();
+        XL_CORE_INFO("AssetRegistry initialized: {0} registered assets", registry.GetCount());
+
+        // 资源浏览器双击回调：场景资产交由 EditorLayer 加载，其它资产记录打开意图
+        m_ContentBrowserPanel.SetOpenAssetCallback([this](const std::filesystem::path& assetPath)
+            {
+                if (assetPath.extension().string() == ".xl")
+                    OpenScene(assetPath);
+                else
+                    XL_CORE_INFO("Opened asset for preview: {0}", assetPath.filename().string());
+            });
+
         m_CheckerboardTexture = Texture2D::Create(AssetManager::GetInstance().GetFullPath("Assets/textures/Checkerboard.png"));
         m_IconPlay = Texture2D::Create(AssetManager::GetInstance().GetFullPath("Resources/Icons/PlayButton.png"));
         m_IconStop = Texture2D::Create(AssetManager::GetInstance().GetFullPath("Resources/Icons/StopButton.png"));
@@ -993,6 +1008,8 @@ namespace XLEngine
         m_ActiveScene->OnRuntimeStart();
 
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+        // 场景已切换：清空指向旧场景的悬垂句柄，避免二次 Play 时访问已析构的 registry
+        m_HoveredEntity = Entity{};
     }
 
     void EditorLayer::OnSceneStop()
@@ -1004,6 +1021,8 @@ namespace XLEngine
         m_ActiveScene = m_EditorScene;
 
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+        // 运行场景已释放：清空其残留句柄，防止后续帧读取已析构的 Level/registry
+        m_HoveredEntity = Entity{};
     }
 
     void EditorLayer::OnDuplicateEntity()
