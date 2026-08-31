@@ -10,6 +10,7 @@
 #include "Runtime/Resource/ConfigManager/ConfigManager.h"
 #include "Runtime/Resource/AssetManager/AssetManager.h"
 #include "Runtime/Resource/AssetRegistry.h"
+#include "Runtime/EcsFramework/World/World.h"
 
 #include <glad/glad.h>
 
@@ -216,8 +217,10 @@ namespace XLEngine
 
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
-        // P1 运行模式入口：以当前编辑场景作为 Play 的来源场景（Play 时 Level::Copy 它）
+        // P4 世界/关卡解耦：初始编辑场景即 World 的持久关卡（编辑源）。
+        // 此后渲染与玩法都由 World 驱动（编辑态跑持久关卡，运行时跑其副本）。
         m_EditorScene = m_ActiveScene;
+        m_World.SetPersistentLevel(m_ActiveScene);
 
 #if 0
         // Entity
@@ -359,13 +362,12 @@ namespace XLEngine
         if (ModeManager::IsEditState())
         {
             m_EditorCameraController.OnUpdate(ts);
-            m_ActiveScene->OnUpdateEditor(ts, m_EditorCameraController.GetCamera());
+            m_World.Update(ts, &m_EditorCameraController.GetCamera(), false);
         }
         else
         {
-            // 运行模式：把冻结的编辑器相机注入 Level，作为玩法移动基准与渲染相机
-            m_ActiveScene->SetRuntimeCamera(&m_EditorCameraController.GetCamera());
-            m_ActiveScene->OnUpdateRuntime(ts);
+            // 运行模式：把冻结的编辑器相机交给 World/GameMode，注入运行关卡并驱动玩法
+            m_World.Update(ts, &m_EditorCameraController.GetCamera(), true);
         }
 
         auto [mx, my] = ImGui::GetMousePos();
@@ -942,6 +944,8 @@ namespace XLEngine
         m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
+        m_EditorScene = m_ActiveScene;
+        m_World.SetPersistentLevel(m_ActiveScene);
         m_EditorScenePath = std::filesystem::path();
     }
 
@@ -971,6 +975,7 @@ namespace XLEngine
             m_SceneHierarchyPanel.SetContext(m_EditorScene);
 
             m_ActiveScene = m_EditorScene;
+            m_World.SetPersistentLevel(m_ActiveScene);
             m_EditorScenePath = path;
         }
     }
@@ -1004,9 +1009,9 @@ namespace XLEngine
         if (ModeManager::IsEditState())
             ModeManager::ChangeState();
 
-        m_ActiveScene = Level::Copy(m_EditorScene);
-        m_ActiveScene->OnRuntimeStart();
-
+        // 编辑 -> 运行时：World 拷贝持久关卡为运行关卡并 BeginPlay（含 GameSystem 重置）
+        m_World.Play();
+        m_ActiveScene = m_World.GetActiveLevel();
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
         // 场景已切换：清空指向旧场景的悬垂句柄，避免二次 Play 时访问已析构的 registry
         m_HoveredEntity = Entity{};
@@ -1017,9 +1022,9 @@ namespace XLEngine
         if (!ModeManager::IsEditState())
             ModeManager::ChangeState();
 
-        m_ActiveScene->OnRuntimeStop();
-        m_ActiveScene = m_EditorScene;
-
+        // 运行时 -> 编辑：World EndPlay 并释放运行关卡，回到持久关卡
+        m_World.Stop();
+        m_ActiveScene = m_World.GetActiveLevel();
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
         // 运行场景已释放：清空其残留句柄，防止后续帧读取已析构的 Level/registry
         m_HoveredEntity = Entity{};

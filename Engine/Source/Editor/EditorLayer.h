@@ -6,6 +6,7 @@
 
 #include "Runtime/ImGui/ImGuiLayer.h"
 #include "Runtime/Renderer/CameraController.h"
+#include "Runtime/EcsFramework/World/World.h"
 
 namespace XLEngine
 {
@@ -57,6 +58,9 @@ namespace XLEngine
 		Ref<Level> m_ActiveScene;
 		Ref<Level> m_EditorScene;
 		std::filesystem::path m_EditorScenePath;
+
+		// 世界：持有持久关卡(编辑源)与运行关卡，Play/Stop 时在两者间切换并调度 GameMode
+		World m_World;
 		Entity m_SquareEntity;
 		Entity m_CameraEntity;
 		Entity m_SecondCamera;
