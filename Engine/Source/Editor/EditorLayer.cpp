@@ -4,7 +4,7 @@
 #include "Runtime/Utils/MathUtils/MathUtils.h"
 #include "Runtime/Utils/Procedural/TerrainNoise.h"
 #include "Runtime/EcsFramework/Component/Prop/PropComponent.h"
-#include "Runtime/EcsFramework/System/Game/GameSystem.h"
+#include "GameModule.h"
 #include "Runtime/Renderer/TextRenderer.h"
 #include "Runtime/Audio/AudioSystem.h"
 #include "Runtime/Resource/ConfigManager/ConfigManager.h"
@@ -400,19 +400,20 @@ namespace XLEngine
             const glm::vec4 ember = { 0.788f, 0.431f, 0.227f, 1.0f }; // #C96E3A 余烬橙
             const glm::vec4 mote  = { 0.616f, 0.722f, 0.290f, 1.0f }; // #9DB84A 荧绿
 
-            if (GameSystem* gs = m_ActiveScene ? m_ActiveScene->GetSystem<GameSystem>() : nullptr)
+            const GameModule::HudInfo hud = GameModule::QueryHud(m_ActiveScene);
+            if (hud.Active)
             {
                 // Close depth test so HUD stays on top of terrain / props.
                 glDisable(GL_DEPTH_TEST);
                 TextRenderer::BeginScene(fboSpec.Width, fboSpec.Height);
 
                 // 光尘进度（顶栏，惨白）
-                std::string motes = "MOTES  " + std::to_string(gs->GetMotesCollected())
-                                  + "/" + std::to_string(gs->GetMotesTotal());
+                std::string motes = "MOTES  " + std::to_string(hud.MotesCollected)
+                                  + "/" + std::to_string(hud.MotesTotal);
                 TextRenderer::DrawString(motes, 14.0f, H - 7.0f * 2.0f - 14.0f, 2.0f, pale);
 
                 // 黎明达成（顶栏下方，荧绿）
-                if (gs->IsDawn())
+                if (hud.Dawn)
                     TextRenderer::DrawString("DAWN  HAS  COME", 14.0f, H - 7.0f * 2.0f * 2.0f - 26.0f, 1.5f, mote);
 
                 // 底部操作提示（余烬橙）
@@ -1013,10 +1014,10 @@ namespace XLEngine
 
     // A 玩法装配：把本项目玩法系统注入关卡（装配层职责，引擎不感知玩法类型）。
     // 持久关卡在 NewScene/OpenScene/OnAttach 装配，运行关卡由 World 运行时装配扩展点装配。
+    // GameModule 是引擎唯一依赖的玩法接口面，具体玩法类型由 Game 库维护。
     void EditorLayer::AttachGameplay(Ref<Level> level)
     {
-        if (level)
-            level->RegisterSystem(new GameSystem(level.get()));
+        GameModule::RegisterGameplay(level);
     }
 
     void EditorLayer::OnScenePlay()

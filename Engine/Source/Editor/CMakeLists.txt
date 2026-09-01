@@ -13,11 +13,12 @@ add_executable(XLEngineEditor ${EditorHeaderFiles} ${EditorSourceFiles})
 
 add_compile_definitions("ENGINE_ROOT_DIR=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
-target_link_libraries(XLEngineEditor PRIVATE XLEngineRuntime winmm)
+target_link_libraries(XLEngineEditor PRIVATE XLEngineRuntime XLEngineGame winmm)
 
 target_include_directories(XLEngineEditor PRIVATE
 	"${EngineSourceDir}"
 	"${EngineRuntimeDir}"
+	"${ProjectRootDir}/Game/Source"
 )
 
 target_compile_definitions(XLEngineEditor PRIVATE

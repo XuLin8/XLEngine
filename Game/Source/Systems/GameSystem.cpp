@@ -1,5 +1,5 @@
 #include "xlpch.h"
-#include "Runtime/EcsFramework/System/Game/GameSystem.h"
+#include "Systems/GameSystem.h"
 
 #include "Runtime/Renderer/Renderer3D.h"
 #include "Runtime/Renderer/StaticMesh.h"
