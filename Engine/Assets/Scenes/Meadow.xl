@@ -1,0 +1,1011 @@
+XLEngineAsset:
+  FormatVersion: 1.0
+  Handle: 10715166189260216393
+  Type: Scene
+  RelativePath: F:/workspace/XLEngine/Engine/Assets/Scenes/Meadow.xl
+  Dependencies:
+    []
+Scene: Untitled
+Entities:
+  - Entity: 960588890265805154
+    TagComponent:
+      Tag: Ruins
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 12.33496
+      Z: 43.621315
+      Type: 5
+      Scale: 1
+      Color: [1, 1, 1, 1]
+  - Entity: 3708357080243440042
+    TagComponent:
+      Tag: Ruins
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -42.8513031
+      Z: -21.8575974
+      Type: 5
+      Scale: 1
+      Color: [1, 1, 1, 1]
+  - Entity: 162872119771012906
+    TagComponent:
+      Tag: Ruins
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 2
+      Z: -20
+      Type: 5
+      Scale: 1
+      Color: [1, 1, 1, 1]
+  - Entity: 7213666123240875011
+    TagComponent:
+      Tag: Ruins
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -21
+      Z: -8
+      Type: 4
+      Scale: 1
+      Color: [1, 1, 1, 1]
+  - Entity: 18184611047866260892
+    TagComponent:
+      Tag: Ruins
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 13
+      Z: 12
+      Type: 5
+      Scale: 1
+      Color: [1, 1, 1, 1]
+  - Entity: 574536987243138555
+    TagComponent:
+      Tag: Ruins
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -9
+      Z: 7
+      Type: 4
+      Scale: 1
+      Color: [1, 1, 1, 1]
+  - Entity: 17622679200259193137
+    TagComponent:
+      Tag: Rock
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -6.80222416
+      Z: 19.998539
+      Type: 6
+      Scale: 1.73600149
+      Color: [1, 1, 1, 1]
+  - Entity: 11513633345084166780
+    TagComponent:
+      Tag: Rock
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 53.3942375
+      Z: 51.9637184
+      Type: 6
+      Scale: 2.9398222
+      Color: [1, 1, 1, 1]
+  - Entity: 2781668669022727175
+    TagComponent:
+      Tag: Rock
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 57.7193565
+      Z: -20.8279495
+      Type: 6
+      Scale: 2.29389954
+      Color: [1, 1, 1, 1]
+  - Entity: 14756852602713345112
+    TagComponent:
+      Tag: Rock
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -56.2501068
+      Z: 9.3982029
+      Type: 6
+      Scale: 2.39116096
+      Color: [1, 1, 1, 1]
+  - Entity: 13561002874267947710
+    TagComponent:
+      Tag: Rock
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -14.2586508
+      Z: -20.1796398
+      Type: 6
+      Scale: 1.66090226
+      Color: [1, 1, 1, 1]
+  - Entity: 821965210691420034
+    TagComponent:
+      Tag: Rock
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -20.7127266
+      Z: 46.2227287
+      Type: 6
+      Scale: 1.32937872
+      Color: [1, 1, 1, 1]
+  - Entity: 6313067507629051488
+    TagComponent:
+      Tag: Rock
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -35.0444832
+      Z: 12.3886585
+      Type: 6
+      Scale: 3.05290461
+      Color: [1, 1, 1, 1]
+  - Entity: 18174734098002166059
+    TagComponent:
+      Tag: Rock
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 0.422142148
+      Z: -60.1224251
+      Type: 6
+      Scale: 2.25768614
+      Color: [1, 1, 1, 1]
+  - Entity: 12809987307558190089
+    TagComponent:
+      Tag: Rock
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -43.2865601
+      Z: -2.23498678
+      Type: 6
+      Scale: 1.75520372
+      Color: [1, 1, 1, 1]
+  - Entity: 11366137801375706544
+    TagComponent:
+      Tag: Rock
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -13.4977379
+      Z: -56.4651108
+      Type: 6
+      Scale: 2.96557379
+      Color: [1, 1, 1, 1]
+  - Entity: 4269103529224678890
+    TagComponent:
+      Tag: Rock
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 53.5086823
+      Z: -49.48349
+      Type: 6
+      Scale: 3.37492013
+      Color: [1, 1, 1, 1]
+  - Entity: 13637140858613446498
+    TagComponent:
+      Tag: Rock
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 51.7346764
+      Z: -30.3161163
+      Type: 6
+      Scale: 1.76245451
+      Color: [1, 1, 1, 1]
+  - Entity: 7370502405511625009
+    TagComponent:
+      Tag: Rock
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 20.1461468
+      Z: 16.3118553
+      Type: 6
+      Scale: 1.78575253
+      Color: [1, 1, 1, 1]
+  - Entity: 3295891936604062135
+    TagComponent:
+      Tag: Rock
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -52.631279
+      Z: -53.983902
+      Type: 6
+      Scale: 2.7492609
+      Color: [1, 1, 1, 1]
+  - Entity: 968567584955518219
+    TagComponent:
+      Tag: Rock
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 62.6796379
+      Z: 51.6740875
+      Type: 6
+      Scale: 2.81084323
+      Color: [1, 1, 1, 1]
+  - Entity: 11282805601050848276
+    TagComponent:
+      Tag: Rock
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -43.9349632
+      Z: 35.0305862
+      Type: 6
+      Scale: 2.69301605
+      Color: [1, 1, 1, 1]
+  - Entity: 14249887727621438558
+    TagComponent:
+      Tag: Rock
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -7.60559511
+      Z: 17.7722397
+      Type: 6
+      Scale: 1.37097549
+      Color: [1, 1, 1, 1]
+  - Entity: 11373106708583556884
+    TagComponent:
+      Tag: Rock
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -62.9766197
+      Z: -48.0794067
+      Type: 6
+      Scale: 2.94165397
+      Color: [1, 1, 1, 1]
+  - Entity: 1704663965601127448
+    TagComponent:
+      Tag: Rock
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -54.2094994
+      Z: 15.9933796
+      Type: 6
+      Scale: 2.55689144
+      Color: [1, 1, 1, 1]
+  - Entity: 3093679312078318853
+    TagComponent:
+      Tag: Rock
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 20.9034634
+      Z: 54.462265
+      Type: 6
+      Scale: 3.07041216
+      Color: [1, 1, 1, 1]
+  - Entity: 17711901048910166408
+    TagComponent:
+      Tag: Rock
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 62.0695724
+      Z: 58.3651009
+      Type: 6
+      Scale: 2.82465887
+      Color: [1, 1, 1, 1]
+  - Entity: 11841320662281224229
+    TagComponent:
+      Tag: Rock
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 29.5807056
+      Z: -42.1268196
+      Type: 6
+      Scale: 3.10665274
+      Color: [1, 1, 1, 1]
+  - Entity: 10266240747848206307
+    TagComponent:
+      Tag: Rock
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -31.4656639
+      Z: -48.4156036
+      Type: 6
+      Scale: 3.26068807
+      Color: [1, 1, 1, 1]
+  - Entity: 6141171452969120590
+    TagComponent:
+      Tag: Rock
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 44.5069084
+      Z: -7.45013428
+      Type: 6
+      Scale: 3.36875033
+      Color: [1, 1, 1, 1]
+  - Entity: 18086623512933780797
+    TagComponent:
+      Tag: Rock
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 23.3280563
+      Z: 34.6391106
+      Type: 6
+      Scale: 3.27065086
+      Color: [1, 1, 1, 1]
+  - Entity: 636257787728427560
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -27.1816044
+      Z: -52.1916428
+      Type: 0
+      Scale: 1.72508168
+      Color: [1, 1, 1, 1]
+  - Entity: 6916877671336328668
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 1.06368852
+      Z: -53.6506996
+      Type: 0
+      Scale: 1.58155477
+      Color: [1, 1, 1, 1]
+  - Entity: 1950200193460511596
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 24.4308968
+      Z: 3.07495379
+      Type: 0
+      Scale: 0.989663005
+      Color: [1, 1, 1, 1]
+  - Entity: 2197528498343390442
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 45.526474
+      Z: 64.469986
+      Type: 0
+      Scale: 0.934155822
+      Color: [1, 1, 1, 1]
+  - Entity: 15215964604152875556
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 22.3355427
+      Z: 3.48090219
+      Type: 1
+      Scale: 0.8231498
+      Color: [1, 1, 1, 1]
+  - Entity: 9167546711594260862
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -62.4829597
+      Z: 37.8955879
+      Type: 3
+      Scale: 1.99386835
+      Color: [1, 1, 1, 1]
+  - Entity: 2015381405514440282
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -62.2420731
+      Z: -41.5150337
+      Type: 0
+      Scale: 1.75755572
+      Color: [1, 1, 1, 1]
+  - Entity: 13148898317665680730
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -31.6026249
+      Z: -52.307518
+      Type: 2
+      Scale: 1.57981098
+      Color: [1, 1, 1, 1]
+  - Entity: 3396750953406870902
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 7.22416878
+      Z: 27.618824
+      Type: 1
+      Scale: 2.10324597
+      Color: [1, 1, 1, 1]
+  - Entity: 9110632480725026470
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 56.0794334
+      Z: 53.0119209
+      Type: 3
+      Scale: 1.1812501
+      Color: [1, 1, 1, 1]
+  - Entity: 15916437441037317517
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 0.817140698
+      Z: 59.6342468
+      Type: 0
+      Scale: 0.884982884
+      Color: [1, 1, 1, 1]
+  - Entity: 14323396467952944843
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 26.2218475
+      Z: 46.6015778
+      Type: 3
+      Scale: 0.907530069
+      Color: [1, 1, 1, 1]
+  - Entity: 11142148985562817452
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -41.022171
+      Z: 45.3747597
+      Type: 0
+      Scale: 1.1494236
+      Color: [1, 1, 1, 1]
+  - Entity: 14056654249212801015
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -61.3525696
+      Z: -55.546051
+      Type: 3
+      Scale: 1.67202783
+      Color: [1, 1, 1, 1]
+  - Entity: 15253536567728384060
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -12.0396814
+      Z: 50.0781059
+      Type: 2
+      Scale: 0.825500369
+      Color: [1, 1, 1, 1]
+  - Entity: 8258661137119330525
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 32.2253952
+      Z: -58.8110962
+      Type: 2
+      Scale: 1.08341539
+      Color: [1, 1, 1, 1]
+  - Entity: 11999600197625048376
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -23.0241089
+      Z: 33.814991
+      Type: 3
+      Scale: 1.02087808
+      Color: [1, 1, 1, 1]
+  - Entity: 16485323800636914678
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 23.0819683
+      Z: 35.6959038
+      Type: 0
+      Scale: 1.10836875
+      Color: [1, 1, 1, 1]
+  - Entity: 11685659395969037135
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -23.2901745
+      Z: -51.935791
+      Type: 3
+      Scale: 2.2263658
+      Color: [1, 1, 1, 1]
+  - Entity: 2349402456783693791
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -63.5169563
+      Z: -54.485363
+      Type: 1
+      Scale: 1.96267223
+      Color: [1, 1, 1, 1]
+  - Entity: 6957980509347759247
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -11.407403
+      Z: -30.2427845
+      Type: 1
+      Scale: 1.19577146
+      Color: [1, 1, 1, 1]
+  - Entity: 16437715581471179812
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 40.4204254
+      Z: 32.0115509
+      Type: 3
+      Scale: 1.07388997
+      Color: [1, 1, 1, 1]
+  - Entity: 10220502471868891148
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 38.8085861
+      Z: 31.9059868
+      Type: 1
+      Scale: 1.44502854
+      Color: [1, 1, 1, 1]
+  - Entity: 16810738128966199821
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 44.6586685
+      Z: 56.223629
+      Type: 2
+      Scale: 1.84783888
+      Color: [1, 1, 1, 1]
+  - Entity: 17155569435701722083
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 20.2183456
+      Z: 23.6836262
+      Type: 3
+      Scale: 1.04596329
+      Color: [1, 1, 1, 1]
+  - Entity: 8194079833620831948
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -61.8382034
+      Z: 38.3305435
+      Type: 2
+      Scale: 1.49771225
+      Color: [1, 1, 1, 1]
+  - Entity: 15504467654989552042
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -62.0067863
+      Z: 42.8936577
+      Type: 2
+      Scale: 2.26740122
+      Color: [1, 1, 1, 1]
+  - Entity: 3849797151786918808
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -23.8500423
+      Z: -44.6198921
+      Type: 1
+      Scale: 0.974165797
+      Color: [1, 1, 1, 1]
+  - Entity: 7966348931652180101
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -34.5016937
+      Z: -14.9150972
+      Type: 3
+      Scale: 1.18910241
+      Color: [1, 1, 1, 1]
+  - Entity: 11802482181957083071
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 31.7191601
+      Z: -53.1006508
+      Type: 1
+      Scale: 1.07777357
+      Color: [1, 1, 1, 1]
+  - Entity: 7035507907121800668
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -61.512619
+      Z: -36.5336952
+      Type: 0
+      Scale: 1.76165795
+      Color: [1, 1, 1, 1]
+  - Entity: 14772528895991863691
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 14.9990225
+      Z: 22.5789013
+      Type: 3
+      Scale: 1.14966238
+      Color: [1, 1, 1, 1]
+  - Entity: 11806722073759983464
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -15.0542336
+      Z: -47.5148697
+      Type: 0
+      Scale: 2.20843673
+      Color: [1, 1, 1, 1]
+  - Entity: 17507126032931392977
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -61.4969368
+      Z: -30.9509392
+      Type: 0
+      Scale: 0.800999999
+      Color: [1, 1, 1, 1]
+  - Entity: 14302748741615256615
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -4.81366682
+      Z: -20.3194065
+      Type: 1
+      Scale: 1.02351403
+      Color: [1, 1, 1, 1]
+  - Entity: 18212481588475246229
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -19.006403
+      Z: -36.6031647
+      Type: 3
+      Scale: 1.68552136
+      Color: [1, 1, 1, 1]
+  - Entity: 17569721710193285907
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 15.391077
+      Z: 32.8873253
+      Type: 1
+      Scale: 1.22807443
+      Color: [1, 1, 1, 1]
+  - Entity: 5795426811359755141
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 23.5263004
+      Z: 21.5717869
+      Type: 3
+      Scale: 0.829256058
+      Color: [1, 1, 1, 1]
+  - Entity: 9179345025718463020
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -18.2936859
+      Z: -54.9644852
+      Type: 2
+      Scale: 1.32841325
+      Color: [1, 1, 1, 1]
+  - Entity: 10754873526176716573
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -37.9627419
+      Z: -5.84066772
+      Type: 2
+      Scale: 1.60687184
+      Color: [1, 1, 1, 1]
+  - Entity: 9197664186645820520
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -56.9455261
+      Z: -32.4795761
+      Type: 0
+      Scale: 2.059407
+      Color: [1, 1, 1, 1]
+  - Entity: 2729644815587332058
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -27.1893234
+      Z: -52.9617996
+      Type: 0
+      Scale: 1.21340013
+      Color: [1, 1, 1, 1]
+  - Entity: 3436951799423383455
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 15
+      Z: 5
+      Type: 2
+      Scale: 1.14999998
+      Color: [1, 1, 1, 1]
+  - Entity: 6928329203987935904
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: 7
+      Z: -14
+      Type: 3
+      Scale: 1.14999998
+      Color: [1, 1, 1, 1]
+  - Entity: 1389587779578339825
+    TagComponent:
+      Tag: Tree
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PropComponent:
+      X: -12
+      Z: 12
+      Type: 1
+      Scale: 1.14999998
+      Color: [1, 1, 1, 1]
+  - Entity: 11614068177617585482
+    TagComponent:
+      Tag: Procedural Terrain
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    TerrainComponent:
+      Size: 150
+      Segments: 150
+      HeightScale: 15
+      NoiseScale: 0.0350000001
+      Seed: 20260829
+      Color: [1, 1, 1, 1]

@@ -277,6 +277,39 @@ namespace XLEngine
 
 			out << YAML::EndMap;
 		}
+
+		// 程序化地形（内容数据驱动：生成参数固化到 .xl，省去编辑器硬编码）
+		if (entity.HasComponent<TerrainComponent>())
+		{
+			out << YAML::Key << "TerrainComponent";
+			out << YAML::BeginMap;
+
+			auto& terrain = entity.GetComponent<TerrainComponent>();
+			out << YAML::Key << "Size" << YAML::Value << terrain.Size;
+			out << YAML::Key << "Segments" << YAML::Value << terrain.Segments;
+			out << YAML::Key << "HeightScale" << YAML::Value << terrain.HeightScale;
+			out << YAML::Key << "NoiseScale" << YAML::Value << terrain.NoiseScale;
+			out << YAML::Key << "Seed" << YAML::Value << terrain.Seed;
+			out << YAML::Key << "Color" << YAML::Value << terrain.Color;
+
+			out << YAML::EndMap;
+		}
+
+		// 程序化散布物件（树木/岩石/遗迹：内容数据驱动，.xl 固化坐标/类型/缩放）
+		if (entity.HasComponent<PropComponent>())
+		{
+			out << YAML::Key << "PropComponent";
+			out << YAML::BeginMap;
+
+			auto& prop = entity.GetComponent<PropComponent>();
+			out << YAML::Key << "X" << YAML::Value << prop.X;
+			out << YAML::Key << "Z" << YAML::Value << prop.Z;
+			out << YAML::Key << "Type" << YAML::Value << (int)prop.Type;
+			out << YAML::Key << "Scale" << YAML::Value << prop.Scale;
+			out << YAML::Key << "Color" << YAML::Value << prop.Color;
+
+			out << YAML::EndMap;
+		}
 		out << YAML::EndMap;// Entity
 	}
 
@@ -439,6 +472,34 @@ namespace XLEngine
 				{
 					std::string str = staticMeshComponent["Path"].as<std::string>();
 					auto& src = deserializedEntity.AddComponent<StaticMeshComponent>(str);
+				}
+
+				auto terrainComponent = entity["TerrainComponent"];
+				if (terrainComponent)
+				{
+					auto& terrain = deserializedEntity.AddComponent<TerrainComponent>();
+					terrain.Size = terrainComponent["Size"].as<float>();
+					terrain.Segments = terrainComponent["Segments"].as<uint32_t>();
+					terrain.HeightScale = terrainComponent["HeightScale"].as<float>();
+					terrain.NoiseScale = terrainComponent["NoiseScale"].as<float>();
+					terrain.Seed = terrainComponent["Seed"].as<uint32_t>();
+					if (terrainComponent["Color"])
+						terrain.Color = terrainComponent["Color"].as<glm::vec4>();
+					// AddComponent<TerrainComponent>() 已按默认参数生成；用固化参数重算，保证完全一致
+					terrain.Generate();
+				}
+
+				auto propComponent = entity["PropComponent"];
+				if (propComponent)
+				{
+					const float x   = propComponent["X"].as<float>();
+					const float z   = propComponent["Z"].as<float>();
+					const int   type = propComponent["Type"].as<int>();
+					const float scale = propComponent["Scale"].as<float>();
+					// 值构造后 AddComponent 触发 OnComponentAdded -> Generate（按固化坐标/类型/缩放生成并烘焙高度）
+					auto& prop = deserializedEntity.AddComponent<PropComponent>(x, z, (PropType)type, scale);
+					if (propComponent["Color"])
+						prop.Color = propComponent["Color"].as<glm::vec4>();
 				}
 			}
 			

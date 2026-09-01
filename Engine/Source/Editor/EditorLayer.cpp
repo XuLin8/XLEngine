@@ -120,100 +120,13 @@ namespace XLEngine
         Application::GetInstance().GetWindow().SetTitleIcon(
             AssetManager::GetInstance().GetFullPath("Assets/Textures/SiluokayiLogo.png").string());
 
-        // Procedural terrain (CPU-generated mesh + 6-color palette, zero assets)
-        Entity terrain = m_ActiveScene->CreateEntity("Procedural Terrain");
-        terrain.AddComponent<TerrainComponent>(); // OnComponentAdded generates the mesh
-        XL_CORE_INFO("OnAttach: terrain generated");
-
-        // Procedural props: 45 trees / 6 ruins / 25 rocks, M0-consistent scatter (zero assets)
-        {
-            XL_CORE_INFO("OnAttach: scatter begin");
-            TerrainNoise sNoise(20260829u);
-            auto hAt = [&](float x, float z) { return TerrainHeightAt(sNoise, x, z); };
-
-            // M0 LCG scatter RNG (seed 7): deterministic, reproducible scene layout
-            uint32_t seed = 7u;
-            auto srand = [&]() -> float {
-                seed = (seed * 16807u) % 2147483647u;
-                return (float)seed / 2147483647.0f;
-            };
-
-            // Special-variant trees anchored near the walkway (bent / fallen / root) for near-view variety
-            const struct { float x, z; int v; } treeAnchors[] = {
-                { -12.0f, 12.0f, 1 }, { 7.0f, -14.0f, 3 }, { 15.0f, 5.0f, 2 },
-            };
-            int treeCount = 0;
-            for (const auto& a : treeAnchors)
-            {
-                Entity e = m_ActiveScene->CreateEntity("Tree");
-                e.AddComponent<PropComponent>(a.x, a.z, (PropType)a.v, 1.15f);
-                treeCount++;
-            }
-
-            // Remaining trees: random scatter in ±64.5, on higher ground, away from center
-            int tries = 0;
-            while (treeCount < 45 && tries < 500)
-            {
-                tries++;
-                const float x = (srand() - 0.5f) * 150.0f * 0.86f;
-                const float z = (srand() - 0.5f) * 150.0f * 0.86f;
-                const float h = hAt(x, z);
-                const float d = std::hypot(x, z);
-                if (h > 1.2f && d > 14.0f)
-                {
-                    Entity e = m_ActiveScene->CreateEntity("Tree");
-                    e.AddComponent<PropComponent>(x, z, (PropType)(int)(srand() * 4.0f), 0.8f + srand() * 1.5f);
-                    treeCount++;
-                }
-            }
-            XL_CORE_INFO("OnAttach: trees done, count={0}", treeCount);
-
-            // Rocks: 25 in ±67.5, away from center, scaled 1.2..3.4
-            int rockCount = 0;
-            tries = 0;
-            while (rockCount < 25 && tries < 400)
-            {
-                tries++;
-                const float x = (srand() - 0.5f) * 150.0f * 0.9f;
-                const float z = (srand() - 0.5f) * 150.0f * 0.9f;
-                const float d = std::hypot(x, z);
-                if (d > 18.0f)
-                {
-                    Entity e = m_ActiveScene->CreateEntity("Rock");
-                    e.AddComponent<PropComponent>(x, z, PropType::Rock, 1.2f + srand() * 2.2f);
-                    rockCount++;
-                }
-            }
-            XL_CORE_INFO("OnAttach: rocks done, count={0}", rockCount);
-
-            // Ruins: 6 — 4 fixed anchors (in-frame) + 2 random, avoiding the toxic glow point (24,-18)
-            const struct { float x, z; int t; } ruinAnchors[] = {
-                { -9.0f, 7.0f, 0 }, { 13.0f, 12.0f, 1 }, { -21.0f, -8.0f, 0 }, { 2.0f, -20.0f, 1 },
-            };
-            int ruinCount = 0;
-            for (const auto& a : ruinAnchors)
-            {
-                Entity e = m_ActiveScene->CreateEntity("Ruins");
-                e.AddComponent<PropComponent>(a.x, a.z, (PropType)(4 + a.t), 1.0f); // 4=RuinsMetal, 5=RuinsRubble
-                ruinCount++;
-            }
-            tries = 0;
-            while (ruinCount < 6 && tries < 200)
-            {
-                tries++;
-                const float x = (srand() - 0.5f) * 150.0f * 0.6f;
-                const float z = (srand() - 0.5f) * 150.0f * 0.6f;
-                const float dLight = std::hypot(x - 24.0f, z + 18.0f);
-                const float dC = std::hypot(x, z);
-                if (dLight > 18.0f && dC > 12.0f)
-                {
-                    Entity e = m_ActiveScene->CreateEntity("Ruins");
-                    e.AddComponent<PropComponent>(x, z, (PropType)(4 + (int)(srand() * 2.0f)), 1.0f);
-                    ruinCount++;
-                }
-            }
-            XL_CORE_INFO("OnAttach: ruins done, count={0}", ruinCount);
-        }
+        // C 内容数据驱动化：地形与散布物件由 Meadow.xl 加载（取代原 EditorLayer 硬编码 scatter）。
+        // 内容归内容、引擎归引擎，工具层不再内嵌具体场景数据。
+        // 场景文件由 CMake 在配置期复制到运行时 Assets 目录（见 Engine/CMakeLists 的 file(COPY)）。
+        // 注：Deserialize 仅追加实体；此处必须为空场景，否则地形/树木/岩石/遗迹会重复出现。
+        SceneSerializer sceneLoader(m_ActiveScene);
+        if (!sceneLoader.Deserialize(AssetManager::GetInstance().GetFullPath("Assets/Scenes/Meadow.xl").string()))
+            XL_CORE_ERROR("OnAttach: 加载 Meadow.xl 失败，场景为空");
 
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
