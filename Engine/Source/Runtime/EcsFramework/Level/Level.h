@@ -12,7 +12,7 @@ class b2World;
 namespace XLEngine
 {
 	class Entity;
-	class GameSystem;
+	class System;
 
 	class Level
 	{
@@ -42,8 +42,17 @@ namespace XLEngine
 		
 		Entity GetPrimaryCameraEntity();
 
-		// M2 玩法系统：供 HUD 查询光尘/灯台进度
-		GameSystem* GetGameSystem();
+		// 通用系统注册/查询：玩法系统由宿主（装配层）通过 RegisterSystem 注入，
+		// 引擎核心不再依赖任何具体玩法类型（Game → Engine 单向依赖）。
+		void RegisterSystem(System* system);
+		template<typename T>
+		T* GetSystem()
+		{
+			for (System* s : mSystems)
+				if (T* t = dynamic_cast<T*>(s))
+					return t;
+			return nullptr;
+		}
 
 		template<typename... Componets>
 		auto GetAllEntitiesWith()

@@ -222,6 +222,11 @@ namespace XLEngine
         m_EditorScene = m_ActiveScene;
         m_World.SetPersistentLevel(m_ActiveScene);
 
+        // A 玩法装配扩展点：Play 拷贝运行关卡后由 World 回调，在此注入玩法系统
+        m_World.SetRuntimeAssembler([this](Ref<Level> level) { AttachGameplay(level); });
+        // 持久关卡（编辑态玩法预览）同样装配玩法系统
+        AttachGameplay(m_ActiveScene);
+
 #if 0
         // Entity
         Entity square = m_ActiveScene->CreateEntity("Green Square");
@@ -395,7 +400,7 @@ namespace XLEngine
             const glm::vec4 ember = { 0.788f, 0.431f, 0.227f, 1.0f }; // #C96E3A 余烬橙
             const glm::vec4 mote  = { 0.616f, 0.722f, 0.290f, 1.0f }; // #9DB84A 荧绿
 
-            if (GameSystem* gs = m_ActiveScene ? m_ActiveScene->GetGameSystem() : nullptr)
+            if (GameSystem* gs = m_ActiveScene ? m_ActiveScene->GetSystem<GameSystem>() : nullptr)
             {
                 // Close depth test so HUD stays on top of terrain / props.
                 glDisable(GL_DEPTH_TEST);
@@ -946,6 +951,7 @@ namespace XLEngine
 
         m_EditorScene = m_ActiveScene;
         m_World.SetPersistentLevel(m_ActiveScene);
+        AttachGameplay(m_ActiveScene);
         m_EditorScenePath = std::filesystem::path();
     }
 
@@ -976,6 +982,7 @@ namespace XLEngine
 
             m_ActiveScene = m_EditorScene;
             m_World.SetPersistentLevel(m_ActiveScene);
+            AttachGameplay(m_ActiveScene);
             m_EditorScenePath = path;
         }
     }
@@ -1002,6 +1009,14 @@ namespace XLEngine
     {
         SceneSerializer serializer(scene);
         serializer.Serialize(path.string());
+    }
+
+    // A 玩法装配：把本项目玩法系统注入关卡（装配层职责，引擎不感知玩法类型）。
+    // 持久关卡在 NewScene/OpenScene/OnAttach 装配，运行关卡由 World 运行时装配扩展点装配。
+    void EditorLayer::AttachGameplay(Ref<Level> level)
+    {
+        if (level)
+            level->RegisterSystem(new GameSystem(level.get()));
     }
 
     void EditorLayer::OnScenePlay()

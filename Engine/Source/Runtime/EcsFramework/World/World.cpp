@@ -1,6 +1,5 @@
 #include "xlpch.h"
 #include "Runtime/EcsFramework/World/World.h"
-#include "Runtime/EcsFramework/System/Game/GameSystem.h"
 
 namespace XLEngine
 {
@@ -21,6 +20,9 @@ namespace XLEngine
 
 		m_RuntimeLevel = Level::Copy(m_PersistentLevel);
 		m_State = EState::Runtime;
+		// 运行关卡装配：由宿主注入玩法系统（引擎不感知具体玩法类型）
+		if (m_RuntimeAssembler)
+			m_RuntimeAssembler(m_RuntimeLevel);
 		if (m_GameMode)
 			m_GameMode->BeginPlay(m_RuntimeLevel.get());
 	}
@@ -63,11 +65,5 @@ namespace XLEngine
 		if (m_State == EState::Runtime && m_RuntimeLevel)
 			return m_RuntimeLevel;
 		return m_PersistentLevel;
-	}
-
-	GameSystem* World::GetGameSystem()
-	{
-		Ref<Level> active = GetActiveLevel();
-		return active ? active->GetGameSystem() : nullptr;
 	}
 }

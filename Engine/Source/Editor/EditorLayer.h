@@ -44,6 +44,10 @@ namespace XLEngine
 		// UI Panels
 		void UI_Toolbar();
 		void LoadDefaultEditorConfig();
+
+		// 玩法装配（装配层职责）：把本项目的玩法系统注册进关卡。
+		// 引擎核心不再硬编码任何玩法类，只在本宿主处注入。
+		void AttachGameplay(Ref<Level> level);
 	private:
 		//temp
 		Ref<VertexArray> m_SquareVA;

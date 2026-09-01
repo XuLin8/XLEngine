@@ -5,7 +5,6 @@
 #include "Runtime/EcsFramework/Component/ComponentGroup.h"
 #include "Runtime/EcsFramework/System/SystemGroup.h"
 #include "Runtime/EcsFramework/System/Script/NativeScriptSystem.h"
-#include "Runtime/EcsFramework/System/Game/GameSystem.h"
 #include "Runtime/Renderer/Renderer2D.h"
 #include "Runtime/Renderer/Renderer3D.h"
 
@@ -14,7 +13,8 @@ namespace XLEngine
 	Level::Level()
 	{
 		mSystems.push_back(new NativeScriptSystem(this)); // 实体脚本（实例化/更新）
-		mSystems.push_back(new GameSystem(this));        // M2 核心循环（探索/收集/点亮/黎明）
+		// 备注：玩法系统（GameSystem）不再由引擎构造函数硬编码注册，
+		// 改由宿主/装配层在关卡装配时通过 RegisterSystem 注入（见 World 运行时装配扩展点）。
 	}
 
 	Level::~Level()
@@ -221,14 +221,10 @@ namespace XLEngine
 		return {};
 	}
 
-	GameSystem* Level::GetGameSystem()
+	void Level::RegisterSystem(System* system)
 	{
-		for (auto& system : mSystems)
-		{
-			if (auto* gs = dynamic_cast<GameSystem*>(system))
-				return gs;
-		}
-		return nullptr;
+		if (system)
+			mSystems.push_back(system);
 	}
 
 	template<typename T>

@@ -7,10 +7,10 @@
 #include "Runtime/Renderer/EditorCamera.h"
 
 #include <cstdint>
+#include <functional>
 
 namespace XLEngine
 {
-	class GameSystem;
 
 	// World：持有"持久关卡"(编辑源)与"运行关卡"(Play 时的副本)，并在编辑/运行时态间切换，
 	// 同时调度 GameMode 的会话生命周期。对应 UE 的 World + 当前 Level + GameMode，
@@ -49,14 +49,17 @@ namespace XLEngine
 		void SetGameMode(Ref<GameMode> gameMode) { m_GameMode = gameMode ? gameMode : CreateRef<DefaultGameMode>(); }
 		[[nodiscard]] Ref<GameMode> GetGameMode() const { return m_GameMode; }
 
-		// 透传给运行关卡，供 HUD 查询玩法进度（如 GameSystem 光尘/灯台）
-		[[nodiscard]] GameSystem* GetGameSystem();
+		// 运行时玩法装配扩展点：Play 拷贝出运行关卡后，由宿主（装配层）注入玩法系统。
+		// 引擎核心不依赖任何具体玩法类型，只提供注入时机；具体系统由宿主注册。
+		using RuntimeAssembler = std::function<void(Ref<Level>)>;
+		void SetRuntimeAssembler(RuntimeAssembler assembler) { m_RuntimeAssembler = std::move(assembler); }
 
 	private:
 		EState m_State = EState::Edit;
 
 		Ref<Level> m_PersistentLevel;   // 编辑源关卡
 		Ref<Level> m_RuntimeLevel;      // Play 时由持久关卡复制的运行关卡
+		RuntimeAssembler m_RuntimeAssembler;
 
 		Ref<GameMode> m_GameMode = CreateRef<DefaultGameMode>();
 	};
