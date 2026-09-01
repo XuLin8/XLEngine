@@ -5,6 +5,7 @@
 #include "Runtime/Renderer/Renderer.h"
 
 #include "Runtime/Input/Input.h"
+#include "Runtime/Input/InputActionManager.h"
 #include "Runtime/Resource/ConfigManager/ConfigManager.h"
 #include "Runtime/Utils/PlatformUtils.h"
 
@@ -74,6 +75,10 @@ namespace XLEngine
 			float time = (float)(glfwGetTime());
 			Timestep timestep = time - mLastFrameTime;
 			mLastFrameTime = time;
+
+			// 阶段 D：每帧首部对绑定键做边沿采样，供各层/玩法查询 WasPressed/WasReleased/IsHeld。
+			// 放在层更新之前，保证本帧动作查询读到的都是本帧快照。
+			InputActionManager::Get().UpdateFrame();
 
 			if (!bMinimized)
 				for (Layer* layer : mLayerStack) layer->OnUpdate(timestep);

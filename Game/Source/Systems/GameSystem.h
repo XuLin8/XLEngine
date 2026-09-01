@@ -29,6 +29,7 @@ namespace XLEngine
 
 	private:
 		void SpawnLevel();
+		void SetupInputActions();
 		void Simulate(Timestep ts, EditorCamera& camera);
 		void DrawOrb(const glm::vec3& pos, float radius, const glm::vec4& color);
 
@@ -50,7 +51,8 @@ namespace XLEngine
 		bool m_Dawn = false;
 		float m_Time = 0.0f;
 
-		bool m_InteractPrev = false;
+		// 阶段 D：输入动作一次性注册（边沿由 InputActionManager 统一跟踪，无需手写）
+		bool m_InputConfigured = false;
 
 		// P1-3 粒子反馈（收集爆发 / 点亮爆发 / 光尘漂浮流）
 		ParticleSystem m_Particles;

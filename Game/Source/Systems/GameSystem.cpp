@@ -3,7 +3,7 @@
 
 #include "Runtime/Renderer/Renderer3D.h"
 #include "Runtime/Renderer/StaticMesh.h"
-#include "Runtime/Input/InputAction.h"
+#include "Runtime/Input/InputActionManager.h"
 #include "Runtime/Utils/Procedural/TerrainNoise.h"
 #include "Runtime/Audio/AudioSystem.h"
 
@@ -126,8 +126,8 @@ namespace XLEngine
 
 	void GameSystem::SpawnLevel()
 	{
-		// 最低限字：确保输入动作映射已就绪，并在首次进入时用确定性种子重建一局
-		InputActionMapper::Get().LoadDefaultBindings();
+		// 阶段 D：一次性向 InputActionManager 注册玩法输入动作（边沿由管理器统一采样）
+		SetupInputActions();
 
 		if (!m_OrbBuilt)
 		{
@@ -178,15 +178,47 @@ namespace XLEngine
 		}
 	}
 
+	// 阶段 D：玩法输入动作注册（Gameplay 上下文）。移动用 Axis2D（WASD/方向键），
+	// 交互用 Tap 触发的 Bool（E/空格）——按下瞬间触发，由管理器完成边沿判定。
+	void GameSystem::SetupInputActions()
+	{
+		if (m_InputConfigured)
+			return;
+		m_InputConfigured = true;
+
+		InputActionManager& input = InputActionManager::Get();
+		input.SetBaseContext("Gameplay");
+
+		InputAction move;
+		move.Name = "Move";
+		move.Type = InputActionType::Axis2D;
+		move.Trigger = InputTrigger::Hold;
+		move.Context = "Gameplay";
+		// 主绑定：WASD（X=D-A 左右，Y=W-S 前后）
+		move.Bindings.push_back({ Key::D, Key::A, Key::W, Key::S, (KeyCode)0 });
+		// 备选绑定：方向键
+		move.Bindings.push_back({ Key::Right, Key::Left, Key::Up, Key::Down, (KeyCode)0 });
+		input.AddAction(move);
+
+		InputAction interact;
+		interact.Name = "Interact";
+		interact.Type = InputActionType::Bool;
+		interact.Trigger = InputTrigger::Tap; // 点亮灯台用边沿
+		interact.Context = "Gameplay";
+		interact.Bindings.push_back({ Key::E, (KeyCode)0, (KeyCode)0, (KeyCode)0, (KeyCode)0 });
+		interact.Bindings.push_back({ Key::Space, (KeyCode)0, (KeyCode)0, (KeyCode)0, (KeyCode)0 });
+		input.AddAction(interact);
+	}
+
 	void GameSystem::Simulate(Timestep ts, EditorCamera& camera)
 	{
 		m_Time += ts;
-		InputActionMapper& input = InputActionMapper::Get();
+		InputActionManager& input = InputActionManager::Get();
 
 		TerrainNoise noise(20260829u);
 		auto hAt = [&](float x, float z) { return TerrainHeightAt(noise, x, z); };
 
-		// ---- 镜头相对移动（WASD/方向键）----
+		// ---- 镜头相对移动（WASD/方向键：Axis2D）----
 		glm::vec3 fwd = camera.GetForwardDirection();
 		fwd.y = 0.0f;
 		if (glm::length(fwd) > 1e-5f) fwd = glm::normalize(fwd);
@@ -194,9 +226,8 @@ namespace XLEngine
 		right.y = 0.0f;
 		if (glm::length(right) > 1e-5f) right = glm::normalize(right);
 
-		const float axisF = input.GetAxisPolar("MoveForward", "MoveBackward");
-		const float axisR = input.GetAxisPolar("MoveRight", "MoveLeft");
-		glm::vec3 move = right * axisR + fwd * axisF;
+		const glm::vec2 axis = input.GetAxis2D("Move");
+		glm::vec3 move = right * axis.x + fwd * axis.y;
 		if (glm::length(move) > 1e-4f)
 		{
 			move = glm::normalize(move) * (m_PlayerSpeed * ts);
@@ -221,10 +252,8 @@ namespace XLEngine
 			}
 		}
 
-		// ---- 点亮灯台（E/空格 边沿触发）----
-		const bool interact = input.IsPressed("Interact");
-		const bool interactPressed = interact && !m_InteractPrev;
-		m_InteractPrev = interact;
+		// ---- 点亮灯台（E/空格 边沿触发，交管理器判定）----
+		const bool interactPressed = input.WasPressed("Interact");
 		for (auto& beacon : mBeacons)
 		{
 			if (beacon.LitTime < 0.0f && Dist2D(m_PlayerPos, beacon.Pos) < kInteractRadius && interactPressed)
