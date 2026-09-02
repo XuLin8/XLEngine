@@ -2,6 +2,7 @@
 #include "SceneSerializer.h"
 #include "Runtime/EcsFramework/Entity/Entity.h"
 #include "Runtime/EcsFramework/Component/ComponentGroup.h"
+#include "Runtime/Reflection/Reflection.h"
 #include "Runtime/Resource/AssetDescriptor.h"
 #include "Runtime/Resource/AssetHandle.h"
 
@@ -9,138 +10,23 @@
 
 #include <fstream>
 
-namespace YAML
-{
-	template<>
-	struct convert<glm::vec2>
-	{
-		static Node encode(const glm::vec2& rhs)
-		{
-			Node node;
-			node.push_back(rhs.x);
-			node.push_back(rhs.y);
-			node.SetStyle(EmitterStyle::Flow);
-			return node;
-		}
-
-		static bool decode(const Node& node, glm::vec2& rhs)
-		{
-			if (!node.IsSequence() || node.size() != 2)
-				return false;
-
-			rhs.x = node[0].as<float>();
-			rhs.y = node[1].as<float>();
-			return true;
-		}
-	};
-
-	template<>
-	struct convert<glm::vec3>
-	{
-		static Node encode(const glm::vec3& rhs)
-		{
-			Node node;
-			node.push_back(rhs.x);
-			node.push_back(rhs.y);
-			node.push_back(rhs.z);
-			return node;
-		}
-
-		static bool decode(const Node& node, glm::vec3& rhs)
-		{
-			if (!node.IsSequence() || node.size() != 3)
-				return false;
-
-			rhs.x = node[0].as<float>();
-			rhs.y = node[1].as<float>();
-			rhs.z = node[2].as<float>();
-			return true;
-		}
-	};
-
-	template<>
-	struct convert<glm::vec4>
-	{
-		static Node encode(const glm::vec4& rhs)
-		{
-			Node node;
-			node.push_back(rhs.x);
-			node.push_back(rhs.y);
-			node.push_back(rhs.z);
-			node.push_back(rhs.w);
-			return node;
-		}
-
-		static bool decode(const Node& node, glm::vec4& rhs)
-		{
-			if (!node.IsSequence() || node.size() != 4)
-				return false;
-
-			rhs.x = node[0].as<float>();
-			rhs.y = node[1].as<float>();
-			rhs.z = node[2].as<float>();
-			rhs.w = node[3].as<float>();
-			return true;
-		}
-	};
-}
-
 namespace XLEngine
 {
-	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec2& v)
+	namespace
 	{
-		out << YAML::Flow;
-		out << YAML::BeginSeq << v.x << v.y << YAML::EndSeq;
-		return out;
-	}
-
-	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec3& v)
-	{
-		out << YAML::Flow;
-		out << YAML::BeginSeq << v.x << v.y << v.z << YAML::EndSeq;
-		return out;
-	}
-
-	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec4& v)
-	{
-		out << YAML::Flow;
-		out << YAML::BeginSeq << v.x << v.y << v.z << v.w << YAML::EndSeq;
-		return out;
-	}
-
-	static std::string RigidBody2DBodyTypeToString(Rigidbody2DComponent::BodyType bodyType)
-	{
-		switch (bodyType)
+		// 反射驱动的组件级序列化：写 "组件名: {字段...}"
+		template<typename T>
+		void SerializeComponentBlock(YAML::Emitter& out, Entity entity)
 		{
-		case Rigidbody2DComponent::BodyType::Static:
-			return "Static";
-		case Rigidbody2DComponent::BodyType::Dynamic:
-			return "Dynamic";
-		case Rigidbody2DComponent::BodyType::Kinematic:
-			return "Kinematic";
+			const auto& component = entity.GetComponent<T>();
+			out << YAML::Key << GetTypeInfo<T>().Name;
+			SerializeComponent(out, component);
 		}
-
-		XL_CORE_ASSERT(false, "Unknown body type!")
-		return {};
-	}
-
-	static Rigidbody2DComponent::BodyType RigidBody2DBodyTypeFromString(const std::string& bodyTypeString)
-	{
-		if (bodyTypeString == "Static")
-			return Rigidbody2DComponent::BodyType::Static;
-		if (bodyTypeString == "Dynamic")
-			return Rigidbody2DComponent::BodyType::Dynamic;
-		if (bodyTypeString == "Kinematic")
-			return Rigidbody2DComponent::BodyType::Kinematic;
-
-		XL_CORE_ASSERT(false, "Unknown body type!")
-		return Rigidbody2DComponent::BodyType::Static;
 	}
 
 	SceneSerializer::SceneSerializer(const Ref<Level>& level)
-		:mLevel(level)
+		: mLevel(level)
 	{
-
 	}
 
 	static void SerializeEntity(YAML::Emitter& out, Entity entity)
@@ -149,33 +35,16 @@ namespace XLEngine
 
 		out << YAML::BeginMap;// Entity
 		out << YAML::Key << "Entity" << YAML::Value << entity.GetUUID();
-		
+
 		if (entity.HasComponent<TagComponent>())
-		{
-			out << YAML::Key << "TagComponent";
-			out << YAML::BeginMap;// TagComponent;
-
-			auto& tag = entity.GetComponent<TagComponent>().Tag;
-			out << YAML::Key << "Tag" << YAML::Value << tag;
-
-			out << YAML::EndMap; // TagComponent;
-		}
+			SerializeComponentBlock<TagComponent>(out, entity);
 
 		if (entity.HasComponent<TransformComponent>())
-		{
-			out << YAML::Key << "TransformComponent";
-			out << YAML::BeginMap; // TransformComponent
-
-			auto& tc = entity.GetComponent<TransformComponent>();
-			out << YAML::Key << "Translation" << YAML::Value << tc.Translation;
-			out << YAML::Key << "Rotation" << YAML::Value << tc.Rotation;
-			out << YAML::Key << "Scale" << YAML::Value << tc.Scale;
-
-			out << YAML::EndMap; // TransformComponent
-		}
+			SerializeComponentBlock<TransformComponent>(out, entity);
 
 		if (entity.HasComponent<CameraComponent>())
 		{
+			// Camera 含嵌套 SceneCamera 子地图，字段结构性较强，暂保留手写
 			out << YAML::Key << "CameraComponent";
 			out << YAML::BeginMap; // CameraComponent
 
@@ -200,116 +69,29 @@ namespace XLEngine
 		}
 
 		if (entity.HasComponent<SpriteRendererComponent>())
-		{
-			out << YAML::Key << "SpriteRendererComponent";
-			out << YAML::BeginMap; // SpriteRendererComponent
-
-			auto& spriteRendererComponent = entity.GetComponent<SpriteRendererComponent>();
-			out << YAML::Key << "Color" << YAML::Value << spriteRendererComponent.Color;
-
-			out << YAML::EndMap; // SpriteRendererComponent
-		}
+			SerializeComponentBlock<SpriteRendererComponent>(out, entity);
 
 		if (entity.HasComponent<CircleRendererComponent>())
-		{
-			out << YAML::Key << "CircleRendererComponent";
-			out << YAML::BeginMap;
-
-			auto& circleComponent = entity.GetComponent<CircleRendererComponent>();
-			out << YAML::Key << "Color" << YAML::Value << circleComponent.Color;
-			out << YAML::Key << "Thickness" << YAML::Value << circleComponent.Thickness;
-			out << YAML::Key << "Fade" << YAML::Value << circleComponent.Fade;
-
-			out << YAML::EndMap;
-		}
+			SerializeComponentBlock<CircleRendererComponent>(out, entity);
 
 		if (entity.HasComponent<Rigidbody2DComponent>())
-		{
-			out << YAML::Key << "Rigidbody2DComponent";
-			out << YAML::BeginMap;// Rigidbody2DComponent;
-
-			auto& rb2dComponent = entity.GetComponent<Rigidbody2DComponent>();
-			out << YAML::Key << "BodyType" << YAML::Value << RigidBody2DBodyTypeToString(rb2dComponent.Type);
-			out << YAML::Key << "FixedRotation" << YAML::Value << rb2dComponent.FixedRotation;
-
-			out << YAML::EndMap;// Rigidbody2DComponent;
-		}
+			SerializeComponentBlock<Rigidbody2DComponent>(out, entity);
 
 		if (entity.HasComponent<BoxCollider2DComponent>())
-		{
-			out << YAML::Key << "BoxCollider2DComponent";
-			out << YAML::BeginMap;// BoxCollider2DComponent
-
-			auto& bc2dComponent = entity.GetComponent<BoxCollider2DComponent>();
-			out << YAML::Key << "Offset" << YAML::Value << bc2dComponent.Offset;
-			out << YAML::Key << "Size" << YAML::Value << bc2dComponent.Size;
-			out << YAML::Key << "Density" << YAML::Value << bc2dComponent.Density;
-			out << YAML::Key << "Friction" << YAML::Value << bc2dComponent.Friction;
-			out << YAML::Key << "Restitution" << YAML::Value << bc2dComponent.Restitution;
-			out << YAML::Key << "RestitutionThreshold" << YAML::Value << bc2dComponent.RestitutionThreshold;
-
-			out << YAML::EndMap;// BoxCollider2DComponent
-		}
+			SerializeComponentBlock<BoxCollider2DComponent>(out, entity);
 
 		if (entity.HasComponent<CircleCollider2DComponent>())
-		{
-			out << YAML::Key << "CircleCollider2DComponent";
-			out << YAML::BeginMap; // CircleCollider2DComponent
-
-			auto& cc2dComponent = entity.GetComponent<CircleCollider2DComponent>();
-			out << YAML::Key << "Offset" << YAML::Value << cc2dComponent.Offset;
-			out << YAML::Key << "Radius" << YAML::Value << cc2dComponent.Radius;
-			out << YAML::Key << "Density" << YAML::Value << cc2dComponent.Density;
-			out << YAML::Key << "Friction" << YAML::Value << cc2dComponent.Friction;
-			out << YAML::Key << "Restitution" << YAML::Value << cc2dComponent.Restitution;
-			out << YAML::Key << "RestitutionThreshold" << YAML::Value << cc2dComponent.RestitutionThreshold;
-			
-			out << YAML::EndMap; // CircleCollider2DComponent
-		}
+			SerializeComponentBlock<CircleCollider2DComponent>(out, entity);
 
 		if (entity.HasComponent<StaticMeshComponent>())
-		{
-			out << YAML::Key << "StaticMeshComponent";
-			out << YAML::BeginMap;
+			SerializeComponentBlock<StaticMeshComponent>(out, entity);
 
-			auto& staticMeshComponent = entity.GetComponent<StaticMeshComponent>();
-			out << YAML::Key << "Path" << YAML::Value << staticMeshComponent.Path.c_str();
-
-			out << YAML::EndMap;
-		}
-
-		// 程序化地形（内容数据驱动：生成参数固化到 .xl，省去编辑器硬编码）
 		if (entity.HasComponent<TerrainComponent>())
-		{
-			out << YAML::Key << "TerrainComponent";
-			out << YAML::BeginMap;
+			SerializeComponentBlock<TerrainComponent>(out, entity);
 
-			auto& terrain = entity.GetComponent<TerrainComponent>();
-			out << YAML::Key << "Size" << YAML::Value << terrain.Size;
-			out << YAML::Key << "Segments" << YAML::Value << terrain.Segments;
-			out << YAML::Key << "HeightScale" << YAML::Value << terrain.HeightScale;
-			out << YAML::Key << "NoiseScale" << YAML::Value << terrain.NoiseScale;
-			out << YAML::Key << "Seed" << YAML::Value << terrain.Seed;
-			out << YAML::Key << "Color" << YAML::Value << terrain.Color;
-
-			out << YAML::EndMap;
-		}
-
-		// 程序化散布物件（树木/岩石/遗迹：内容数据驱动，.xl 固化坐标/类型/缩放）
 		if (entity.HasComponent<PropComponent>())
-		{
-			out << YAML::Key << "PropComponent";
-			out << YAML::BeginMap;
+			SerializeComponentBlock<PropComponent>(out, entity);
 
-			auto& prop = entity.GetComponent<PropComponent>();
-			out << YAML::Key << "X" << YAML::Value << prop.X;
-			out << YAML::Key << "Z" << YAML::Value << prop.Z;
-			out << YAML::Key << "Type" << YAML::Value << (int)prop.Type;
-			out << YAML::Key << "Scale" << YAML::Value << prop.Scale;
-			out << YAML::Key << "Color" << YAML::Value << prop.Color;
-
-			out << YAML::EndMap;
-		}
 		out << YAML::EndMap;// Entity
 	}
 
@@ -389,14 +171,10 @@ namespace XLEngine
 
 				Entity deserializedEntity = mLevel->CreateEntityWithUUID(uuid, name);
 
-				auto transformComponent = entity["TransformComponent"];
-				if (transformComponent)
+				// Transform 始终存在（CreateEntityWithUUID 已添加），反射读回即可
 				{
-					// Entities always have transforms
 					auto& tc = deserializedEntity.GetComponent<TransformComponent>();
-					tc.Translation = transformComponent["Translation"].as<glm::vec3>();
-					tc.Rotation = transformComponent["Rotation"].as<glm::vec3>();
-					tc.Scale = transformComponent["Scale"].as<glm::vec3>();
+					DeserializeComponent(tc, entity["TransformComponent"]);
 				}
 
 				auto cameraComponent = entity["CameraComponent"];
@@ -419,87 +197,42 @@ namespace XLEngine
 					cc.FixedAspectRatio = cameraComponent["FixedAspectRatio"].as<bool>();
 				}
 
-				auto spriteRendererComponent = entity["SpriteRendererComponent"];
-				if (spriteRendererComponent)
+				if (auto sprite = entity["SpriteRendererComponent"])
+					DeserializeComponent(deserializedEntity.AddComponent<SpriteRendererComponent>(), sprite);
+
+				if (auto circle = entity["CircleRendererComponent"])
+					DeserializeComponent(deserializedEntity.AddComponent<CircleRendererComponent>(), circle);
+
+				if (auto rb2d = entity["Rigidbody2DComponent"])
+					DeserializeComponent(deserializedEntity.AddComponent<Rigidbody2DComponent>(), rb2d);
+
+				if (auto box2d = entity["BoxCollider2DComponent"])
+					DeserializeComponent(deserializedEntity.AddComponent<BoxCollider2DComponent>(), box2d);
+
+				if (auto cc2d = entity["CircleCollider2DComponent"])
+					DeserializeComponent(deserializedEntity.AddComponent<CircleCollider2DComponent>(), cc2d);
+
+				// StaticMesh 网格在 OnComponentAdded 时按 Path 加载，须先构造出 Path
+				if (auto staticMesh = entity["StaticMeshComponent"])
 				{
-					auto& src = deserializedEntity.AddComponent<SpriteRendererComponent>();
-					src.Color = spriteRendererComponent["Color"].as<glm::vec4>();
+					std::string path = staticMesh["Path"].as<std::string>();
+					deserializedEntity.AddComponent<StaticMeshComponent>(path);
 				}
 
-				auto circleRendererComponent = entity["CircleRendererComponent"];
-				if (circleRendererComponent)
-				{
-					auto& circle = deserializedEntity.AddComponent<CircleRendererComponent>();
-					circle.Color = circleRendererComponent["Color"].as<glm::vec4>();
-					circle.Thickness = circleRendererComponent["Thickness"].as<float>();
-					circle.Fade = circleRendererComponent["Fade"].as<float>();
-				}
-
-				auto rigidbody2DComponent = entity["Rigidbody2DComponent"];
-				if (rigidbody2DComponent)
-				{
-					auto& rb2d = deserializedEntity.AddComponent<Rigidbody2DComponent>();
-					rb2d.Type = RigidBody2DBodyTypeFromString(rigidbody2DComponent["BodyType"].as<std::string>());
-					rb2d.FixedRotation = rigidbody2DComponent["FixedRotation"].as<bool>();
-				}
-
-				auto boxCollider2DComponent = entity["BoxCollider2DComponent"];
-				if (boxCollider2DComponent)
-				{
-					auto& bc2d = deserializedEntity.AddComponent<BoxCollider2DComponent>();
-					bc2d.Offset = boxCollider2DComponent["Offset"].as<glm::vec2>();
-					bc2d.Size = boxCollider2DComponent["Size"].as<glm::vec2>();
-					bc2d.Density = boxCollider2DComponent["Density"].as<float>();
-					bc2d.Friction = boxCollider2DComponent["Friction"].as<float>();
-					bc2d.Restitution = boxCollider2DComponent["Restitution"].as<float>();
-					bc2d.RestitutionThreshold = boxCollider2DComponent["RestitutionThreshold"].as<float>();
-				}
-
-				auto circleCollider2DComponent = entity["CircleCollider2DComponent"];
-				if (circleCollider2DComponent)
-				{
-					auto& cc2d = deserializedEntity.AddComponent<CircleCollider2DComponent>();
-					cc2d.Offset = circleCollider2DComponent["Offset"].as<glm::vec2>();
-					cc2d.Radius = circleCollider2DComponent["Radius"].as<float>();
-					cc2d.Density = circleCollider2DComponent["Density"].as<float>();
-					cc2d.Friction = circleCollider2DComponent["Friction"].as<float>();
-					cc2d.Restitution = circleCollider2DComponent["Restitution"].as<float>();
-					cc2d.RestitutionThreshold = circleCollider2DComponent["RestitutionThreshold"].as<float>();
-				}
-
-				auto staticMeshComponent = entity["StaticMeshComponent"];
-				if (staticMeshComponent)
-				{
-					std::string str = staticMeshComponent["Path"].as<std::string>();
-					auto& src = deserializedEntity.AddComponent<StaticMeshComponent>(str);
-				}
-
-				auto terrainComponent = entity["TerrainComponent"];
-				if (terrainComponent)
+				if (auto terrainComponent = entity["TerrainComponent"])
 				{
 					auto& terrain = deserializedEntity.AddComponent<TerrainComponent>();
-					terrain.Size = terrainComponent["Size"].as<float>();
-					terrain.Segments = terrainComponent["Segments"].as<uint32_t>();
-					terrain.HeightScale = terrainComponent["HeightScale"].as<float>();
-					terrain.NoiseScale = terrainComponent["NoiseScale"].as<float>();
-					terrain.Seed = terrainComponent["Seed"].as<uint32_t>();
-					if (terrainComponent["Color"])
-						terrain.Color = terrainComponent["Color"].as<glm::vec4>();
-					// AddComponent<TerrainComponent>() 已按默认参数生成；用固化参数重算，保证完全一致
+					DeserializeComponent(terrain, terrainComponent);
+					// AddComponent 已按默认参数生成；用固化参数重建，保证完全一致
 					terrain.Generate();
 				}
 
-				auto propComponent = entity["PropComponent"];
-				if (propComponent)
+				if (auto propComponent = entity["PropComponent"])
 				{
-					const float x   = propComponent["X"].as<float>();
-					const float z   = propComponent["Z"].as<float>();
-					const int   type = propComponent["Type"].as<int>();
-					const float scale = propComponent["Scale"].as<float>();
-					// 值构造后 AddComponent 触发 OnComponentAdded -> Generate（按固化坐标/类型/缩放生成并烘焙高度）
-					auto& prop = deserializedEntity.AddComponent<PropComponent>(x, z, (PropType)type, scale);
-					if (propComponent["Color"])
-						prop.Color = propComponent["Color"].as<glm::vec4>();
+					auto& prop = deserializedEntity.AddComponent<PropComponent>();
+					DeserializeComponent(prop, propComponent);
+					// 阶段 E：Y 为内容烘焙进 .xl 的地面高度，引擎按 (X, Y, Z) 直接用固化参数重建
+					prop.Generate();
 				}
 			}
 			

@@ -1,7 +1,6 @@
 #include "xlpch.h"
 #include "Runtime/EcsFramework/Component/Prop/PropComponent.h"
 #include "Runtime/Renderer/StaticMesh.h"
-#include "Runtime/Utils/Procedural/TerrainNoise.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -209,8 +208,8 @@ namespace XLEngine
 
 	void PropComponent::Generate()
 	{
-		TerrainNoise noise(20260829u);
-		const float ground = TerrainHeightAt(noise, X, Z);
+		// 阶段 E：地面高度 Y 已由内容烘焙（见 .xl），引擎不再采样"岛"高度场。
+		const float ground = Y;
 
 		const float s = Scale;
 		MeshBuilder mb;

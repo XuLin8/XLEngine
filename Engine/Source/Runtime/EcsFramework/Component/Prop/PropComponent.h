@@ -23,14 +23,17 @@ namespace XLEngine
 	public:
 		PropComponent() = default;
 		PropComponent(const PropComponent&) = default;
-		PropComponent(float x, float z, PropType type, float scale)
-			: X(x), Z(z), Type(type), Scale(scale) {}
+		PropComponent(float x, float y, float z, PropType type, float scale)
+			: X(x), Y(y), Z(z), Type(type), Scale(scale) {}
 
 		// CPU 生成网格（基础几何体拼接 + 顶点色，零素材），
 		// 在 AddComponent 时经 Level::OnComponentAdded 触发。
+		// 阶段 E：Y 为内容烘焙进 .xl 的地面高度；引擎只按 (X, Y, Z) 定位，
+		// 不再采样具体"岛"高度场（岛布局归 Game/Content）。
 		void Generate();
 
-		float X = 0.0f;      // 世界坐标（用于地形高度采样，高度烘焙进网格）
+		float X = 0.0f;      // 世界 XZ 定位
+		float Y = 0.0f;      // 世界地面高度（内容烘焙）
 		float Z = 0.0f;
 		PropType Type = PropType::Rock;
 		float Scale = 1.0f;
