@@ -20,6 +20,11 @@ namespace XLEngine
 		inline void SetPitch(float pitch) { m_Pitch = pitch; }
 		inline void SetYaw(float yaw) { m_Yaw = yaw; }
 
+		// 运行时跟随：设置轨道焦点（如玩家位置）并重算视图。编辑用 OrbitPan 平移，
+		// 运行时游玩则直接把焦点钉到被跟随目标（镜头相对移动基准也随焦点而动）。
+		inline void SetFocalPoint(const glm::vec3& focal) { m_FocalPoint = focal; UpdateView(); }
+		[[nodiscard]] const glm::vec3& GetFocalPoint() const { return m_FocalPoint; }
+
 		inline void SetViewportSize(float width, float height) { m_ViewportWidth = width; m_ViewportHeight = height; UpdateProjection(); }
 
 		// FPS free-roam mode (WASD + RMB look), linked with the gizmo for object manipulation

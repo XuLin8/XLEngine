@@ -5,8 +5,9 @@
 #  配套：
 #     .\Scripts\LocalDumps-XLEngine.ps1    先固化崩溃转储（建议管理员执行一次）
 #  用法：
-#     .\Scripts\smoke_test.ps1               增量构建 + 运行 + 输入注入
-#     .\Scripts\smoke_test.ps1 -SkipBuild    仅运行 + 输入注入（不重新构建）
+#     .\Scripts\smoke_test.ps1               增量构建 + ECS 单测 + 运行 + 输入注入
+#     .\Scripts\smoke_test.ps1 -SkipBuild    仅运行 + 输入注入（不重新构建/不重跑单测）
+#     .\Scripts\smoke_test.ps1 -Play         以运行时(Play)模式启动并注入输入
 #  输出：
 #     控制台 绿/黄/红 汇总；详细日志写 build\bin\logs\smoke_test_*.log；
 #     崩溃时提示检查 LocalDumps 目录 与 运行日志目录（build\bin\logs）。
@@ -20,7 +21,10 @@ param(
     [int]$StableSeconds = 3,
     # 持续注入输入的总时长（秒）
     [int]$InputSeconds = 8,
-    [switch]$SkipBuild
+    [switch]$SkipBuild,
+    # 运行时(Play)模式：启动即向进程传 --play，首个可渲染帧自动进入 Play，
+    # 从而覆盖运行时玩法更新/渲染路径的回归（默认为编辑态启动）。
+    [switch]$Play
 )
 
 $ErrorActionPreference = 'Stop'
@@ -172,6 +176,18 @@ if (-not $SkipBuild) {
     Write-Step '跳过构建（-SkipBuild）'
 }
 
+# ----------------------------------------------------------------------------
+# 1.5 ECS core unit tests (headless: build + run, no window/GL needed)
+# ----------------------------------------------------------------------------
+Write-Step "run ECS core unit tests via ctest (EcsCoreTests)"
+$ctestOut = & ctest --test-dir $BuildDir -R EcsCoreTests --output-on-failure 2>&1
+Add-Content $LogPath ($ctestOut -join "`n")
+if ($LASTEXITCODE -ne 0) {
+    Write-Fail "ECS core unit tests FAILED: exit=$LASTEXITCODE"
+    exit 8
+}
+Write-Pass 'ECS core unit tests PASS'
+
 if (-not (Test-Path $Exe)) {
     Write-Fail "未找到可执行文件：$Exe"
     exit 2
@@ -182,8 +198,12 @@ if (-not (Test-Path $Exe)) {
 # =============================================================================
 $engineProc = $null
 try {
-    Write-Step "启动：$Exe"
-    $engineProc = Start-Process -FilePath $Exe -PassThru
+    $playLabel = ''
+    if ($Play) { $playLabel = ' --play(运行时模式)' }
+    Write-Step ("启动：" + $Exe + $playLabel)
+    $startArgs = @()
+    if ($Play) { $startArgs += '--play' }
+    $engineProc = Start-Process -FilePath $Exe -ArgumentList $startArgs -PassThru
     Start-Sleep -Seconds $StableSeconds
 
     if ($engineProc.HasExited) {

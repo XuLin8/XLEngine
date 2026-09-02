@@ -9,6 +9,9 @@
 #include "Runtime/Events/Event.h"
 #include "Runtime/Events/ApplicationEvent.h"
 
+#include <string>
+#include <vector>
+
 int main(int argc, char** argv);
 
 namespace XLEngine
@@ -33,6 +36,9 @@ namespace XLEngine
 		// UI 层（如 ImGuiLayer）通过 Layer 抽象驱动，Application 不依赖具体 UI 实现
 		[[nodiscard]] Layer* GetImGuiLayer() { return m_ImGuiLayer; }
 
+		// Command line arguments for --play etc.
+		[[nodiscard]] const std::vector<std::string>& GetArgs() const { return m_Args; }
+
 		void Close();
 	private:
 		void Init(const std::string& name);
@@ -52,5 +58,7 @@ namespace XLEngine
 
 		// To be defined in CLIENT
 		friend void MyAppInitialize(Application& app);
+	private:
+		std::vector<std::string> m_Args;
 	};
 }

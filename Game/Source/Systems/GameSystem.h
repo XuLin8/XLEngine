@@ -26,6 +26,8 @@ namespace XLEngine
 		[[nodiscard]] int GetMotesTotal() const { return (int)mMotes.size(); }
 		[[nodiscard]] int GetBeaconsLit() const { return (int)m_BeaconsLit; }
 		[[nodiscard]] bool IsDawn() const { return m_Dawn; }
+		// 玩家位置：供运行时跟随相机每帧把焦点钉到玩家（镜头相对移动基准）
+		[[nodiscard]] const glm::vec3& GetPlayerPos() const { return m_PlayerPos; }
 
 	private:
 		void SpawnLevel();

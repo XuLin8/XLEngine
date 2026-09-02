@@ -5,6 +5,7 @@
 #include "Runtime/Utils/Procedural/TerrainNoise.h"
 #include "Runtime/EcsFramework/Component/Prop/PropComponent.h"
 #include "GameModule.h"
+#include "Systems/GameSystem.h"
 #include "Runtime/Renderer/TextRenderer.h"
 #include "Runtime/Audio/AudioSystem.h"
 #include "Runtime/Resource/ConfigManager/ConfigManager.h"
@@ -38,6 +39,15 @@ namespace XLEngine
     static bool bShowTutorial = false;
     static bool bShowAboutMe = false;
     static bool bShowDemoImGui = false;
+
+    // 相机视角预设
+    // 编辑态（M1 俯瞰演示）：远·高，便于纵观整座岛散布
+    constexpr float kEditCamDistance = 135.0f;
+    constexpr float kEditCamPitch   = 52.0f;
+    constexpr float kEditCamYaw     = 45.0f;
+    // 运行态（游玩跟随）：低空俯视，玩家居中，便于看清光尘/灯台与交互距离
+    constexpr float kGameCamDistance = 26.0f;
+    constexpr float kGameCamPitch   = 58.0f;
 
 	EditorLayer::EditorLayer(ImGuiLayer* imguiLayer)
 		:Layer("EditorLayer"), m_ImGuiLayer(imguiLayer)
@@ -112,9 +122,9 @@ namespace XLEngine
         m_ActiveScene = CreateRef<Level>();
         m_EditorCameraController = CameraController(30.0f, 1.778f, 0.1f, 1000.0f);
         // M1 pure-visual demo scene: 2.5D oblique framing of the procedural terrain
-        m_EditorCameraController.GetCamera().SetDistance(135.0f);
-        m_EditorCameraController.GetCamera().SetPitch(52.0f);
-        m_EditorCameraController.GetCamera().SetYaw(45.0f);
+        m_EditorCameraController.GetCamera().SetDistance(kEditCamDistance);
+        m_EditorCameraController.GetCamera().SetPitch(kEditCamPitch);
+        m_EditorCameraController.GetCamera().SetYaw(kEditCamYaw);
 
         // Set the window title-bar / taskbar icon from an Asset-folder PNG
         Application::GetInstance().GetWindow().SetTitleIcon(
@@ -139,6 +149,11 @@ namespace XLEngine
         m_World.SetRuntimeAssembler([this](Ref<Level> level) { AttachGameplay(level); });
         // 持久关卡（编辑态玩法预览）同样装配玩法系统
         AttachGameplay(m_ActiveScene);
+
+        // --play：启动即自动进入运行时(Play)模式（首个待渲染帧触发，见 OnUpdate）
+        const auto& cliArgs = Application::GetInstance().GetArgs();
+        for (const auto& a : cliArgs)
+            if (a == "--play") { m_AutoPlay = true; break; }
 
 #if 0
         // Entity
@@ -208,6 +223,13 @@ namespace XLEngine
     void EditorLayer::OnUpdate(Timestep ts)
     {
         XL_PROFILE_FUNCTION();
+
+        // --play：首个可渲染帧自动进入运行时(Play)模式（此时 GL 就绪，可安全拷贝场景/初始化玩法网格）
+        if (m_AutoPlay && !m_AutoPlayDone)
+        {
+            m_AutoPlayDone = true;
+            OnScenePlay();
+        }
 
         // Resize
         if (FramebufferSpecification spec = m_Framebuffer->GetSpecification();
@@ -284,8 +306,12 @@ namespace XLEngine
         }
         else
         {
-            // 运行模式：把冻结的编辑器相机交给 World/GameMode，注入运行关卡并驱动玩法
-            m_World.Update(ts, &m_EditorCameraController.GetCamera(), true);
+            // 运行模式：低空跟随玩家（焦点每帧钉到玩家位置），把相机交给 World/GameMode
+            // 注入运行关卡驱动玩法；镜头相对移动基准也随焦点而动，便于探索收集。
+            EditorCamera& runtimeCam = m_EditorCameraController.GetCamera();
+            if (GameSystem* gs = m_ActiveScene ? m_ActiveScene->GetSystem<GameSystem>() : nullptr)
+                runtimeCam.SetFocalPoint(gs->GetPlayerPos());
+            m_World.Update(ts, &runtimeCam, true);
         }
 
         auto [mx, my] = ImGui::GetMousePos();
@@ -866,6 +892,8 @@ namespace XLEngine
         m_EditorScene = m_ActiveScene;
         m_World.SetPersistentLevel(m_ActiveScene);
         AttachGameplay(m_ActiveScene);
+        // 场景已切换：清空指向旧场景的悬垂句柄，避免后续帧读取已析构的 Level/registry
+        m_HoveredEntity = Entity{};
         m_EditorScenePath = std::filesystem::path();
     }
 
@@ -888,8 +916,23 @@ namespace XLEngine
 
         Ref<Level> newScene = CreateRef<Level>();
         SceneSerializer serializer(newScene);
-        if (serializer.Deserialize(path.string()))
+        XL_CORE_TRACE("OpenScene: deserializing {0} ...", path.string());
+        bool ok = false;
+        try
         {
+            ok = serializer.Deserialize(path.string());
+        }
+        catch (const std::exception& e)
+        {
+            XL_CORE_ERROR("Exception during scene deserialization of {0}: {1}", path.string(), e.what());
+        }
+        catch (...)
+        {
+            XL_CORE_ERROR("Unknown exception during scene deserialization of {0}", path.string());
+        }
+        if (ok)
+        {
+            XL_CORE_TRACE("OpenScene: deserialize OK, entities cleared, switching scene...");
             m_EditorScene = newScene;
             m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
             m_SceneHierarchyPanel.SetContext(m_EditorScene);
@@ -897,6 +940,8 @@ namespace XLEngine
             m_ActiveScene = m_EditorScene;
             m_World.SetPersistentLevel(m_ActiveScene);
             AttachGameplay(m_ActiveScene);
+            // 场景已切换：清空指向旧场景的悬垂句柄，避免后续帧读取已析构的 Level/registry
+            m_HoveredEntity = Entity{};
             m_EditorScenePath = path;
         }
     }
@@ -944,6 +989,13 @@ namespace XLEngine
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
         // 场景已切换：清空指向旧场景的悬垂句柄，避免二次 Play 时访问已析构的 registry
         m_HoveredEntity = Entity{};
+
+        // 运行时游玩视角：低空跟随轨道相机（编辑"M1 俯瞰演示"视角过远过高，不适合游玩）。
+        // 距离/俯仰/偏航固定，切换后焦点由 OnUpdate 运行时分支每帧跟随玩家。
+        EditorCamera& cam = m_EditorCameraController.GetCamera();
+        cam.SetDistance(kGameCamDistance);
+        cam.SetPitch(kGameCamPitch);
+        cam.SetFocalPoint(glm::vec3(0.0f, 0.0f, 0.0f));
     }
 
     void EditorLayer::OnSceneStop()
@@ -957,6 +1009,13 @@ namespace XLEngine
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
         // 运行场景已释放：清空其残留句柄，防止后续帧读取已析构的 Level/registry
         m_HoveredEntity = Entity{};
+
+        // 恢复编辑"M1 俯瞰演示"视角（游玩低空视角不保留回编辑态）
+        EditorCamera& cam = m_EditorCameraController.GetCamera();
+        cam.SetDistance(kEditCamDistance);
+        cam.SetPitch(kEditCamPitch);
+        cam.SetYaw(kEditCamYaw);
+        cam.SetFocalPoint(glm::vec3(0.0f, 0.0f, 0.0f));
     }
 
     void EditorLayer::OnDuplicateEntity()

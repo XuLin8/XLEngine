@@ -99,6 +99,10 @@ namespace XLEngine
 		// FPS free-roam (roam mode): WASD + RMB look, toggled by F / Settings checkbox
 		bool m_FlyMode = false;
 
+		// --play 命令行：启动即自动进入运行时(Play)模式，供冒烟/自动化验收运行时玩法路径
+		bool m_AutoPlay = false;
+		bool m_AutoPlayDone = false;
+
 		// Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;
 		ContentBrowserPanel m_ContentBrowserPanel;

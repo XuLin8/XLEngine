@@ -4,7 +4,7 @@
 #include "Runtime/Renderer/Renderer3D.h"
 #include "Runtime/Renderer/StaticMesh.h"
 #include "Runtime/Input/InputActionManager.h"
-#include "Runtime/Utils/Procedural/TerrainNoise.h"
+#include "Content/IslandTerrain.h"
 #include "Runtime/Audio/AudioSystem.h"
 
 #include <glm/gtc/matrix_transform.hpp>
