@@ -8,6 +8,10 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 project(XLEngine LANGUAGES C CXX)
 
+# 启用 CTest（ECS 核心单元测试等通过 ctest --test-dir build 运行）。
+# 须在 add_subdirectory 之前开启，子目录测试（如 Engine/Source/Test）才能被登记。
+enable_testing()
+
 # 导出 compile_commands.json，供 VSCode C/C++ 扩展 / clangd 等工具
 # 获得与真实编译一致的 include/宏 信息（IDE 跳转、IntelliSense 依赖此文件）
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
