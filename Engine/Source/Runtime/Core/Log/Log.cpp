@@ -63,6 +63,16 @@ namespace XLEngine
 		}
 	}
 
+	void Log::ShowAssertDialog(const std::string& message)
+	{
+		// 中文环境 MessageBoxW 需要宽字符；window 句柄传给 nullptr 表示应用主窗口，由系统选取
+		int n = static_cast<int>(message.size());
+		std::wstring wmsg(n, L'\0');
+		// 仅做 UTF-8 -> UTF-16 转换（spdlog 控制台字符串是按 UTF-8 处理的）
+		MultiByteToWideChar(CP_UTF8, 0, message.c_str(), n, &wmsg[0], n);
+		MessageBoxW(nullptr, wmsg.c_str(), L"XLEngine 断言失败", MB_OK | MB_ICONERROR);
+	}
+
 	void Log::Init()
 	{
 		std::vector<spdlog::sink_ptr> sinks;

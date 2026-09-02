@@ -8,7 +8,7 @@
 
 // Alteratively we could use the same "default" message for both "WITH_MSG" and "NO_MSG" and
 // provide support for custom formatting by concatenating the formatting string instead of having the format inside the default message
-#define XL_INTERNAL_ASSERT_IMPL(type, check, msg, ...) { if(!(check)) { XL##type##ERROR(msg, __VA_ARGS__); XL_DEBUGBREAK(); } }
+#define XL_INTERNAL_ASSERT_IMPL(type, check, msg, ...) { if(!(check)) { auto __xl_msg = fmt::format(msg, __VA_ARGS__); XL##type##ERROR("{}", __xl_msg); ::XLEngine::Log::ShowAssertDialog(__xl_msg); XL_DEBUGBREAK(); } }
 #define XL_INTERNAL_ASSERT_WITH_MSG(type, check, ...) XL_INTERNAL_ASSERT_IMPL(type, check, "Assertion failed: {0}", __VA_ARGS__)
 #define XL_INTERNAL_ASSERT_NO_MSG(type, check) XL_INTERNAL_ASSERT_IMPL(type, check, "Assertion '{0}' failed at {1}:{2}", XL_STRINGIFY_MACRO(check), std::filesystem::path(__FILE__).filename().string(), __LINE__)
 

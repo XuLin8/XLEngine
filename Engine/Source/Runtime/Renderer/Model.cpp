@@ -12,18 +12,34 @@ namespace XLEngine
 
     void Model::LoadModel(const std::string& path)
     {
-        Assimp::Importer importer;
-        const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
-
-        if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+        // assimp 在解析个别模型（尤其材质属性阶段）时会抛出 C++ 异常；若放任逃逸，
+        // 会击穿场景反序列化并终止引擎。这里就地捕获并退化为空模型 + 错误日志。
+        try
         {
-            XL_CORE_ASSERT("ERROR::ASSIMP::{0}", importer.GetErrorString());
-            return;
+            Assimp::Importer importer;
+            const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+
+            if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+            {
+                XL_CORE_ERROR("Failed to load model {0}: {1}", path, importer.GetErrorString());
+                mMeshes.clear();
+                return;
+            }
+
+            mDirectory = std::filesystem::path(path).parent_path().string();
+
+            ProcessNode(scene->mRootNode, scene);
         }
-
-        mDirectory = std::filesystem::path(path).parent_path().string();
-
-        ProcessNode(scene->mRootNode, scene);
+        catch (const std::exception& e)
+        {
+            XL_CORE_ERROR("Exception while importing model {0}: {1}", path, e.what());
+            mMeshes.clear();
+        }
+        catch (...)
+        {
+            XL_CORE_ERROR("Unknown exception while importing model {0}", path);
+            mMeshes.clear();
+        }
     }
 
     void Model::ProcessNode(aiNode* node, const aiScene* scene)
