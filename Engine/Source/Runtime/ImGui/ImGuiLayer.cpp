@@ -11,6 +11,8 @@
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
+#include <filesystem>
+#include <string>
 #include <ImGuizmo.h>
 
 namespace XLEngine {
@@ -36,8 +38,41 @@ namespace XLEngine {
 		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoMerge;
 
 		float fontSize = 18.0f;
+		// 注：OpenSans 不含 CJK 字形，若只加载它，中文（如工具栏/菜单/面板/打包界面）会渲染成 ???。
+		// 故在 OpenSans 之后合并一个可用的系统中文字体，英文走 OpenSans、中文走合并字形。
+		static const char* kCjkFontCandidates[] = {
+			"C:/Windows/Fonts/msyh.ttc",     // 微软雅黑
+			"C:/Windows/Fonts/msyhbd.ttc",   // 微软雅黑 Bold
+			"C:/Windows/Fonts/simhei.ttf",   // 黑体
+			"C:/Windows/Fonts/simsun.ttc",   // 宋体
+		};
+		std::string cjkFontPath;
+		for (const char* f : kCjkFontCandidates)
+		{
+			if (std::filesystem::exists(f)) { cjkFontPath = f; break; }
+		}
+
+		// MergeMode 会合入当前 Fonts.back() 所指字体；故先加 Bold 并合并，再加 Regular 并合并。
 		io.Fonts->AddFontFromFileTTF(AssetManager::GetInstance().GetFullPath("Assets/fonts/opensans/OpenSans-Bold.ttf").string().c_str(), fontSize);
+		if (!cjkFontPath.empty())
+		{
+			ImFontConfig cjkCfg;
+			cjkCfg.MergeMode = true;
+			cjkCfg.GlyphOffset = ImVec2(0.0f, 1.0f); // 少许下移，与 OpenSans 基线对齐更协调
+			io.Fonts->AddFontFromFileTTF(cjkFontPath.c_str(), fontSize, &cjkCfg, io.Fonts->GetGlyphRangesChineseFull());
+		}
 		io.FontDefault = io.Fonts->AddFontFromFileTTF(AssetManager::GetInstance().GetFullPath("Assets/fonts/opensans/OpenSans-Regular.ttf").string().c_str(), fontSize);
+		if (!cjkFontPath.empty())
+		{
+			ImFontConfig cjkCfg;
+			cjkCfg.MergeMode = true;
+			cjkCfg.GlyphOffset = ImVec2(0.0f, 1.0f);
+			io.Fonts->AddFontFromFileTTF(cjkFontPath.c_str(), fontSize, &cjkCfg, io.Fonts->GetGlyphRangesChineseFull());
+		}
+		else
+		{
+			XL_CORE_WARN("未找到可用的系统中文字体，中文界面将显示为 ???");
+		}
 
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
