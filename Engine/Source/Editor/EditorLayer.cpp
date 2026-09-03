@@ -505,19 +505,34 @@ namespace XLEngine
                 ImGui::EndMenu();
             }
 
-            if (ImGui::BeginMenu("Help"))
-            {
-                ImGui::MenuItem("Tutorial", NULL, &bShowTutorial);
-                ImGui::MenuItem("About Me", NULL, &bShowAboutMe);
-                ImGui::MenuItem("Demo ImGui", NULL, &bShowDemoImGui);
-                ImGui::EndMenu();
-            }
+            if (ImGui::BeginMenu("Build"))
+	            {
+	                if (ImGui::MenuItem("打包游戏包…"))
+	                {
+	                    m_bShowPackaging = true;
+	                    m_PackPanel.Reset();
+	                }
+	                ImGui::EndMenu();
+	            }
 
-            ImGui::EndMenuBar();
+	            if (ImGui::BeginMenu("Help"))
+	            {
+	                ImGui::MenuItem("Tutorial", NULL, &bShowTutorial);
+	                ImGui::MenuItem("About Me", NULL, &bShowAboutMe);
+	                ImGui::MenuItem("Demo ImGui", NULL, &bShowDemoImGui);
+	                ImGui::EndMenu();
+	            }
+
+	            ImGui::EndMenuBar();
         }
         // ----MenuBar End----
 
         // ----Windows Begin----
+        if (m_bShowPackaging)
+        {
+            m_PackPanel.OnImGuiRender(&m_bShowPackaging);
+        }
+
         if (bShowContentBrowser)
         {
             m_ContentBrowserPanel.OnImGuiRender(&bShowContentBrowser);

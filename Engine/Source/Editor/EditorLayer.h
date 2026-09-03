@@ -3,6 +3,7 @@
 #include "XLEngine.h"
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/ContentBrowserPanel.h"
+#include "Packing/PackPanel.h"
 
 #include "Runtime/ImGui/ImGuiLayer.h"
 #include "Runtime/Renderer/CameraController.h"
@@ -106,6 +107,8 @@ namespace XLEngine
 		// Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;
 		ContentBrowserPanel m_ContentBrowserPanel;
+		PackPanel m_PackPanel;
+		bool m_bShowPackaging = false; // 打包窗口开关
 
 		// Editor resources
 		Ref<Texture2D> m_IconPlay, m_IconStop;

@@ -3,6 +3,7 @@
 */bin/
 bin-int/
 build/
+BuildPack/   # 编辑器中“打包”功能产出的游戏包体目录
 out/
 
 .vs/
