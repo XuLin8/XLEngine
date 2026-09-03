@@ -2,6 +2,7 @@
 #include "Runtime/Utils/PlatformUtils.h"
 
 #include <commdlg.h>
+#include <shlobj.h>
 #include <GLFW/glfw3.h>
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
@@ -53,5 +54,43 @@ namespace XLEngine
 			return ofn.lpstrFile;
 		}
 		return std::string();
+	}
+
+	std::string FileDialogs::PickFolder()
+	{
+		// 用 IFileOpenDialog 的文件夹模式 (FOS_PICKFOLDERS) 选择一个目录（COM）。
+		HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
+		if (hr != S_OK && hr != S_FALSE) // S_FALSE = 已在当前线程初始化，同样可用
+			return std::string();
+
+		std::string result;
+		IFileOpenDialog* dialog = nullptr;
+		if (SUCCEEDED(CoCreateInstance(CLSID_FileOpenDialog, nullptr, CLSCTX_INPROC_SERVER,
+			IID_PPV_ARGS(&dialog))))
+		{
+			DWORD opts;
+			dialog->GetOptions(&opts);
+			dialog->SetOptions(opts | FOS_PICKFOLDERS | FOS_PATHMUSTEXIST);
+			if (dialog->Show(glfwGetWin32Window((GLFWwindow*)s_OwnerWindow)) == S_OK)
+			{
+				IShellItem* item = nullptr;
+				if (dialog->GetResult(&item) == S_OK)
+				{
+					PWSTR path = nullptr;
+					if (item->GetDisplayName(SIGDN_FILESYSPATH, &path) == S_OK && path)
+					{
+						// 宽路径转 UTF-8（引擎内部统一窄串 std::string）
+						int len = WideCharToMultiByte(CP_UTF8, 0, path, -1, nullptr, 0, nullptr, nullptr);
+						result.assign(len - 1, '\0');
+						WideCharToMultiByte(CP_UTF8, 0, path, -1, &result[0], len, nullptr, nullptr);
+						CoTaskMemFree(path);
+					}
+					item->Release();
+				}
+			}
+			dialog->Release();
+		}
+		CoUninitialize();
+		return result;
 	}
 }

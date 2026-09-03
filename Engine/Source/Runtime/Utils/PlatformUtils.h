@@ -7,8 +7,11 @@ namespace XLEngine
 	{
 	public:
 		// These return empty strings if cancelled
-		static std::string OpenFile(const char* filter);
-		static std::string SaveFile(const char* filter);
+                static std::string OpenFile(const char* filter);
+                static std::string SaveFile(const char* filter);
+
+                // 选择文件夹（打包输出路径等复用）。返回空串表示取消。
+                static std::string PickFolder();
 
 		// 由应用框架层注入原生窗口句柄（作为原生文件对话框的父窗口），
 		// 避免平台层反向依赖 Application 单例。
